@@ -550,34 +550,40 @@ public class LaunchGameCommand : BaseCommand
 
 ## 8. Backend Service Interface (Mock-First)
 
-### 8.1 Interface Contract
+All actual API endpoints, request/response JSON payloads, and error codes are specified in the central **[Backend & API Specification](file:///Users/vitaliivasylenko/Development/Unity/CrashmaniaEx/Project/spec_backend.md)**. 
+
+To isolate the Unity client from network changes, the client communicates with the server via an injectible interface. The app ships with a mock implementation for offline development, designed to be easily swapped with a live REST/WS implementation matching the backend spec.
+
+### 8.1 C# Interface Contract
+Every method corresponds to the respective HTTP endpoint or WebSocket handler defined in `spec_backend.md`:
 
 ```csharp
 public interface IBackendService
 {
-    // Auth
+    // Auth (Mapped to /api/auth/ endpoints)
     UniTask<AuthResponse> Login(string email, string password);
     UniTask<AuthResponse> LoginWithGoogle(string idToken);
     UniTask<AuthResponse> RefreshToken(string refreshToken);
     
-    // Lobby
+    // Lobby (Mapped to /api/lobby and /api/player/profile endpoints)
     UniTask<LobbyDataResponse> GetLobbyData();
     UniTask<PlayerProfile> GetPlayerProfile();
     
-    // Store
+    // Store (Mapped to /api/store/ packages & purchase endpoints)
     UniTask<List<StorePackage>> GetStorePackages();
     UniTask<PurchaseResult> PurchasePackage(string packageId);
     
-    // Bonuses
+    // Bonuses (Mapped to /api/bonuses/ status & claim endpoints)
     UniTask<BonusStatus> GetBonusStatus(BonusType type);
     UniTask<ClaimResult> ClaimBonus(BonusType type);
     
-    // Game (used by game modules, not lobby directly)
+    // Game (WebSocket session starter helper)
     UniTask<GameSession> StartGameSession(string gameId, string accessToken);
 }
 ```
 
 ### 8.2 Mock Implementation
+Used during early implementation phases to return simulated delayed results without a running server.
 
 ```csharp
 public class MockBackendService : IBackendService
@@ -594,7 +600,7 @@ public class MockBackendService : IBackendService
 
     public async UniTask<AuthResponse> Login(string email, string password)
     {
-        await UniTask.Delay(500); // Simulate network
+        await UniTask.Delay(500); // Simulate network latency
         return new AuthResponse
         {
             Success = true,
@@ -615,25 +621,26 @@ public class MockBackendService : IBackendService
         };
     }
 
-    // ... other methods return mock data with simulated delays
+    // ... other methods return mock data with simulated delays matching the specs
 }
 ```
 
-### 8.3 Swapping to Real Backend
-
-When `spec_backend.md` is implemented, the swap is a single line in `Startup.cs`:
+### 8.3 Swapping to a Live Backend
+Once the backend is deployed, swap the registered provider in `Startup.cs` to the HTTP wrapper that communicates with routes specified in `spec_backend.md`:
 
 ```csharp
-// Before (mock):
+// Before (Offline Mock):
 container.Register<IBackendService>(new MockBackendService());
 
-// After (real):
-container.Register<IBackendService>(new HttpBackendService("https://api.yourplatform.com"));
+// After (Live Server):
+container.Register<IBackendService>(new HttpBackendService("https://api.crashmania.com"));
 ```
 
 ---
 
-## 9. Data Models
+## 9. Client-Side Data Models (Unity C#)
+
+These classes are local C# representations of the JSON data structures sent and received by the API defined in `spec_backend.md`.
 
 ```csharp
 // --- Lobby ---

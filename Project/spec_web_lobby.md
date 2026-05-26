@@ -359,59 +359,37 @@ interface AuthState {
 
 ---
 
-## 8. API Contract (Lobby-Relevant Endpoints)
+## 8. API Contract & Backend Services
 
-### 8.1 Catalog & Lobby
+All backend REST API endpoints, security authentication tokens, real-time WebSocket protocol messages, and database schema mappings are defined in the central backend specification document:
 
-| Method | Endpoint | Response |
-|--------|----------|----------|
-| `GET` | `/api/lobby` | `{ categories: Category[], banners: Banner[], topGames: Game[] }` |
-| `GET` | `/api/catalog/games` | `Game[]` with filtering/sorting query params |
-| `GET` | `/api/player` | `{ id, email, displayName, balanceCC, balanceSC, vipTier }` |
+👉 **[Backend & API Specification](file:///Users/vitaliivasylenko/Development/Unity/CrashmaniaEx/Project/spec_backend.md)**
 
-### 8.2 Store & Payments
-
-| Method | Endpoint | Response |
-|--------|----------|----------|
-| `GET` | `/api/stores` | `StorePackage[]` |
-| `POST` | `/api/payment` | `{ transactionId, status, redirectUrl? }` |
-
-### 8.3 Bonuses & Rewards
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/hourly-bonus` | Timer + available amount |
-| `POST` | `/hourly-bonus/claim` | Claims bonus, returns new balance |
-| `GET` | `/weekly-streak-bonus` | Streak progress |
-| `POST` | `/weekly-streak-bonus/claim` | Claim streak reward |
-| `GET` | `/monthly-calendar-bonus` | Calendar state |
-| `POST` | `/monthly-calendar-bonus/claim` | Claim calendar day |
-| `GET` | `/welcome-bonus/active` | Welcome bonus availability |
-| `POST` | `/welcome-bonus/claim` | Claim welcome gift |
-
-### 8.4 Data Models
+### 8.1 Web Lobby Client Interface Mapping
+The React application maps these backend models into client-side interfaces. Refer to `spec_backend.md` for actual JSON response schemas and properties:
 
 ```typescript
-interface Game {
+// Client-side TypeScript models mapped from spec_backend.md schemas
+export interface Game {
   id: string;
   name: string;
   thumbnail: string;       // CDN URL
   provider: 'internal' | 'mancala' | 'slotmill' | 'ela' | 'infin';
   type: 'crash' | 'slot' | 'table' | 'instant';
-  iframeUrl: string;       // WebGL build URL or provider iframe
+  iframeUrl: string;       // WebGL build URL
   isNew: boolean;
   isFeatured: boolean;
   supportsSC: boolean;     // Supports Sweep Coins mode
 }
 
-interface Category {
+export interface Category {
   id: string;
   name: string;
   icon?: string;
   games: Game[];
 }
 
-interface StorePackage {
+export interface StorePackage {
   id: string;
   coinAmount: number;
   bonusSC: number;
@@ -420,15 +398,16 @@ interface StorePackage {
   iconUrl: string;
 }
 
-interface Banner {
+export interface Banner {
   id: string;
   imageUrl: string;
-  linkTo: string;          // Internal route or external URL
+  linkTo: string;
   priority: number;
 }
 ```
 
 ---
+
 
 ## 9. Game Integration Layer (React ↔ Unity Bridge)
 
