@@ -1,7 +1,9 @@
-# CrashMania Clone — Backend & API Specification
+# CrashMania Clone — Backend & API Simulation Reference
 
-> **Scope**: This document defines the backend services, REST API, WebSocket protocol, database schema, and provably fair math engine for the CrashMania platform.
-> It serves as the single source of truth for both the **React Web Lobby** and the **Unity iOS Mobile App** client integrations.
+> ⚠️ **Status**: **[POSTPONED / FOR REFERENCE ONLY]**
+>
+> **Scope**: This document defines the standard backend services, REST API, WebSocket protocol, database schema, and provably fair math engine for the live CrashMania platform.
+> For this **iOS Mobile Test Application**, the physical server infrastructure is postponed. Instead, this specification is implemented as a **high-fidelity client-side MockBackendService** within Unity, simulating every payload, timing sequence, and curve equation defined herein to make the app 100% self-contained and immediately runnable.
 
 ---
 

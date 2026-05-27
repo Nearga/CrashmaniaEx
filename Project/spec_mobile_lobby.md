@@ -1,7 +1,9 @@
 # CrashMania Clone — Mobile Lobby Specification (Unity / iOS)
 
-> **Scope**: Pure Unity mobile application targeting **iOS (App Store)**. This spec covers the lobby shell, scene navigation, UI layout, mocked backend, and the plugin architecture for loading games.
-> Game-specific specs live in separate documents. Backend server spec lives in `spec_backend.md`.
+> **Scope**: Pure Unity mobile application targeting **iOS (App Store)**. This spec covers the lobby shell, scene navigation, UI layout, self-contained mock backend simulation, centralized ScriptableObject configurations, and the plugin architecture for loading expandable game machines.
+> Game-specific specs live in separate documents. Mock backend simulation parameters are detailed in `spec_backend.md`.
+>
+> 💡 **Review Context**: This is a premium **CTO-grade test application**. All network servers and external `.env` variables are completely bypassed. The Unity application is 100% self-contained and run-ready, simulating HTTP endpoints and WebSocket ticks entirely client-side using centralized, hardcoded configuration files.
 
 ---
 
@@ -9,19 +11,19 @@
 
 A native iOS social casino lobby built entirely in Unity (Canvas/UGUI), using the **PureMVC** architecture proven in LastOneOut. The lobby is a self-contained shell that:
 
-- Displays game categories in scrollable carousels
-- Supports a **dual-currency** sweepstakes model (Crash Coins + Sweep Coins)
-- Loads games as **Addressable asset bundles** (future), mocked as embedded scenes for now
-- Connects to a REST API + WebSocket backend (mocked locally, designed for easy swap to real services via `spec_backend.md`)
+- Displays game categories in horizontally scrollable carousels.
+- Supports a **dual-currency** sweepstakes model (Crash Coins + Sweep Coins).
+- Integrates both the Lobby Shell and highly **expandable Game Machines** (e.g. Crash game rooms) into the Unity scene architecture.
+- Connects to a robust local `MockBackendService` that simulates REST and WebSocket data streams instantly with zero server infrastructure.
 
 ### Key Architectural Principles
 
 | Principle | Implementation |
 |-----------|---------------|
-| **Game-agnostic shell** | Adding a game = registering a catalog entry + Addressable address. Zero lobby code changes. |
-| **Backend-swappable** | All API calls go through a `IBackendService` interface. Mock implementation ships first; real HTTP implementation drops in later. |
+| **Game-agnostic shell** | Adding a game = registering a catalog entry ScriptableObject + scene layout. Zero lobby core code changes. |
+| **Self-Contained Mock** | All API calls go through a C# `IBackendService` interface. The app ships with a high-fidelity local `MockBackendService` simulating endpoints and ticks. |
+| **Central Config** | No external `.env` or configuration text files. All settings are centralized inside a single Unity `AppConfig` ScriptableObject. |
 | **PureMVC separation** | Views never touch data directly. All state flows through Proxies, all logic through Commands, all UI binding through Mediators. |
-| **Addressable-ready** | Game scenes are referenced by Addressable keys, not hard scene names. For MVP, bundles are local; for production, they download from CDN. |
 
 ---
 
@@ -113,7 +115,7 @@ graph TD
 
 ### 3.3 Dependency Injection
 
-Reuse the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut:
+Reuse the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut, loading the centralized configuration from Resources:
 
 ```csharp
 // Startup.cs (MonoBehaviour on persistent root GO)
@@ -126,13 +128,17 @@ public class Startup : MonoBehaviour
     {
         var container = DependencyContainer.Instance;
         
-        // Register services
-        container.Register<IBackendService>(new MockBackendService());
-        container.Register<IGameLoader>(new AddressableGameLoader());
+        // 1. Load and Register Centralized Hardcoded Configurations
+        AppConfig config = Resources.Load<AppConfig>("AppConfig");
+        container.Register<AppConfig>(config);
+        
+        // 2. Register mock backend service utilizing this config
+        container.Register<IBackendService>(new MockBackendService(config));
+        container.Register<IGameLoader>(new EmbeddedGameLoader());
         container.Register<GameCatalogMap>(gameCatalog);
         container.Register<DesignTokens>(designTokens);
         
-        // Initialize PureMVC
+        // 3. Initialize PureMVC
         LobbyFacade.GetInstance().Startup();
     }
 }
@@ -630,7 +636,7 @@ Once the backend is deployed, swap the registered provider in `Startup.cs` to th
 
 ```csharp
 // Before (Offline Mock):
-container.Register<IBackendService>(new MockBackendService());
+container.Register<IBackendService>(new MockBackendService(config));
 
 // After (Live Server):
 container.Register<IBackendService>(new HttpBackendService("https://api.crashmania.com"));

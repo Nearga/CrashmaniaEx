@@ -1,3 +1,5 @@
+## DAY 1 
+
 1. Download raw assets and available code "https://game.crashmania.com/lobby" to /Research/raw
 2. Run deobfuscation script: ./deobfuscate.sh
 
@@ -13,5 +15,27 @@ By compiling r2unity as a native plugin directly inside the radare2 framework, w
 
 8. Tried to make screenshots automatically for layout - failed - will get back to it later, if necessary
 
-9. Cloned my previous test task i'm proud of - LastOneOut. Summarized strong sides in Sample/Unity-last-one-out/new features.md
+9. Created Research/docs with a proper description of existing index and the game: 
+Research/docs/01_LobbyAnalysis.md, 
+Research/docs/02_ColorPalette.md, 
+Research/docs/03_Typography.md, 
+Research/docs/04_UIComponents.md, 
+Research/docs/05_APIEndpoints.md, 
+Research/docs/06_MobileAppAnalysis.md, 
+Research/docs/07_ReconstructedScriptCatalog.md, 
+Research/docs/08_UnityGameFlow.md,  
+Research/docs/09_WebSocketRealtimeMath.md
 
+10. Cloned my previous test task i'm proud of - LastOneOut. Summarized strong sides in Sample/Unity-last-one-out/new features.md
+
+11. Created a spec for the new project: 
+/Project/spec_master.md, 
+/Project/spec_mobile_lobby.md, 
+/Project/spec_backend.md, 
+/Project/spec_game.md, 
+/Project/spec_web_lobby.md 
+
+
+## DAY 2
+
+12.
