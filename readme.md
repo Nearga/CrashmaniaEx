@@ -11,7 +11,7 @@
 6. While decompilers like Il2CppDumper and Cpp2IL are completely stuck on Unity 6 (Metadata 39), there is a specialized reverse-engineering tool named r2unity (built for the radare2 framework) which has native support for parsing Metadata Version 39.
 By compiling r2unity as a native plugin directly inside the radare2 framework, we completely bypassed the Unity 6/Metadata 39 version blocks. 
 
-7. Downloaded and decompiled APK
+7. Downloaded and decompiled xAPK. Tried to install it on locall device. Override the license, run the app, stuck on "update required" screen
 
 8. Tried to make screenshots automatically for layout - failed - will get back to it later, if necessary
 
@@ -38,4 +38,7 @@ Research/docs/09_WebSocketRealtimeMath.md
 
 ## DAY 2
 
-12.
+12. Run Crashmania on phone. Override license. Override the "update required" screen, pass the registration (bugged), now on the lobby
+Screenshots: Research/app_patched/screenshots/Screenshots 
+
+13. 
