@@ -185,10 +185,10 @@ These GameObjects are created once in Boot and survive all scene loads:
 
 ### 6.3 Game Scene Canvas & Layout
 - [ ] `GameCanvas` with `SafeAreaPanel`
-- [ ] **Game Header** row: back button + title TMP + CC/SC balance widgets
-- [ ] **Viewport Container**: masked `RectTransform` occupying ~50% of portrait height
-- [ ] **Dual Bet Container**: `HorizontalLayoutGroup` with two `BetPanel` prefabs side-by-side
-- [ ] **Info Section**: split `RoundHistoryPanel` (horizontal scroll, pill badges) + `ActiveBetsPanel` (vertical scroll, player rows)
+- [ ] **Game Header** row: back button + Level Badge + CC/SC balance widget + Currency Toggle + Menu Button
+- [ ] **Viewport Container**: masked `RectTransform` occupying ~50% of portrait height. Contains the Round History horizontally scrollable pill badges in the top left corner.
+- [ ] **Active Bets Accordion**: collapsible vertical list of active players situated between the viewport and bet panels. Has a header (PLAYER, BET, MULTI, WIN).
+- [ ] **Dual Bet Container**: `VerticalLayoutGroup` with two `BetPanel` prefabs stacked vertically.
 
 ### 6.4 Core Visual Components
 - [ ] `Assets/Scripts/UI/Components/ScrollingGridBackground.cs` — `RawImage` material UV offset, speed driven by `SetSpeedFactor(multiplier)` (per `spec_game.md §5.2`)
@@ -198,8 +198,8 @@ These GameObjects are created once in Boot and survive all scene loads:
 - [ ] Explosion prefab (deactivated by default); plays on crash
 
 ### 6.5 BetPanel Prefab & State Machine
-- [ ] `Assets/UI/Prefabs/BetPanel.prefab` — currency tag, bet amount input, `1/2` / `2X` / `Max` quick buttons, auto-cashout toggle + input, action button
-- [ ] `BetPanelController.cs` — tracks 4 states: `Idle` → `"PLACE BET"` (green), `Pending` → `"CANCEL BET"` (yellow), `InFlight` → `"CASH OUT [amount]"` (orange), `Won/Lost` → disabled
+- [ ] `Assets/UI/Prefabs/BetPanel.prefab` — bet amount input with `[-]`/`[+]`, quick buttons (`10K`/`20K`/`40K`/etc.), autoplay toggle, action button
+- [ ] `BetPanelController.cs` — tracks 4 states: `Idle` → `"BET"` (blue), `Pending` → `"CANCEL BET"` (red/yellow), `InFlight` → `"CASHOUT [amount]"` (orange), `Won/Lost` → wait for next round
 - [ ] Action button is a `GradientImage` button with DOTween colour transition between states
 
 ### 6.6 Crash Game Mock WebSocket Loop (`MockBackendService` extension)

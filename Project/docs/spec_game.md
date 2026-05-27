@@ -11,28 +11,35 @@ The Crash Game scene (`Game.unity`) is loaded additively by the Lobby shell's `I
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│  [← Back]  CRASH ORIGINAL   [💰 250k] [🟢 5.00]  [☰]  │  ← Game Header
+│  [← Back]  [Level]  [CC 💰 122 420] [ + ]   [Toggle] [☰]│  ← Game Header
 ├────────────────────────────────────────────────────────┤
 │ ┌────────────────────────────────────────────────────┐ │
+│ │  [1.31] [4.76] [4.34] [2.62] [1.75] [1.83] [Hist]  │ │  ← Round History Pills
+│ │                                                    │ │
+│ │                                                    │ │
 │ │                  ROCKET FLIGHT VIEWPORT            │ │
 │ │                                                    │ │
 │ │                       🚀 (climbing rocket)         │ │
-│ │          2.45x (multiplier text)                   │ │
+│ │               x1.51 (multiplier text)              │ │
 │ │                                                    │ │
 │ └────────────────────────────────────────────────────┘ │
 ├────────────────────────────────────────────────────────┤
-│ ┌──────────────────────────┐ ┌──────────────────────┐  │
-│ │   BET PANEL A            │ │   BET PANEL B        │  │  ← Dual Parallel Bets
-│ │   [ CC ] / [ SC ]        │ │   [ CC ] / [ SC ]    │  │
-│ │   Amount: [ 100 ]        │ │   Amount: [ 250 ]    │  │
-│ │   Auto: [ 2.00 ]x        │ │   Auto: [ OFF ]      │  │
-│ │   [    PLACE BET    ]    │ │   [   CASH OUT 462 ] │  │
-│ └──────────────────────────┘ └──────────────────────┘  │
+│  PLAYER           BET           MULTI          WIN  [v]│  ← Active Players (Collapsible)
+│  alex****n...     20,000        x1.96          39,200  │
 ├────────────────────────────────────────────────────────┤
-│ ┌──────────────────────────┐ ┌──────────────────────┐  │
-│ │   ROUND HISTORY          │ │   ACTIVE PLAYERS     │  │  ← Badges & Status List
-│ │   [1.42x] [5.20x] [1.02x]│ │   LuckyR...  100 [CC]│  │
-│ └──────────────────────────┘ └──────────────────────┘  │
+│ ┌────────────────────────────────────────────────────┐ │
+│ │   [ - ]     6K      [ + ]   ┌────────────────────┐ │ │  ← Bet Panel 1
+│ │   [10K] [20K] [40K] [60K]   │       BET          │ │ │
+│ │                             │      [CC] 6K       │ │ │
+│ │   [|||] [ ] AUTOPLAY        └────────────────────┘ │ │
+│ └────────────────────────────────────────────────────┘ │
+├────────────────────────────────────────────────────────┤
+│ ┌────────────────────────────────────────────────────┐ │
+│ │   [ - ]     6K      [ + ]   ┌────────────────────┐ │ │  ← Bet Panel 2
+│ │   [10K] [20K] [40K] [60K]   │       BET          │ │ │
+│ │                             │      [CC] 6K       │ │ │
+│ │   [|||] [ ] AUTOPLAY        └────────────────────┘ │ │
+│ └────────────────────────────────────────────────────┘ │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -42,11 +49,13 @@ GameCanvas (Render Mode: Screen Space - Camera, Match: 0.5)
 ├── SafeAreaPanel (Adjusts for iPhone Dynamic Island / Safe Indicator)
 │   ├── GameHeader
 │   │   ├── BackButton (Triggers exit notification back to lobby)
-│   │   ├── TitleText ("CRASH ORIGINAL" in Murecho Bold)
-│   │   ├── CC_BalanceWidget (Displays play coins via AccumulateToBalance)
-│   │   └── SC_BalanceWidget (Displays sweep coins via AccumulateToBalance)
+│   │   ├── LevelBadge (Hexagon with current level)
+│   │   ├── BalanceWidget (Displays play/sweep coins via AccumulateToBalance)
+│   │   ├── CurrencyToggle (Switch between CC and SC modes)
+│   │   └── MenuButton (Hamburger menu)
 │   │
 │   ├── ViewportContainer (Masked, contains flight visual canvas)
+│   │   ├── RoundHistoryOverlay (Horizontal scroll, pill badges in top left)
 │   │   ├── ScrollingGridBackground (Material offset shader representing travel)
 │   │   ├── SpaceParticles (Star/asteroid particles traveling downward/leftward)
 │   │   ├── RocketContainer (RigidBody or RectTransform tracking flight curve path)
@@ -55,13 +64,13 @@ GameCanvas (Render Mode: Screen Space - Camera, Match: 0.5)
 │   │   ├── ExplosionEffectPrefab (Deactivated, plays splash/fire on crash)
 │   │   └── MultiplierText (TMP, centered, sizes up slightly on every tick)
 │   │
-│   ├── DualBetContainer (HorizontalLayoutGroup, matches Aviator parallel bet layout)
-│   │   ├── BetPanel_A (Controls bet index 0)
-│   │   └── BetPanel_B (Controls bet index 1)
+│   ├── ActiveBetsAccordion (Collapsible list)
+│   │   ├── Header (PLAYER, BET, MULTI, WIN texts + expand/collapse toggle)
+│   │   └── ActiveBetsPanel (Vertical scroll, player rows matching simulated players)
 │   │
-│   └── InfoSectionContainer (Two tabs or split panel)
-│       ├── RoundHistoryPanel (HorizontalScrollRect with pill badges)
-│       └── ActiveBetsPanel (Vertical list matching active simulated players)
+│   └── DualBetContainer (VerticalLayoutGroup, two BetPanels stacked vertically)
+│       ├── BetPanel_A (Controls bet index 0)
+│       └── BetPanel_B (Controls bet index 1)
 ```
 
 ---
@@ -104,10 +113,9 @@ A defining element of high-fidelity social casino crash games is the **Dual-Bet 
 
 ### 3.1 Bet Panel UI Prefab (`BetPanel.prefab`)
 Each panel contains:
-1. **Currency Tag**: Displaying the active currency Mode (CC or SC).
-2. **Bet Input**: Text field + quick action buttons (`Min`, `1/2`, `2X`, `Max`).
-3. **Auto-Cashout Input**: Toggle checkbox + numerical input (e.g., auto-cashout at `2.00x`).
-4. **Interactive Action Button**: A skewed, vertex-colored gradient button transitioning across states:
+1. **Bet Input**: Text field + `[-][+]` increment buttons, and quick action buttons (`10K`, `20K`, `40K`, `60K`, `80K`).
+2. **Autoplay Toggle**: Switch to enable automated betting.
+3. **Interactive Action Button**: A large colored button on the right side transitioning across states:
    * **State A: Betting Inactive (Green CTA)**: `"PLACE BET"` -> Submits bet parameters to active pool.
    * **State B: Betting Pending (Yellow CTA)**: `"CANCEL BET"` -> Retracts bet before flight begins.
    * **State C: Active Flight (Orange CTA)**: `"CASH OUT"` -> Instantly lock current multiplier.
