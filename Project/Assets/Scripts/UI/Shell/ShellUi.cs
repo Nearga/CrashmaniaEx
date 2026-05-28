@@ -50,7 +50,11 @@ namespace Crashmania.UI.Shell
 
             var label = textObject.AddComponent<TextMeshProUGUI>();
             label.text = text;
-            label.font = tokens != null ? tokens.fontDefault : null;
+            if (TryGetFont(tokens, out var font))
+            {
+                label.font = font;
+            }
+
             label.fontSize = size;
             label.fontStyle = style;
             label.color = tokens != null ? tokens.textPrimary : Color.white;
@@ -63,6 +67,25 @@ namespace Crashmania.UI.Shell
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             return label;
+        }
+
+        private static bool TryGetFont(DesignTokens tokens, out TMP_FontAsset font)
+        {
+            font = tokens != null ? tokens.fontDefault : null;
+            if (font == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                return font.atlasTexture != null;
+            }
+            catch
+            {
+                font = null;
+                return false;
+            }
         }
     }
 }

@@ -61,6 +61,7 @@ namespace Crashmania.Editor
             camera.backgroundColor = tokens != null ? tokens.bgMain : new Color(0.157f, 0.169f, 0.220f);
             camera.orthographic = true;
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+            cameraObject.AddComponent<AudioListener>();
 
             var lightObject = new GameObject("Directional Light");
             lightObject.AddComponent<Light>().type = LightType.Directional;
@@ -80,7 +81,11 @@ namespace Crashmania.Editor
             label.transform.SetParent(background.transform, false);
             var text = label.AddComponent<TextMeshProUGUI>();
             text.text = sceneName.ToUpperInvariant();
-            text.font = tokens != null ? tokens.fontHeading : null;
+            if (TryGetFont(tokens, out var font))
+            {
+                text.font = font;
+            }
+
             text.fontSize = 72f;
             text.fontStyle = FontStyles.Bold;
             text.color = tokens != null ? tokens.textPrimary : Color.white;
@@ -111,6 +116,25 @@ namespace Crashmania.Editor
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             return panel;
+        }
+
+        private static bool TryGetFont(DesignTokens tokens, out TMP_FontAsset font)
+        {
+            font = tokens != null ? tokens.fontHeading : null;
+            if (font == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                return font.atlasTexture != null;
+            }
+            catch
+            {
+                font = null;
+                return false;
+            }
         }
     }
 }
