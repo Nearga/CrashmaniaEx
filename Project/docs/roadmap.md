@@ -9,43 +9,43 @@
 *Goal: Unity project compiles, boots to a blank screen, DI wired, and PureMVC facade alive.*
 
 ### 1.1 Unity Project Setup
-- [ ] Create Unity 6 project (`6000.x`) with URP (2D) render pipeline
-- [ ] Configure iOS build target: IL2CPP, ARM64, minimum iOS 16.0, portrait orientation lock
-- [ ] Add `.gitignore` for Unity (Library/, Temp/, Logs/, obj/, UserSettings/)
-- [ ] Set Canvas Scaler: `Scale With Screen Size`, Reference `1170×2532`, Match `0.5`
+- [x] Create Unity 6 project (`6000.x`) with URP (2D) render pipeline
+- [x] Configure iOS build target: IL2CPP, ARM64, minimum iOS 16.0, portrait orientation lock
+- [x] Add `.gitignore` for Unity (Library/, Temp/, Logs/, obj/, UserSettings/)
+- [x] Set Canvas Scaler: `Scale With Screen Size`, Reference `1170×2532`, Match `0.5`
 
 ### 1.2 Package Installation
-- [ ] Import **TextMeshPro** (built-in package, generate essential resources)
-- [ ] Import **DOTween Pro** (Asset Store) — configure default ease settings
-- [ ] Import **UniTask** (OpenUPM: `com.cysharp.unitask`)
-- [ ] Import **PureMVC** (manual DLL or NuGet source in `Assets/Plugins/PureMVC/`)
-- [ ] Import **Addressables** (Unity Package Manager built-in)
-- [ ] Import **Newtonsoft JSON** (`com.unity.nuget.newtonsoft-json`)
+- [x] Import **TextMeshPro** (built-in package, generate essential resources)
+- [x] Import **DOTween Pro** (Asset Store) — configure default ease settings
+- [x] Import **UniTask** (OpenUPM: `com.cysharp.unitask`)
+- [x] Import **PureMVC** (manual DLL or NuGet source in `Assets/Plugins/PureMVC/`)
+- [x] Import **Addressables** (Unity Package Manager built-in)
+- [x] Import **Newtonsoft JSON** (`com.unity.nuget.newtonsoft-json`)
 
 ### 1.3 Font & Design Token Assets
-- [ ] Import Murecho font family (Regular 400, SemiBold 600, Bold 700, Black 900) → generate TMP font assets
-- [ ] Import Saira Condensed Black 900 → generate TMP font asset
-- [ ] Create `DesignTokens.asset` ScriptableObject with all color and font references (per `spec_mobile_lobby.md §5.1`)
-- [ ] Create `AppConfig.asset` ScriptableObject (placed in `Assets/Resources/AppConfig.asset`) with all hardcoded settings (per `spec_master.md §4.1`)
+- [x] Import Murecho font family (Regular 400, SemiBold 600, Bold 700, Black 900) → generate TMP font assets
+- [x] Import Saira Condensed Black 900 → generate TMP font asset
+- [x] Create `DesignTokens.asset` ScriptableObject with all color and font references (per `spec_mobile_lobby.md §5.1`)
+- [x] Create `AppConfig.asset` ScriptableObject (placed in `Assets/Resources/AppConfig.asset`) with all hardcoded settings (per `spec_master.md §4.1`)
 
 ### 1.4 Core Architecture — DI Container
 Port the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut:
-- [ ] `Assets/Scripts/Core/InjectAttribute.cs`
-- [ ] `Assets/Scripts/Core/DependencyContainer.cs` (singleton, `Register<T>`, `Resolve<T>`)
-- [ ] `Assets/Scripts/Core/ServiceLocator.cs` (static pass-through for convenience access)
-- [ ] Unit-smoke-test: register a `string` and resolve it in Editor Play Mode
+- [x] `Assets/Scripts/Core/InjectAttribute.cs`
+- [x] `Assets/Scripts/Core/DependencyContainer.cs` (singleton, `Register<T>`, `Resolve<T>`)
+- [x] `Assets/Scripts/Core/ServiceLocator.cs` (static pass-through for convenience access)
+- [x] Unit-smoke-test: register a `string` and resolve it in Editor Play Mode
 
 ### 1.5 PureMVC Foundation
-- [ ] `Assets/Scripts/PureMvc/LobbyFacade.cs` — extends PureMVC `Facade`, singleton
-- [ ] `Assets/Scripts/PureMvc/Notifications/LobbyNotifications.cs` — all notification name constants
-- [ ] `Assets/Scripts/PureMvc/LobbyFacade.Startup()` — registers all proxies and commands (stubs OK at this phase)
-- [ ] `Assets/Scripts/Core/Startup.cs` — MonoBehaviour, loads `AppConfig`, registers `IBackendService`, calls `LobbyFacade.GetInstance().Startup()`
+- [x] `Assets/Scripts/PureMvc/LobbyFacade.cs` — extends PureMVC `Facade`, singleton
+- [x] `Assets/Scripts/PureMvc/Notifications/LobbyNotifications.cs` — all notification name constants
+- [x] `Assets/Scripts/PureMvc/LobbyFacade.Startup()` — registers all proxies and commands (stubs OK at this phase)
+- [x] `Assets/Scripts/Core/Startup.cs` — MonoBehaviour, loads `AppConfig`, registers `IBackendService`, calls `LobbyFacade.GetInstance().Startup()`
 
 ### 1.6 Boot Scene
-- [ ] Create `Scenes/Boot.unity`
-- [ ] Add persistent root GameObject `[Startup]` carrying `Startup.cs`
-- [ ] `Assets/Scripts/Services/MockBackendService.cs` — stub implementation returning empty/hardcoded data with `UniTask.Delay(config.mockNetworkDelayMs)`
-- [ ] Boot immediately sends `LobbyNotifications.NavigateTo` → `"Login"` (auto-login not yet, just navigation smoke test)
+- [x] Create `Scenes/Boot.unity`
+- [x] Add persistent root GameObject `[Startup]` carrying `Startup.cs`
+- [x] `Assets/Scripts/Services/MockBackendService.cs` — stub implementation returning empty/hardcoded data with `UniTask.Delay(config.mockNetworkDelayMs)`
+- [x] Boot immediately sends `LobbyNotifications.NavigateTo` → `"Login"` (auto-login not yet, just navigation smoke test)
 
 ---
 

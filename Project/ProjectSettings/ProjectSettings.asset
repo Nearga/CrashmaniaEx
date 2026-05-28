@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 0
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
@@ -59,9 +59,9 @@ PlayerSettings:
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
   allowedAutorotateToPortrait: 1
-  allowedAutorotateToPortraitUpsideDown: 1
-  allowedAutorotateToLandscapeRight: 1
-  allowedAutorotateToLandscapeLeft: 1
+  allowedAutorotateToPortraitUpsideDown: 0
+  allowedAutorotateToLandscapeRight: 0
+  allowedAutorotateToLandscapeLeft: 0
   useOSAutorotation: 1
   use32BitDisplayBuffer: 1
   preserveFramebufferAlpha: 0
@@ -189,7 +189,7 @@ PlayerSettings:
   VertexChannelCompressionMask: 4054
   iPhoneSdkVersion: 988
   iOSSimulatorArchitecture: 0
-  iOSTargetOSVersionString: 15.0
+  iOSTargetOSVersionString: 16.0
   tvOSSdkVersion: 0
   tvOSSimulatorArchitecture: 0
   tvOSRequireExtendedGameController: 0
@@ -582,10 +582,29 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY
+    Android: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    EmbeddedLinux: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    GameCoreScarlett: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    GameCoreXboxOne: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    Kepler: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    LinuxHeadlessSimulation: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    Nintendo Switch: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    Nintendo Switch 2: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    PS4: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    PS5: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    QNX: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    Standalone: APP_UI_EDITOR_ONLY;SENTIS_ANALYTICS_ENABLED;DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    VisionOS: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    WebGL: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    Windows Store Apps: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    XboxOne: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    iPhone: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
+    tvOS: DOTWEEN_UITOOLKIT;DOTWEEN_TEXTMESHPRO;DOTWEEN
   additionalCompilerArguments: {}
-  platformArchitecture: {}
-  scriptingBackend: {}
+  platformArchitecture:
+    iPhone: 1
+  scriptingBackend:
+    iPhone: 1
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   il2cppStacktraceInformation: {}

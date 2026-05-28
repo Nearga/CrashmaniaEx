@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77faee8a903b24e22a906dbc09e0ce26, type: 3}
+  m_Name: AppConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Crashmania.Config.AppConfig
+  apiBaseUrl: https://api.crashmania.com/api
+  webSocketUrl: wss://crash.crashmania.com/ws
+  enableOfflineMocks: 1
+  mockNetworkDelayMs: 350
+  houseEdgeRate: 0.03
+  startingBalanceCC: 250000
+  startingBalanceSC: 5
+  demoUserDisplayName: CTO_Guest
+  defaultVipTier: 1
+  hourlyBonusAmountCC: 10000
+  hourlyBonusIntervalSeconds: 7200
+  dailyStreakCcRewards:
+  - 10000
+  - 15000
+  - 20000
+  - 25000
+  - 30000
+  - 40000
+  - 50000
+  dailyStreakDay7ScBonus: 1
