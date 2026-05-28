@@ -105,6 +105,17 @@ These GameObjects are created once in Boot and survive all scene loads:
 - [x] `Assets/Scripts/PureMvc/Commands/Auth/LoginCommand.cs` — calls `MockBackendService.Login()`, populates `AuthProxy`, fires `LoginSuccess`
 - [x] `LoginView.cs` / `LoginMediator.cs` — submit button calls `SendNotification(LoginRequest, credentials)`, listens for `LoginSuccess` → navigate to Lobby
 
+### 3.4 Login Screen Implementation Plan
+- [ ] Plan how to implement the login screen to closely match the provided screenshots (`Research/app_patched/screenshots/Screenshots/1 Login screen/1.png`, `2.png`, and `3.png`).
+- [ ] The UI must be as close as possible to the screenshots. Most assets are static (use downloaded/unpacked assets from `Research/raw/index/images/` and `Research/raw/index/images/homepage/`).
+- [ ] Implement 4 main interactive buttons: "Login" and "Sign up" (top right), plus "Join now" and "Play for free" in the main content area.
+- [ ] The "Join now" and "Play for free" buttons should trigger the "Sign up" flow.
+
+### 3.5 Login and Signup Popups
+- [ ] Implement login and signup popups matching screenshots (`Login - popup.png`, `Signup - pre-popup warning.png`, `Signup - popup.png`).
+- [ ] For the signup flow, the first step must show the pre-popup warning (`Signup - pre-popup warning.png`).
+- [ ] Keep functionality minimal for now: buttons should only trigger the flows (show/close popups) without any actual login/signup authentication logic.
+
 ---
 
 ## Phase 4 — Lobby Screen
