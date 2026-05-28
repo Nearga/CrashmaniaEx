@@ -85,10 +85,22 @@ namespace Crashmania.Editor
                     throw new InvalidOperationException($"{sceneName} is missing a scaled Canvas.");
                 }
 
+                AssertCanvasScalerPolicy(canvasObject.GetComponent<CanvasScaler>(), sceneName);
+
                 if (GameObject.Find("EventSystem") == null)
                 {
                     throw new InvalidOperationException($"{sceneName} is missing EventSystem.");
                 }
+            }
+        }
+
+        private static void AssertCanvasScalerPolicy(CanvasScaler scaler, string owner)
+        {
+            if (scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize ||
+                scaler.referenceResolution != CanvasResolutionPolicy.ReferenceResolution ||
+                Math.Abs(scaler.matchWidthOrHeight - CanvasResolutionPolicy.MatchWidthOrHeight) > 0.001f)
+            {
+                throw new InvalidOperationException($"{owner} CanvasScaler does not match the iPhone portrait resolution policy.");
             }
         }
 

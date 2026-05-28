@@ -274,8 +274,8 @@ Since this is **portrait-only iOS** (not tablet-first), we design for a single c
 |----------|-------|
 | Canvas Scaler mode | `Scale With Screen Size` |
 | Reference Resolution | `1170 × 2532` (iPhone 14 Pro logical) |
-| Match Width or Height | `0.5` (balanced) |
-| Safe Area | `SafeAreaPanel` component auto-adjusts for notch/Dynamic Island |
+| Match Width or Height | `0.0` (width match for portrait-first iPhone UI) |
+| Safe Area | `SafeAreaPanel` component auto-adjusts interactive chrome/content for notch/Dynamic Island |
 
 ---
 

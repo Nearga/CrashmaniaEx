@@ -5,6 +5,7 @@ using System.Linq;
 using Crashmania.Config;
 using Crashmania.Core;
 using Crashmania.Services;
+using Crashmania.UI.Components;
 using DG.Tweening;
 using TMPro;
 using UnityEditor;
@@ -128,8 +129,8 @@ namespace Crashmania.Editor
             var scaler = canvas.GetComponent<CanvasScaler>();
             if (scaler == null ||
                 scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize ||
-                scaler.referenceResolution != new Vector2(1170f, 2532f) ||
-                Math.Abs(scaler.matchWidthOrHeight - 0.5f) > 0.001f)
+                scaler.referenceResolution != CanvasResolutionPolicy.ReferenceResolution ||
+                Math.Abs(scaler.matchWidthOrHeight - CanvasResolutionPolicy.MatchWidthOrHeight) > 0.001f)
             {
                 throw new InvalidOperationException("Boot scene CanvasScaler does not match Phase 1 mobile reference settings.");
             }

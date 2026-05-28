@@ -67,10 +67,9 @@ namespace Crashmania.UI.Shell
 
         private void Initialize()
         {
-            canvasGroup = GetComponent<CanvasGroup>();
             if (canvasGroup == null)
             {
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
+                canvasGroup = GetComponent<CanvasGroup>();
             }
         }
     }

@@ -17,12 +17,18 @@ namespace Crashmania.PureMvc.Mediators
 
         public override void OnRegister()
         {
-            View.TabSelected += OnTabSelected;
+            if (View != null)
+            {
+                View.TabSelected += OnTabSelected;
+            }
         }
 
         public override void OnRemove()
         {
-            View.TabSelected -= OnTabSelected;
+            if (View != null)
+            {
+                View.TabSelected -= OnTabSelected;
+            }
         }
 
         public override string[] ListNotificationInterests()
@@ -32,6 +38,11 @@ namespace Crashmania.PureMvc.Mediators
 
         public override void HandleNotification(INotification notification)
         {
+            if (View == null)
+            {
+                return;
+            }
+
             var sceneName = notification.Body as string;
             View.SetVisibleForScene(sceneName);
             View.Highlight(sceneName);

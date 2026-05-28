@@ -23,6 +23,11 @@ namespace Crashmania.PureMvc.Mediators
 
         public override void HandleNotification(INotification notification)
         {
+            if (View == null)
+            {
+                return;
+            }
+
             switch (notification.Name)
             {
                 case LobbyNotifications.BalanceUpdated:

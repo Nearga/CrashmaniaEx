@@ -22,6 +22,12 @@ Use 2-space indentation for JavaScript and JSON research scripts. Use standard C
 
 No automated test suite is currently defined. Validate script changes by running the specific script against a small, known input and checking generated files for deterministic output. For Unity work, open the exported project in Unity, check console errors, and verify affected scenes or prefabs manually. If adding tests later, place script tests beside the relevant utility or in `Research/tests/`, and use descriptive names like `deobfuscate-bundle.test.js`.
 
+## Unity MCP Workflow
+
+Always use Unity MCP for Unity Editor work. Before changing scenes, prefabs, UI layout, GameObjects, components, or Unity scripts, inspect the live editor state with MCP resources/tools, including relevant scene hierarchy, selected/persistent objects, component values, console errors, and screenshots when visual fidelity matters. Do not guess layout or behavior blindly from file contents alone when the editor can verify it.
+
+If Unity MCP exposes an issue that can be fixed safely, fix it and re-check the editor state/console afterward. If Unity MCP is unavailable, disconnected, stale, blocked by compilation, or otherwise reporting something genuinely wrong, stop and tell the user exactly what is wrong and what must be opened, connected, compiled, or clarified before proceeding.
+
 ## Commit & Pull Request Guidelines
 
 This checkout has no commit history, so use concise imperative commit subjects such as `Document research workflow` or `Annotate lobby bundle parsing`. Pull requests should describe the affected area, list commands or Unity checks performed, and note whether raw source evidence, deobfuscated output, or reconstructed Unity assets changed. Include screenshots only for visible lobby or Unity scene changes.

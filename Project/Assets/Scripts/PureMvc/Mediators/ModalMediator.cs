@@ -22,6 +22,11 @@ namespace Crashmania.PureMvc.Mediators
 
         public override void HandleNotification(INotification notification)
         {
+            if (View == null)
+            {
+                return;
+            }
+
             if (notification.Name == LobbyNotifications.ShowModal)
             {
                 if (notification.Body is string modalName)

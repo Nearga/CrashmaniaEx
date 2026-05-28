@@ -12,7 +12,7 @@
 - [x] Create Unity 6 project (`6000.x`) with URP (2D) render pipeline
 - [x] Configure iOS build target: IL2CPP, ARM64, minimum iOS 16.0, portrait orientation lock
 - [x] Add `.gitignore` for Unity (Library/, Temp/, Logs/, obj/, UserSettings/)
-- [x] Set Canvas Scaler: `Scale With Screen Size`, Reference `1170×2532`, Match `0.5`
+- [x] Set Canvas Scaler: `Scale With Screen Size`, Reference `1170×2532`, width match `0.0`
 
 ### 1.2 Package Installation
 - [x] Import **TextMeshPro** (built-in package, generate essential resources)
@@ -140,6 +140,16 @@ Review all animations against spec targets:
 - [ ] Carousel snap: 0.3s
 - [x] Tab switch: color + scale 0.15s
 - [ ] Promo banner auto-advance: 0.4s slide
+
+### 4.4 iOS Resolution & Editor Fidelity
+- [ ] Standardize all runtime UI canvases and overlays on `1170×2532`, `Scale With Screen Size`, width match `0.0`.
+- [ ] Use Unity MCP before layout changes; verify live editor state, console, hierarchy, and screenshots.
+- [ ] Treat iPhone portrait as source of truth; use Game View presets for iPhone 14 Pro, iPhone SE 3, and optional Pro Max.
+- [ ] Apply safe area only to interactive chrome/content, not decorative full-screen backgrounds.
+- [ ] Fix login/section image sizing from source asset aspect instead of hardcoded heights.
+- [ ] Add verifier coverage for CanvasScaler policy, iOS portrait lock, safe-area overlays, and URP/iPhone quality settings.
+
+Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with width match `0.0` for portrait-first UI.
 
 ---
 

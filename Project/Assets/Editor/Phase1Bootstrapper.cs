@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Crashmania.Config;
 using Crashmania.Core;
+using Crashmania.UI.Components;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -304,9 +305,7 @@ namespace Crashmania.Editor
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasObject.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1170f, 2532f);
-            scaler.matchWidthOrHeight = 0.5f;
+            CanvasResolutionPolicy.ApplyTo(scaler);
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var backgroundObject = new GameObject("Blank Background");

@@ -3,6 +3,7 @@ using Crashmania.Core;
 using Crashmania.PureMvc;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.Services;
+using Crashmania.UI.Components;
 using Crashmania.UI.Shell;
 using DG.Tweening;
 using UnityEngine;
@@ -17,6 +18,9 @@ namespace Crashmania.Core
 
         private void Awake()
         {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = CanvasResolutionPolicy.TargetFrameRate;
+
             DontDestroyOnLoad(gameObject);
 
             var config = Resources.Load<AppConfig>("AppConfig");
