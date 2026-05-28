@@ -1,5 +1,19 @@
 namespace Crashmania.Models
 {
+    public enum LoginProvider
+    {
+        Email,
+        Google
+    }
+
+    public sealed class LoginCredentials
+    {
+        public string Email;
+        public string Password;
+        public string GoogleIdToken;
+        public LoginProvider Provider;
+    }
+
     public sealed class AuthResponse
     {
         public bool Success;

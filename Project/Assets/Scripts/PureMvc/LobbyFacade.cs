@@ -1,5 +1,7 @@
+using Crashmania.PureMvc.Commands.Auth;
 using Crashmania.PureMvc.Commands.Navigation;
 using Crashmania.PureMvc.Notifications;
+using Crashmania.PureMvc.Proxies;
 using PureMVC.Patterns.Facade;
 
 namespace Crashmania.PureMvc
@@ -25,6 +27,8 @@ namespace Crashmania.PureMvc
                 return;
             }
 
+            RegisterProxy(new AuthProxy());
+            RegisterCommand(LobbyNotifications.LoginRequest, () => new LoginCommand());
             RegisterCommand(LobbyNotifications.NavigateTo, () => new NavigateCommand());
             RegisterCommand(LobbyNotifications.SceneLoaded, () => new SceneLoadedCommand());
             started = true;

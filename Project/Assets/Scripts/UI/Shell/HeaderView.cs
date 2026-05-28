@@ -71,7 +71,12 @@ namespace Crashmania.UI.Shell
 
         public void SetVisibleForScene(string sceneName)
         {
-            gameObject.SetActive(sceneName != "Game");
+            gameObject.SetActive(IsShellScene(sceneName));
+        }
+
+        private static bool IsShellScene(string sceneName)
+        {
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account";
         }
 
         private AccumulateToBalance CreateBalanceWidget(Transform parent, string prefix, DesignTokens tokens, string format)

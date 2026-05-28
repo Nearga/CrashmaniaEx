@@ -24,7 +24,7 @@ namespace Crashmania.PureMvc.Mediators
         {
             if (notification.Name == LobbyNotifications.ShowModal)
             {
-                View.Show();
+                View.Show(notification.Body);
                 return;
             }
 

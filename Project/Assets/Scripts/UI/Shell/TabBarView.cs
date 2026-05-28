@@ -38,10 +38,10 @@ namespace Crashmania.UI.Shell
 
             var view = root.AddComponent<TabBarView>();
             view.tokens = tokens;
-            view.AddTab(bar.transform, "Lobby", "HOME", "H");
-            view.AddTab(bar.transform, "Store", "STORE", "S");
-            view.AddTab(bar.transform, "Gifts", "GIFTS", "G");
-            view.AddTab(bar.transform, "Account", "ACCOUNT", "A");
+            view.AddTab(bar.transform, "Lobby", "HOME");
+            view.AddTab(bar.transform, "Store", "STORE");
+            view.AddTab(bar.transform, "Gifts", "GIFTS");
+            view.AddTab(bar.transform, "Account", "ACCOUNT");
             view.Highlight("Lobby");
             return view;
         }
@@ -56,10 +56,15 @@ namespace Crashmania.UI.Shell
 
         public void SetVisibleForScene(string sceneName)
         {
-            gameObject.SetActive(sceneName != "Game");
+            gameObject.SetActive(IsShellScene(sceneName));
         }
 
-        private void AddTab(Transform parent, string sceneName, string label, string icon)
+        private static bool IsShellScene(string sceneName)
+        {
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account";
+        }
+
+        private void AddTab(Transform parent, string sceneName, string label)
         {
             var buttonObject = ShellUi.CreatePanel($"{label} Tab", parent, Color.clear);
             buttonObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
@@ -73,18 +78,24 @@ namespace Crashmania.UI.Shell
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childForceExpandHeight = false;
 
-            var iconText = ShellUi.CreateText("Icon", buttonObject.transform, icon, tokens, 38, FontStyles.Bold);
+            var iconObject = ShellUi.CreatePanel("Icon", buttonObject.transform, tokens != null ? tokens.textSecondary : Color.gray);
+            var iconImage = iconObject.GetComponent<Image>();
+            iconImage.raycastTarget = false;
+            iconObject.AddComponent<LayoutElement>().preferredHeight = 42f;
+            iconObject.GetComponent<LayoutElement>().preferredWidth = 42f;
+
             var labelText = ShellUi.CreateText("Label", buttonObject.transform, label, tokens, 24, FontStyles.Bold);
-            tabs[sceneName] = new TabButton(buttonObject.transform, iconText, labelText);
+            labelText.gameObject.AddComponent<LayoutElement>().preferredHeight = 34f;
+            tabs[sceneName] = new TabButton(buttonObject.transform, iconImage, labelText);
         }
 
         private readonly struct TabButton
         {
             private readonly Transform root;
-            private readonly TMP_Text icon;
+            private readonly Image icon;
             private readonly TMP_Text label;
 
-            public TabButton(Transform root, TMP_Text icon, TMP_Text label)
+            public TabButton(Transform root, Image icon, TMP_Text label)
             {
                 this.root = root;
                 this.icon = icon;

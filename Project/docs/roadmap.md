@@ -53,35 +53,35 @@ Port the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut:
 *Goal: All scenes exist, tab bar works, back button works, fade transitions play.*
 
 ### 2.1 Scene Files
-- [ ] Create empty scenes: `Login.unity`, `Lobby.unity`, `Store.unity`, `Gifts.unity`, `Account.unity`, `Game.unity`
-- [ ] Add all scenes to Build Settings in the correct order
+- [x] Create empty scenes: `Login.unity`, `Lobby.unity`, `Store.unity`, `Gifts.unity`, `Account.unity`, `Game.unity`
+- [x] Add all scenes to Build Settings in the correct order
 
 ### 2.2 Navigation Command
-- [ ] `Assets/Scripts/PureMvc/Commands/Navigation/NavigateCommand.cs` — resolves `NavigationService`, calls `LoadScene(sceneName)`
-- [ ] `Assets/Scripts/Services/NavigationService.cs` — `LoadScene()` with fade-in/out using DOTween on a `TransitionOverlay` canvas
-- [ ] `Assets/Scripts/PureMvc/Commands/Navigation/SceneLoadedCommand.cs` — registers mediators for the freshly loaded scene
+- [x] `Assets/Scripts/PureMvc/Commands/Navigation/NavigateCommand.cs` — resolves `NavigationService`, calls `LoadScene(sceneName)`
+- [x] `Assets/Scripts/Services/NavigationService.cs` — `LoadScene()` with fade-in/out using DOTween on a `TransitionOverlay` canvas
+- [x] `Assets/Scripts/PureMvc/Commands/Navigation/SceneLoadedCommand.cs` — registers mediators for the freshly loaded scene
 
 ### 2.3 Persistent Overlays (DontDestroyOnLoad)
 These GameObjects are created once in Boot and survive all scene loads:
-- [ ] `[TransitionOverlay]` — full-screen black `CanvasGroup`, DOTween fade, sort order 300
-- [ ] `[HeaderOverlay]` — `HeaderView.cs` + `Canvas` sort order 100 (Lobby/Store/Gifts/Account modes); **hidden during Game scene**
-- [ ] `[TabBar]` — `TabBarView.cs` + `Canvas` sort order 100; **hidden during Game scene**
-- [ ] `[ModalManager]` — `ModalView.cs` + `Canvas` sort order 200, queues and stacks modal prefabs
-- [ ] `[AudioManager]` — `AudioManager.cs`, background music loop + SFX pool (5 AudioSources)
+- [x] `[TransitionOverlay]` — full-screen black `CanvasGroup`, DOTween fade, sort order 300
+- [x] `[HeaderOverlay]` — `HeaderView.cs` + `Canvas` sort order 100 (Lobby/Store/Gifts/Account modes); **hidden during Game scene**
+- [x] `[TabBar]` — `TabBarView.cs` + `Canvas` sort order 100; **hidden during Game scene**
+- [x] `[ModalManager]` — `ModalView.cs` + `Canvas` sort order 200, queues and stacks modal prefabs
+- [x] `[AudioManager]` — `AudioManager.cs`, background music loop + SFX pool (5 AudioSources)
 
 ### 2.4 HeaderView
-- [ ] Layout: Logo (107×47px equivalent in UGUI points), CC balance widget, SC balance widget
-- [ ] `AccumulateToBalance.cs` — DOTween float tween on TMP text, ease-out cubic, 0.5s duration
-- [ ] `HeaderMediator.cs` — listens to `BalanceUpdated` notification, calls `OnBalanceUpdated()` on view
+- [x] Layout: Logo (107×47px equivalent in UGUI points), CC balance widget, SC balance widget
+- [x] `AccumulateToBalance.cs` — DOTween float tween on TMP text, ease-out cubic, 0.5s duration
+- [x] `HeaderMediator.cs` — listens to `BalanceUpdated` notification, calls `OnBalanceUpdated()` on view
 
 ### 2.5 TabBarView
-- [ ] 4 buttons: Home, Store, Gifts, Account; each has icon `Image` + label `TMP_Text`
-- [ ] Active tab: `brandPurple` tint, inactive: `textSecondary` — DOTween color + scale 0.15s transition
-- [ ] Each button fires `SendNotification(LobbyNotifications.NavigateTo, sceneName)`
-- [ ] `TabBarMediator.cs` — highlights active tab on `SceneLoaded` notification
+- [x] 4 buttons: Home, Store, Gifts, Account; each has icon `Image` + label `TMP_Text`
+- [x] Active tab: `brandPurple` tint, inactive: `textSecondary` — DOTween color + scale 0.15s transition
+- [x] Each button fires `SendNotification(LobbyNotifications.NavigateTo, sceneName)`
+- [x] `TabBarMediator.cs` — highlights active tab on `SceneLoaded` notification
 
 ### 2.6 SafeAreaPanel Component
-- [ ] `Assets/Scripts/UI/Components/SafeAreaPanel.cs` — applies `Screen.safeArea` as RectTransform offsets in `Awake()`; works for Dynamic Island and home indicator bar
+- [x] `Assets/Scripts/UI/Components/SafeAreaPanel.cs` — applies `Screen.safeArea` as RectTransform offsets in `Awake()`; works for Dynamic Island and home indicator bar
 
 ---
 
@@ -89,21 +89,21 @@ These GameObjects are created once in Boot and survive all scene loads:
 *Goal: Tapping "Login" on a styled screen auto-logs in via mock and goes to Lobby.*
 
 ### 3.1 Login UI
-- [ ] Full-screen background image (dark gradient matching `#282b38`)
-- [ ] Logo centered, large
-- [ ] "Email" + "Password" TMP InputFields with underline style
-- [ ] "LOGIN" gradient CTA button (blue gradient, skewed `-5deg` via `SkewRect` component)
-- [ ] "Continue with Google" outline button
-- [ ] "Sign Up" text link below
+- [x] Full-screen background image (dark gradient matching `#282b38`)
+- [x] Logo centered, large
+- [x] "Email" + "Password" TMP InputFields with underline style
+- [x] "LOGIN" gradient CTA button (blue gradient, skewed `-5deg` via `SkewRect` component)
+- [x] "Continue with Google" outline button
+- [x] "Sign Up" text link below
 
 ### 3.2 Custom UI Components
-- [ ] `Assets/Scripts/UI/Components/SkewRect.cs` — `IMeshModifier` that shears all 4 vertices by a configurable angle
-- [ ] `Assets/Scripts/UI/Components/GradientImage.cs` — vertex color gradient top→bottom on `Image` component
+- [x] `Assets/Scripts/UI/Components/SkewRect.cs` — `IMeshModifier` that shears all 4 vertices by a configurable angle
+- [x] `Assets/Scripts/UI/Components/GradientImage.cs` — vertex color gradient top→bottom on `Image` component
 
 ### 3.3 Login Flow (Mock)
-- [ ] `Assets/Scripts/PureMvc/Proxies/AuthProxy.cs` — holds `PlayerProfile`, `AccessToken`, `IsAuthenticated`
-- [ ] `Assets/Scripts/PureMvc/Commands/Auth/LoginCommand.cs` — calls `MockBackendService.Login()`, populates `AuthProxy`, fires `LoginSuccess`
-- [ ] `LoginView.cs` / `LoginMediator.cs` — submit button calls `SendNotification(LoginRequest, credentials)`, listens for `LoginSuccess` → navigate to Lobby
+- [x] `Assets/Scripts/PureMvc/Proxies/AuthProxy.cs` — holds `PlayerProfile`, `AccessToken`, `IsAuthenticated`
+- [x] `Assets/Scripts/PureMvc/Commands/Auth/LoginCommand.cs` — calls `MockBackendService.Login()`, populates `AuthProxy`, fires `LoginSuccess`
+- [x] `LoginView.cs` / `LoginMediator.cs` — submit button calls `SendNotification(LoginRequest, credentials)`, listens for `LoginSuccess` → navigate to Lobby
 
 ---
 

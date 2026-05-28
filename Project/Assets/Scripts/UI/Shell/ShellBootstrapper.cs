@@ -16,6 +16,8 @@ namespace Crashmania.UI.Shell
             var header = Object.FindAnyObjectByType<HeaderView>() ?? HeaderView.Create(tokens, config);
             var tabBar = Object.FindAnyObjectByType<TabBarView>() ?? TabBarView.Create(tokens);
             var modal = Object.FindAnyObjectByType<ModalView>() ?? ModalView.Create(tokens);
+            header.SetVisibleForScene("Login");
+            tabBar.SetVisibleForScene("Login");
 
             RegisterMediatorIfMissing(facade, HeaderMediator.Name, () => new HeaderMediator(header));
             RegisterMediatorIfMissing(facade, TabBarMediator.Name, () => new TabBarMediator(tabBar));
