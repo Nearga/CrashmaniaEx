@@ -41,4 +41,10 @@ Research/docs/09_WebSocketRealtimeMath.md
 12. Run Crashmania on phone. Override license. Override the "update required" screen, pass the registration (bugged), now on the lobby
 Screenshots: Research/app_patched/screenshots/Screenshots 
 
-13. 
+13. WIP on Lobby. Lots of supporting infrastructure (specs, docs, carousel, prefabs, scene hierarchy rules)
+
+## DAY 3
+
+14. Lobby is finished, buttons are interactive, sroller. Similar 95% to original
+
+15. 

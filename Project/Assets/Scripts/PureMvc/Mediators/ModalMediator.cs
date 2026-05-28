@@ -1,4 +1,5 @@
 using Crashmania.PureMvc.Notifications;
+using Crashmania.UI.Modals;
 using Crashmania.UI.Shell;
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Mediator;
@@ -15,9 +16,31 @@ namespace Crashmania.PureMvc.Mediators
         {
         }
 
+        public override void OnRegister()
+        {
+            if (View != null)
+            {
+                View.ModalShown += OnModalShown;
+            }
+        }
+
+        public override void OnRemove()
+        {
+            if (View != null)
+            {
+                View.ModalShown -= OnModalShown;
+            }
+        }
+
         public override string[] ListNotificationInterests()
         {
-            return new[] { LobbyNotifications.ShowModal, LobbyNotifications.HideModal };
+            return new[]
+            {
+                LobbyNotifications.ShowModal,
+                LobbyNotifications.HideModal,
+                LobbyNotifications.LoginSuccess,
+                LobbyNotifications.LoginFailed
+            };
         }
 
         public override void HandleNotification(INotification notification)
@@ -41,7 +64,73 @@ namespace Crashmania.PureMvc.Mediators
                 return;
             }
 
-            View.Hide();
+            if (notification.Name == LobbyNotifications.HideModal)
+            {
+                View.Hide();
+                return;
+            }
+
+            if (notification.Name == LobbyNotifications.LoginSuccess)
+            {
+                View.Hide();
+                SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+                SendNotification(LobbyNotifications.ShowToast, "Successfully Logged In!");
+                return;
+            }
+
+            if (notification.Name == LobbyNotifications.LoginFailed)
+            {
+                SendNotification(LobbyNotifications.ShowToast, notification.Body as string ?? "Login failed.");
+            }
+        }
+
+        private void OnModalShown(UnityEngine.GameObject instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            var login = instance.GetComponent<LoginModalView>();
+            if (login != null)
+            {
+                login.CloseRequested += OnCloseRequested;
+                login.LoginRequested += credentials => SendNotification(LobbyNotifications.LoginRequest, credentials);
+                return;
+            }
+
+            var signup = instance.GetComponent<SignupModalView>();
+            if (signup != null)
+            {
+                signup.CloseRequested += OnCloseRequested;
+                signup.PlayNowRequested += OnSignupPlayNowRequested;
+                return;
+            }
+
+            var prePopup = instance.GetComponent<SignupPrePopupModalView>();
+            if (prePopup != null)
+            {
+                prePopup.CloseRequested += OnCloseRequested;
+                prePopup.ContinueRequested += OnSignupPrePopupAccepted;
+            }
+        }
+
+        private void OnCloseRequested()
+        {
+            SendNotification(LobbyNotifications.HideModal);
+        }
+
+        private void OnSignupPrePopupAccepted()
+        {
+            SendNotification(LobbyNotifications.HideModal);
+            SendNotification(LobbyNotifications.ShowModal, "SignupModal");
+        }
+
+        private void OnSignupPlayNowRequested()
+        {
+            SendNotification(LobbyNotifications.HideModal);
+            SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+            SendNotification(LobbyNotifications.ShowToast, "Successfully Registered!");
         }
     }
 }

@@ -1,5 +1,3 @@
-using Crashmania.Config;
-using Crashmania.Core;
 using Crashmania.PureMvc.Mediators;
 using Crashmania.UI.Login;
 using PureMVC.Interfaces;
@@ -27,8 +25,13 @@ namespace Crashmania.PureMvc.Commands.Navigation
         {
             RemoveMediatorIfPresent(LoginMediator.Name);
 
-            var view = Object.FindAnyObjectByType<LoginView>(FindObjectsInactive.Include) ?? 
-                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/LoginScreen")).GetComponent<LoginView>();
+            var view = Object.FindAnyObjectByType<LoginView>(FindObjectsInactive.Include);
+            if (view == null)
+            {
+                Debug.LogError("[SceneLoadedCommand] Login scene is missing an in-scene LoginView.");
+                return;
+            }
+
             Facade.RegisterMediator(new LoginMediator(view));
             Debug.Log("[SceneLoadedCommand] Login mediator registered.");
         }
@@ -38,18 +41,6 @@ namespace Crashmania.PureMvc.Commands.Navigation
             if (Facade.HasMediator(mediatorName))
             {
                 Facade.RemoveMediator(mediatorName);
-            }
-        }
-
-        private static T TryResolve<T>() where T : class
-        {
-            try
-            {
-                return ServiceLocator.Resolve<T>();
-            }
-            catch
-            {
-                return null;
             }
         }
     }

@@ -194,6 +194,11 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [ ] `Assets/UI/Prefabs/SkeletonCard.prefab` — same dimensions as `GameCard` but `Image` with shimmer shader material
 - [ ] `Assets/UI/Materials/ShimmerMaterial.mat` — URP Sprite shader with animated UV offset; `Mathf.PingPong` or shader property tween
 
+### 5.9 Implement UI From Screenshots
+- [ ] `Research/app_patched/screenshots/Screenshots/2 Lobby` - 5 main games + 5 top games + 5 hot games + 5 promo banners + 5 category chips
+- [ ] Clicking any game should play a subtle sound effect and send a notification to the game loader to load the game.
+
+
 ---
 
 ## Phase 6 — Balance, Currency & Store

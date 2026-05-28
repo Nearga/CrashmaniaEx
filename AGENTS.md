@@ -28,6 +28,8 @@ Always use Unity MCP for Unity Editor work. Before changing scenes, prefabs, UI 
 
 If Unity MCP exposes an issue that can be fixed safely, fix it and re-check the editor state/console afterward. If Unity MCP is unavailable, disconnected, stale, blocked by compilation, or otherwise reporting something genuinely wrong, stop and tell the user exactly what is wrong and what must be opened, connected, compiled, or clarified before proceeding.
 
+Avoid code-created UI components and child hierarchies for visual layout work. The point of visual editing is to split work cleanly between developers and artists: reusable UI should be built and adjusted as prefabs, while single-use UI should be laid out directly in the scene or prefab hierarchy. Runtime code may bind behavior, repair small non-visual settings, or populate data into existing slots, but it should not be the primary source of visual structure unless the user explicitly asks for generated UI.
+
 ## Commit & Pull Request Guidelines
 
 This checkout has no commit history, so use concise imperative commit subjects such as `Document research workflow` or `Annotate lobby bundle parsing`. Pull requests should describe the affected area, list commands or Unity checks performed, and note whether raw source evidence, deobfuscated output, or reconstructed Unity assets changed. Include screenshots only for visible lobby or Unity scene changes.

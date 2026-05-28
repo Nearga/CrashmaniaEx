@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,9 @@ namespace Crashmania.UI.Shell
 
         private readonly Queue<GameObject> queuedPrefabs = new();
         private readonly Stack<GameObject> modalStack = new();
+
+        public event Action<GameObject> ModalShown;
+        public event Action<GameObject> ModalHidden;
 
         private void Awake()
         {
@@ -54,7 +58,9 @@ namespace Crashmania.UI.Shell
         {
             if (modalStack.Count > 0)
             {
-                Destroy(modalStack.Pop());
+                var modal = modalStack.Pop();
+                ModalHidden?.Invoke(modal);
+                Destroy(modal);
             }
 
             if (canvasGroup != null)
@@ -100,6 +106,7 @@ namespace Crashmania.UI.Shell
 
                 var instance = Instantiate(modalPrefab, panel);
                 modalStack.Push(instance);
+                ModalShown?.Invoke(instance);
             }
             Show();
         }
