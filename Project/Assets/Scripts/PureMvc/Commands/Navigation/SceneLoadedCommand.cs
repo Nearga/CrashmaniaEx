@@ -27,7 +27,8 @@ namespace Crashmania.PureMvc.Commands.Navigation
         {
             RemoveMediatorIfPresent(LoginMediator.Name);
 
-            var view = Object.FindAnyObjectByType<LoginView>() ?? LoginView.Create(TryResolve<DesignTokens>());
+            var view = Object.FindAnyObjectByType<LoginView>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/LoginScreen")).GetComponent<LoginView>();
             Facade.RegisterMediator(new LoginMediator(view));
             Debug.Log("[SceneLoadedCommand] Login mediator registered.");
         }

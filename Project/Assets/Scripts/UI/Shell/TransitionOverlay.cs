@@ -13,36 +13,7 @@ namespace Crashmania.UI.Shell
 
         public static TransitionOverlay Instance { get; private set; }
 
-        public static TransitionOverlay Create()
-        {
-            if (Instance != null)
-            {
-                return Instance;
-            }
 
-            var root = new GameObject("[TransitionOverlay]");
-            DontDestroyOnLoad(root);
-
-            var canvas = root.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 300;
-            root.AddComponent<GraphicRaycaster>();
-
-            var overlay = root.AddComponent<TransitionOverlay>();
-            var image = root.AddComponent<Image>();
-            image.color = Color.black;
-
-            var rectTransform = root.GetComponent<RectTransform>();
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-
-            overlay.Initialize();
-            overlay.canvasGroup.alpha = 0f;
-            overlay.canvasGroup.blocksRaycasts = false;
-            return overlay;
-        }
 
         private void Awake()
         {
@@ -53,7 +24,6 @@ namespace Crashmania.UI.Shell
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
             Initialize();
         }
 

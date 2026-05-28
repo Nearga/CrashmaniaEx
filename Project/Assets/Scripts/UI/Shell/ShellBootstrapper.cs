@@ -10,18 +10,37 @@ namespace Crashmania.UI.Shell
     {
         public static void EnsureShell(DesignTokens tokens, AppConfig config, LobbyFacade facade)
         {
-            TransitionOverlay.Create();
             AudioManager.Ensure();
 
-            var header = Object.FindAnyObjectByType<HeaderView>() ?? HeaderView.Create(tokens, config);
-            var tabBar = Object.FindAnyObjectByType<TabBarView>() ?? TabBarView.Create(tokens);
-            var modal = Object.FindAnyObjectByType<ModalView>() ?? ModalView.Create(tokens);
+            var transition = Object.FindAnyObjectByType<TransitionOverlay>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/TransitionOverlay")).GetComponent<TransitionOverlay>();
+
+            var header = Object.FindAnyObjectByType<HeaderView>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/HeaderOverlay")).GetComponent<HeaderView>();
+                
+            var tabBar = Object.FindAnyObjectByType<TabBarView>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/TabBarOverlay")).GetComponent<TabBarView>();
+            tabBar.Initialize(tokens);
+                
+            var modal = Object.FindAnyObjectByType<ModalView>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/ModalManagerOverlay")).GetComponent<ModalView>();
+                
+            var toast = Object.FindAnyObjectByType<ToastView>(FindObjectsInactive.Include) ?? 
+                Object.Instantiate(Resources.Load<GameObject>("UI/Prefabs/ToastOverlay")).GetComponent<ToastView>();
+            
+            Object.DontDestroyOnLoad(transition.gameObject);
+            Object.DontDestroyOnLoad(header.gameObject);
+            Object.DontDestroyOnLoad(tabBar.gameObject);
+            Object.DontDestroyOnLoad(modal.gameObject);
+            Object.DontDestroyOnLoad(toast.gameObject);
+
             header.SetVisibleForScene("Login");
             tabBar.SetVisibleForScene("Login");
 
             RegisterMediatorIfMissing(facade, HeaderMediator.Name, () => new HeaderMediator(header));
             RegisterMediatorIfMissing(facade, TabBarMediator.Name, () => new TabBarMediator(tabBar));
             RegisterMediatorIfMissing(facade, ModalMediator.Name, () => new ModalMediator(modal));
+            RegisterMediatorIfMissing(facade, ToastMediator.Name, () => new ToastMediator(toast));
         }
 
         private static void RegisterMediatorIfMissing(LobbyFacade facade, string name, System.Func<PureMVC.Interfaces.IMediator> factory)

@@ -24,7 +24,15 @@ namespace Crashmania.PureMvc.Mediators
         {
             if (notification.Name == LobbyNotifications.ShowModal)
             {
-                View.Show(notification.Body);
+                if (notification.Body is string modalName)
+                {
+                    var prefab = UnityEngine.Resources.Load<UnityEngine.GameObject>($"UI/Modals/{modalName}");
+                    View.Show(prefab);
+                }
+                else
+                {
+                    View.Show(notification.Body);
+                }
                 return;
             }
 

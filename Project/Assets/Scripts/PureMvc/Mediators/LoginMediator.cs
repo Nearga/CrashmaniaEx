@@ -1,4 +1,3 @@
-using Crashmania.Models;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.UI.Login;
 using PureMVC.Interfaces;
@@ -19,8 +18,8 @@ namespace Crashmania.PureMvc.Mediators
 
         public override void OnRegister()
         {
-            View.SubmitRequested += OnSubmitRequested;
-            View.SignUpSelected += OnSignUpSelected;
+            View.LoginRequested += OnLoginRequested;
+            View.SignUpRequested += OnSignUpRequested;
         }
 
         public override void OnRemove()
@@ -30,39 +29,29 @@ namespace Crashmania.PureMvc.Mediators
                 return;
             }
 
-            View.SubmitRequested -= OnSubmitRequested;
-            View.SignUpSelected -= OnSignUpSelected;
+            View.LoginRequested -= OnLoginRequested;
+            View.SignUpRequested -= OnSignUpRequested;
         }
 
         public override string[] ListNotificationInterests()
         {
-            return new[] { LobbyNotifications.LoginSuccess, LobbyNotifications.LoginFailed };
+            return new string[0];
         }
 
         public override void HandleNotification(INotification notification)
         {
-            switch (notification.Name)
-            {
-                case LobbyNotifications.LoginSuccess:
-                    View.SetLoading(false);
-                    SendNotification(LobbyNotifications.NavigateTo, "Lobby");
-                    break;
-                case LobbyNotifications.LoginFailed:
-                    View.SetLoading(false);
-                    View.ShowError(notification.Body as string ?? "Login failed.");
-                    break;
-            }
         }
 
-        private void OnSubmitRequested(LoginCredentials credentials)
+        private void OnLoginRequested()
         {
-            View.SetLoading(true);
-            SendNotification(LobbyNotifications.LoginRequest, credentials);
+            Debug.Log("[LoginMediator] Show Login Modal");
+            SendNotification(LobbyNotifications.ShowModal, "LoginModal");
         }
 
-        private void OnSignUpSelected()
+        private void OnSignUpRequested()
         {
-            Debug.Log("[LoginMediator] Sign Up selected; signup flow is not implemented yet.");
+            Debug.Log("[LoginMediator] Show Signup Pre-Popup Warning");
+            SendNotification(LobbyNotifications.ShowModal, "SignupPrePopupModal");
         }
     }
 }
