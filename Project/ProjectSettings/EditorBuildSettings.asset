@@ -8,5 +8,23 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Boot.unity
     guid: 9aaabc8d7770d41c19e3f07eb026fcdf
+  - enabled: 1
+    path: Assets/Scenes/Login.unity
+    guid: a643be01c4126411188b76ab734121ce
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: d4cd50cc461f74b268c2d8b3a228a2b5
+  - enabled: 1
+    path: Assets/Scenes/Store.unity
+    guid: d9d513c71cadd41c9b1b03afe1ff6577
+  - enabled: 1
+    path: Assets/Scenes/Gifts.unity
+    guid: 411decf2d755e489ca25829e7190ade3
+  - enabled: 1
+    path: Assets/Scenes/Account.unity
+    guid: 06567eb1a0d5c4f57a56058090c1ef50
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: 592d11fe8d5dc4b3c99e93eb4600024f
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}

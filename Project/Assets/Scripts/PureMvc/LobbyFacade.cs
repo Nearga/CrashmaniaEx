@@ -25,7 +25,8 @@ namespace Crashmania.PureMvc
                 return;
             }
 
-            RegisterCommand(LobbyNotifications.NavigateTo, () => new Phase1NavigateCommand());
+            RegisterCommand(LobbyNotifications.NavigateTo, () => new NavigateCommand());
+            RegisterCommand(LobbyNotifications.SceneLoaded, () => new SceneLoadedCommand());
             started = true;
         }
     }
