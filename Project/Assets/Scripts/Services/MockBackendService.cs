@@ -46,7 +46,7 @@ namespace Crashmania.Services
         public async UniTask<LobbyDataResponse> GetLobbyData()
         {
             await Delay();
-            return new LobbyDataResponse();
+            return MockCatalog.Create();
         }
 
         public async UniTask<PlayerProfile> GetPlayerProfile()

@@ -331,6 +331,12 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
   - Purchase store item (mock); balance updates
   - Logout → Login screen
 
+
+---
+
+
+2. I dont like SceneLoadedCommand "knows" about LobbyMediator/LobbyView and LoginMediator/LoginView. Search web for best practises of PureMvc, check Sample/Unity-last-one-out and suggest better options
+
 ---
 
 ## Appendix — File Creation Order Summary

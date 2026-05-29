@@ -9,6 +9,7 @@ namespace Crashmania.PureMvc.Notifications
         public const string LoginFailed = "LoginFailed";
         public const string LogoutRequest = "LogoutRequest";
         public const string LobbyDataLoaded = "LobbyDataLoaded";
+        public const string LoadLobbyData = "LoadLobbyData";
         public const string BalanceUpdated = "BalanceUpdated";
         public const string CatalogUpdated = "CatalogUpdated";
         public const string LaunchGame = "LaunchGame";

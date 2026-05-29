@@ -22,6 +22,8 @@ namespace Crashmania.Models
         public string Name;
         public string SceneAddress;
         public string ThumbnailUrl;
+        public string ThumbnailResourcePath;
+        public int OnlineCount;
     }
 
     public sealed class BannerModel
@@ -29,5 +31,6 @@ namespace Crashmania.Models
         public string Id;
         public string Title;
         public string ImageUrl;
+        public string ImageResourcePath;
     }
 }
