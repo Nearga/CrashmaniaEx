@@ -3,6 +3,7 @@ using System.IO;
 using Crashmania.UI.Components;
 using Crashmania.UI.Lobby;
 using Crashmania.UI.Shell;
+using Crashmania.PureMvc.Scenes;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -100,7 +101,7 @@ namespace Crashmania.Editor
             text.fontSize = size;
             text.color = color;
             text.alignment = alignment;
-            text.enableWordWrapping = false;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
             text.raycastTarget = false;
             return text;
         }
@@ -408,6 +409,7 @@ namespace Crashmania.Editor
             var canvasBg = Img(canvasGO, Hex("#292C38"));
             canvasBg.raycastTarget = false;
             var lobbyView = canvasGO.AddComponent<LobbyView>();
+            var lobbySceneController = canvasGO.AddComponent<LobbySceneController>();
 
             var scroll = UI("ScrollRect", canvasGO.transform);
             Full(RT(scroll));
@@ -521,6 +523,7 @@ namespace Crashmania.Editor
             Field(lobbyView, "carouselContent", RT(carousels));
             Field(lobbyView, "searchInput", input);
             Field(lobbyView, "recentMultipliersText", recentText.GetComponent<TMP_Text>());
+            Field(lobbySceneController, "lobbyView", lobbyView);
 
             EditorSceneManager.SaveScene(scene);
         }

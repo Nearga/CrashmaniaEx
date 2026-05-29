@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using Crashmania.PureMvc.Scenes;
 using Crashmania.UI.Components;
 using Crashmania.UI.Login;
 using UnityEditor;
@@ -63,6 +64,7 @@ namespace Crashmania.Editor
 
             VerifyHierarchy();
             VerifyLoginView();
+            VerifySceneController();
             VerifyCanvasScaler();
             VerifyTopDragAndHeader();
             VerifyAssets();
@@ -88,7 +90,7 @@ namespace Crashmania.Editor
 
         private static void VerifyLoginView()
         {
-            var views = UnityEngine.Object.FindObjectsByType<LoginView>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var views = UnityEngine.Object.FindObjectsByType<LoginView>(FindObjectsInactive.Include);
             if (views.Length != 1)
             {
                 throw new InvalidOperationException($"Login.unity must contain exactly one in-scene LoginView. Found: {views.Length}");
@@ -106,6 +108,15 @@ namespace Crashmania.Editor
                 {
                     throw new InvalidOperationException($"{path} is missing a Button component.");
                 }
+            }
+        }
+
+        private static void VerifySceneController()
+        {
+            var controllers = UnityEngine.Object.FindObjectsByType<LoginSceneController>(FindObjectsInactive.Include);
+            if (controllers.Length != 1)
+            {
+                throw new InvalidOperationException($"Login.unity must contain exactly one LoginSceneController. Found: {controllers.Length}");
             }
         }
 
@@ -165,6 +176,12 @@ namespace Crashmania.Editor
             if (source.Contains("UI/Prefabs/LoginScreen", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("SceneLoadedCommand must not instantiate the LoginScreen prefab fallback.");
+            }
+
+            if (source.Contains("LoginView", StringComparison.Ordinal) ||
+                source.Contains("LoginMediator", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException("SceneLoadedCommand must stay generic; Login-specific mediation belongs to LoginSceneController.");
             }
         }
     }

@@ -4,6 +4,7 @@ using System.IO;
 using Crashmania.PureMvc.Commands.Lobby;
 using Crashmania.PureMvc.Mediators;
 using Crashmania.PureMvc.Proxies;
+using Crashmania.PureMvc.Scenes;
 using Crashmania.UI.Components;
 using Crashmania.UI.Lobby;
 using UnityEditor;
@@ -67,6 +68,7 @@ namespace Crashmania.Editor
             AssertType<CatalogProxy>();
             AssertType<LoadLobbyDataCommand>();
             AssertType<LobbyMediator>();
+            AssertType<LobbySceneController>();
             AssertType<LobbyView>();
         }
 
@@ -105,10 +107,16 @@ namespace Crashmania.Editor
                 }
             }
 
-            var views = UnityEngine.Object.FindObjectsByType<LobbyView>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var views = UnityEngine.Object.FindObjectsByType<LobbyView>(FindObjectsInactive.Include);
             if (views.Length != 1)
             {
                 throw new InvalidOperationException($"Lobby.unity must contain exactly one in-scene LobbyView. Found: {views.Length}");
+            }
+
+            var controllers = UnityEngine.Object.FindObjectsByType<LobbySceneController>(FindObjectsInactive.Include);
+            if (controllers.Length != 1)
+            {
+                throw new InvalidOperationException($"Lobby.unity must contain exactly one LobbySceneController. Found: {controllers.Length}");
             }
 
             var scaler = GameObject.Find("LobbyCanvas")?.GetComponent<CanvasScaler>();

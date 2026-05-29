@@ -1,4 +1,5 @@
 using Crashmania.Core;
+using Crashmania.PureMvc.Scenes;
 using Crashmania.Services;
 using Cysharp.Threading.Tasks;
 using PureMVC.Interfaces;
@@ -25,6 +26,8 @@ namespace Crashmania.PureMvc.Commands.Navigation
         {
             try
             {
+                PureMvcSceneRegistry.CloseActiveScene(LobbyFacade.GetInstance());
+
                 var navigationService = ServiceLocator.Resolve<NavigationService>();
                 await navigationService.LoadScene(sceneName);
             }

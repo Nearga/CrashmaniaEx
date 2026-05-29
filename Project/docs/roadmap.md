@@ -335,7 +335,6 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 ---
 
 
-2. I dont like SceneLoadedCommand "knows" about LobbyMediator/LobbyView and LoginMediator/LoginView. Search web for best practises of PureMvc, check Sample/Unity-last-one-out and suggest better options
 
 ---
 
