@@ -19,6 +19,12 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private TMP_InputField searchInput;
         [SerializeField] private RecentMultipliersView recentMultipliersView;
 
+        [Header("Shell Tab Panels")]
+        [SerializeField] private GameObject lobbyPanel;
+        [SerializeField] private GameObject storePanel;
+        [SerializeField] private GameObject giftsPanel;
+        [SerializeField] private GameObject accountPanel;
+
         private readonly List<CategoryChipView> chips = new();
         private LobbyDataResponse currentData;
         private string activeCategoryId = "all";
@@ -36,6 +42,12 @@ namespace Crashmania.UI.Lobby
             if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
             if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
             if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
+
+            if (lobbyPanel == null)
+            {
+                var scrollRect = transform.Find("ScrollRect");
+                if (scrollRect != null) lobbyPanel = scrollRect.gameObject;
+            }
 
             if (searchInput != null)
             {
@@ -58,12 +70,65 @@ namespace Crashmania.UI.Lobby
 
         public void Render(LobbyDataResponse data)
         {
+            if (data != null && IsDataIdentical(data))
+            {
+                return;
+            }
+
             currentData = data ?? new LobbyDataResponse();
             activeCategoryId = "all";
             RenderPromo();
             RenderRecentMultipliers();
             RenderCategories();
             RenderCarousels();
+        }
+
+        private bool IsDataIdentical(LobbyDataResponse data)
+        {
+            if (currentData == null) return false;
+            
+            // Compare top games count
+            if (currentData.TopGames.Count != data.TopGames.Count) return false;
+            
+            // Compare categories count
+            if (currentData.Categories.Count != data.Categories.Count) return false;
+            
+            // Compare banners count
+            if (currentData.Banners.Count != data.Banners.Count) return false;
+
+            // Deep compare Banners
+            for (int i = 0; i < currentData.Banners.Count; i++)
+            {
+                var b1 = currentData.Banners[i];
+                var b2 = data.Banners[i];
+                if (b1.Id != b2.Id || b1.Title != b2.Title || b1.ImageResourcePath != b2.ImageResourcePath)
+                {
+                    return false;
+                }
+            }
+
+            // Deep compare Categories
+            for (int i = 0; i < currentData.Categories.Count; i++)
+            {
+                var c1 = currentData.Categories[i];
+                var c2 = data.Categories[i];
+                if (c1.Id != c2.Id || c1.Name != c2.Name || c1.Games.Count != c2.Games.Count)
+                {
+                    return false;
+                }
+
+                for (int j = 0; j < c1.Games.Count; j++)
+                {
+                    var g1 = c1.Games[j];
+                    var g2 = c2.Games[j];
+                    if (g1.Id != g2.Id || g1.Name != g2.Name || g1.OnlineCount != g2.OnlineCount || g1.ThumbnailResourcePath != g2.ThumbnailResourcePath)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public void RenderSearchResults(IReadOnlyList<GameModel> games)
@@ -193,6 +258,14 @@ namespace Crashmania.UI.Lobby
             }
 
             Canvas.ForceUpdateCanvases();
+        }
+
+        public void ShowTab(string tabName)
+        {
+            if (lobbyPanel != null) lobbyPanel.SetActive(tabName == "Lobby");
+            if (storePanel != null) storePanel.SetActive(tabName == "Store");
+            if (giftsPanel != null) giftsPanel.SetActive(tabName == "Gifts");
+            if (accountPanel != null) accountPanel.SetActive(tabName == "Account");
         }
 
         private static void Clear(Transform target)

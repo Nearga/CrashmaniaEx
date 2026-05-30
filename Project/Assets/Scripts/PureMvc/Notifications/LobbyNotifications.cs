@@ -2,8 +2,10 @@ namespace Crashmania.PureMvc.Notifications
 {
     public static class LobbyNotifications
     {
-        public const string NavigateTo = "NavigateTo";
+        public const string NavigateToScene = "NavigateToScene";
+        public const string NavigateToTab = "NavigateToTab";
         public const string SceneLoaded = "SceneLoaded";
+        public const string ShowTab = "ShowTab";
         public const string LoginRequest = "LoginRequest";
         public const string LoginSuccess = "LoginSuccess";
         public const string LoginFailed = "LoginFailed";

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace Crashmania.Models
 {
+    [System.Serializable]
     public sealed class LobbyDataResponse
     {
         public List<CategoryModel> Categories = new();
@@ -9,6 +10,7 @@ namespace Crashmania.Models
         public List<BannerModel> Banners = new();
     }
 
+    [System.Serializable]
     public sealed class CategoryModel
     {
         public string Id;
@@ -16,6 +18,7 @@ namespace Crashmania.Models
         public List<GameModel> Games = new();
     }
 
+    [System.Serializable]
     public sealed class GameModel
     {
         public string Id;
@@ -26,6 +29,7 @@ namespace Crashmania.Models
         public int OnlineCount;
     }
 
+    [System.Serializable]
     public sealed class BannerModel
     {
         public string Id;

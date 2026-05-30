@@ -39,7 +39,7 @@ namespace Crashmania.Editor
         private static void VerifyTypes()
         {
             AssertType<NavigationService>();
-            AssertType<NavigateCommand>();
+            AssertType<NavigateSceneCommand>();
             AssertType<SceneLoadedCommand>();
             AssertType<HeaderView>();
             AssertType<TabBarView>();
@@ -79,13 +79,13 @@ namespace Crashmania.Editor
                     throw new InvalidOperationException($"{sceneName} is missing Directional Light.");
                 }
 
-                var canvasObject = GameObject.Find("Canvas");
-                if (canvasObject == null || canvasObject.GetComponent<CanvasScaler>() == null)
+                var scaler = UnityEngine.Object.FindAnyObjectByType<CanvasScaler>();
+                if (scaler == null)
                 {
                     throw new InvalidOperationException($"{sceneName} is missing a scaled Canvas.");
                 }
 
-                AssertCanvasScalerPolicy(canvasObject.GetComponent<CanvasScaler>(), sceneName);
+                AssertCanvasScalerPolicy(scaler, sceneName);
 
                 if (GameObject.Find("EventSystem") == null)
                 {

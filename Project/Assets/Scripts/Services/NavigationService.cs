@@ -12,6 +12,7 @@ namespace Crashmania.Services
         private bool isLoading;
 
         public string CurrentSceneName { get; private set; }
+        public string TargetTab { get; set; } = "Lobby";
 
         public async UniTask LoadScene(string sceneName, bool showTransition = true)
         {
@@ -48,7 +49,7 @@ namespace Crashmania.Services
                     await overlay.FadeOut(0.25f);
                 }
 
-                LobbyFacade.GetInstance().SendNotification(LobbyNotifications.SceneLoaded, sceneName);
+                LobbyFacade.GetInstance().SendNotification(LobbyNotifications.SceneLoaded, sceneName == "Lobby" ? TargetTab : sceneName);
             }
             finally
             {

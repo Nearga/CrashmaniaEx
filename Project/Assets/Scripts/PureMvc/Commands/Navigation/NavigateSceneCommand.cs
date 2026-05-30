@@ -1,4 +1,5 @@
 using Crashmania.Core;
+using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Scenes;
 using Crashmania.Services;
 using Cysharp.Threading.Tasks;
@@ -8,14 +9,14 @@ using UnityEngine;
 
 namespace Crashmania.PureMvc.Commands.Navigation
 {
-    public sealed class NavigateCommand : SimpleCommand
+    public sealed class NavigateSceneCommand : SimpleCommand
     {
         public override void Execute(INotification notification)
         {
             var sceneName = notification.Body as string;
             if (string.IsNullOrWhiteSpace(sceneName))
             {
-                Debug.LogWarning("[NavigateCommand] NavigateTo ignored because scene name is empty.");
+                Debug.LogWarning("[NavigateSceneCommand] Navigation ignored: target scene name is empty.");
                 return;
             }
 
@@ -26,14 +27,15 @@ namespace Crashmania.PureMvc.Commands.Navigation
         {
             try
             {
-                PureMvcSceneRegistry.CloseActiveScene(LobbyFacade.GetInstance());
-
                 var navigationService = ServiceLocator.Resolve<NavigationService>();
-                await navigationService.LoadScene(sceneName);
+                var facade = LobbyFacade.GetInstance();
+
+                PureMvcSceneRegistry.CloseActiveScene(facade);
+                await navigationService.LoadScene(sceneName, showTransition: true);
             }
             catch (System.Exception exception)
             {
-                Debug.LogError($"[NavigateCommand] Failed to navigate to {sceneName}: {exception}");
+                Debug.LogError($"[NavigateSceneCommand] Failed to navigate to scene {sceneName}: {exception}");
             }
         }
     }

@@ -73,7 +73,7 @@ namespace Crashmania.PureMvc.Mediators
             if (notification.Name == LobbyNotifications.LoginSuccess)
             {
                 View.Hide();
-                SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+                SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
                 SendNotification(LobbyNotifications.ShowToast, "Successfully Logged In!");
                 return;
             }
@@ -129,7 +129,7 @@ namespace Crashmania.PureMvc.Mediators
         private void OnSignupPlayNowRequested()
         {
             SendNotification(LobbyNotifications.HideModal);
-            SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+            SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
             SendNotification(LobbyNotifications.ShowToast, "Successfully Registered!");
         }
     }

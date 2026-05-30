@@ -50,7 +50,7 @@ namespace Crashmania.PureMvc.Mediators
 
         private void OnTabSelected(string sceneName)
         {
-            SendNotification(LobbyNotifications.NavigateTo, sceneName);
+            SendNotification(LobbyNotifications.NavigateToTab, sceneName);
         }
     }
 }

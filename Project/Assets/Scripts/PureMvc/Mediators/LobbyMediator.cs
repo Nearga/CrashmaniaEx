@@ -1,6 +1,8 @@
+using Crashmania.Core;
 using Crashmania.Models;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Proxies;
+using Crashmania.Services;
 using Crashmania.UI.Lobby;
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Mediator;
@@ -28,6 +30,20 @@ namespace Crashmania.PureMvc.Mediators
             View.GameSelected += OnGameSelected;
             View.ViewAllSelected += OnViewAllSelected;
             View.SearchChanged += OnSearchChanged;
+
+            // Initialize target tab panel state from NavigationService
+            var navigationService = ServiceLocator.Resolve<NavigationService>();
+            if (navigationService != null)
+            {
+                View.ShowTab(navigationService.TargetTab);
+            }
+
+            // Instantly render cached catalog if available to avoid layout jumps
+            var catalog = Facade.RetrieveProxy(CatalogProxy.Name) as CatalogProxy;
+            if (catalog != null && catalog.Categories.Count > 0)
+            {
+                RenderFullCatalog(catalog);
+            }
         }
 
         public override void OnRemove()
@@ -45,13 +61,19 @@ namespace Crashmania.PureMvc.Mediators
 
         public override string[] ListNotificationInterests()
         {
-            return new[] { LobbyNotifications.CatalogUpdated };
+            return new[] { LobbyNotifications.CatalogUpdated, LobbyNotifications.ShowTab };
         }
 
         public override void HandleNotification(INotification notification)
         {
             if (View == null)
             {
+                return;
+            }
+
+            if (notification.Name == LobbyNotifications.ShowTab)
+            {
+                View.ShowTab(notification.Body as string);
                 return;
             }
 

@@ -54,7 +54,15 @@ namespace Crashmania.Core
             var facade = LobbyFacade.GetInstance();
             facade.Startup();
             ShellBootstrapper.EnsureShell(designTokens, config, facade);
-            facade.SendNotification(LobbyNotifications.NavigateTo, GetInitialSceneName());
+            var initialScene = GetInitialSceneName();
+            if (initialScene == "Lobby" || initialScene == "Store" || initialScene == "Gifts" || initialScene == "Account")
+            {
+                facade.SendNotification(LobbyNotifications.NavigateToTab, initialScene);
+            }
+            else
+            {
+                facade.SendNotification(LobbyNotifications.NavigateToScene, initialScene);
+            }
         }
 
         private void Update()
@@ -69,7 +77,7 @@ namespace Crashmania.Core
                 return;
             }
 
-            LobbyFacade.GetInstance().SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+            LobbyFacade.GetInstance().SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
         }
 
         private IBackendService CreateBackendService(AppConfig config)
