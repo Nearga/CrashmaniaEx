@@ -5,6 +5,7 @@ using Crashmania.PureMvc.Commands.Lobby;
 using Crashmania.PureMvc.Mediators;
 using Crashmania.PureMvc.Proxies;
 using Crashmania.PureMvc.Scenes;
+using Crashmania.Services;
 using Crashmania.UI.Components;
 using Crashmania.UI.Lobby;
 using UnityEditor;
@@ -50,7 +51,13 @@ namespace Crashmania.Editor
             "Assets/Resources/UI/Promotions/Lobby/gift-sweep.png",
             "Assets/Resources/UI/Games/Top10/1.png",
             "Assets/Resources/UI/Games/Homepage/astro_go.png",
-            "Assets/Resources/UI/Games/Homepage/tiltx.png"
+            "Assets/Resources/UI/Games/Homepage/tiltx.png",
+            "Assets/Resources/UI/NativeSprites/MGSlots-Lucky_Twins_Wilds_Jackpots.asset",
+            "Assets/Resources/UI/NativeSprites/MGSlots-Bountiful_Birds.asset",
+            "Assets/Resources/UI/NativeSprites/Crash-astro_go_thumbnail.asset",
+            "Assets/Resources/UI/NativeSprites/Bottom Nav-home_icon_big.asset",
+            "Assets/Resources/UI/NativeSprites/Top Bar-coin_crash.asset",
+            "Assets/Resources/UI/NativeSprites/Body-Search.asset"
         };
 
         [MenuItem("Crashmania/Verify Phase 5 Lobby")]
@@ -58,6 +65,7 @@ namespace Crashmania.Editor
         {
             VerifyTypes();
             VerifyAssets();
+            VerifyMockData();
             VerifyScene();
             VerifyPureMvcBoundaries();
             Debug.Log("[Phase5LobbyVerifier] Phase 5 lobby verification completed.");
@@ -88,6 +96,16 @@ namespace Crashmania.Editor
                 {
                     throw new InvalidOperationException($"Missing required lobby sprite: {spritePath}");
                 }
+            }
+
+            if (File.Exists(Path.Combine(Application.dataPath, "Editor/Phase5LobbyBuilder.cs")))
+            {
+                throw new InvalidOperationException("Phase 5 lobby must not depend on Phase5LobbyBuilder.cs.");
+            }
+
+            if (!File.Exists(Path.Combine(Application.dataPath, "../docs/phase5_asset_inventory.md")))
+            {
+                throw new InvalidOperationException("Missing Phase 5 asset inventory note.");
             }
         }
 
@@ -127,6 +145,53 @@ namespace Crashmania.Editor
                 Math.Abs(scaler.matchWidthOrHeight - CanvasResolutionPolicy.MatchWidthOrHeight) > 0.001f)
             {
                 throw new InvalidOperationException("LobbyCanvas CanvasScaler does not match Phase 4.4 policy.");
+            }
+
+            var scrollRect = GameObject.Find("LobbyCanvas/ScrollRect")?.GetComponent<ScrollRect>();
+            if (scrollRect == null ||
+                !scrollRect.vertical ||
+                scrollRect.horizontal ||
+                scrollRect.movementType != ScrollRect.MovementType.Clamped)
+            {
+                throw new InvalidOperationException("Lobby ScrollRect must be vertical-only and clamped.");
+            }
+
+            var carouselLayout = GameObject.Find("LobbyCanvas/ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<LayoutElement>();
+            if (carouselLayout == null || carouselLayout.preferredHeight < 1000f)
+            {
+                throw new InvalidOperationException("CarouselSections must reserve enough preferred height for scrollable lobby content.");
+            }
+        }
+
+        private static void VerifyMockData()
+        {
+            var data = MockCatalog.Create();
+            if (data.Banners.Count != 5)
+            {
+                throw new InvalidOperationException($"MockCatalog must expose 5 lobby banners. Found: {data.Banners.Count}");
+            }
+
+            if (data.Categories.Count != 5)
+            {
+                throw new InvalidOperationException($"MockCatalog must expose 5 lobby categories. Found: {data.Categories.Count}");
+            }
+
+            var visibleCarouselCount = 0;
+            var visibleGameCount = 0;
+            foreach (var category in data.Categories)
+            {
+                if (category.Id == "all" || category.Id == "trending")
+                {
+                    continue;
+                }
+
+                visibleCarouselCount++;
+                visibleGameCount += category.Games.Count;
+            }
+
+            if (visibleCarouselCount != 3 || visibleGameCount != 15)
+            {
+                throw new InvalidOperationException($"MockCatalog must expose 3 visible carousels and 15 visible cards. Found: {visibleCarouselCount} / {visibleGameCount}");
             }
         }
 

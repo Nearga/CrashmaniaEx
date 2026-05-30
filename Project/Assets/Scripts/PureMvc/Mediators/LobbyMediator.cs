@@ -76,6 +76,12 @@ namespace Crashmania.PureMvc.Mediators
         private void OnCategorySelected(string categoryId)
         {
             var catalog = Facade.RetrieveProxy(CatalogProxy.Name) as CatalogProxy;
+            if (categoryId == "all")
+            {
+                RenderFullCatalog(catalog);
+                return;
+            }
+
             var category = catalog?.GetCategory(categoryId);
             if (category != null)
             {
@@ -104,15 +110,26 @@ namespace Crashmania.PureMvc.Mediators
 
             if (string.IsNullOrWhiteSpace(query))
             {
-                var category = catalog.GetCategory("all");
-                if (category != null)
-                {
-                    View.RenderSearchResults(category.Games);
-                }
+                RenderFullCatalog(catalog);
                 return;
             }
 
             View.RenderSearchResults(catalog.Search(query));
+        }
+
+        private void RenderFullCatalog(CatalogProxy catalog)
+        {
+            if (catalog == null)
+            {
+                return;
+            }
+
+            View.Render(new LobbyDataResponse
+            {
+                Banners = new System.Collections.Generic.List<BannerModel>(catalog.Banners),
+                Categories = new System.Collections.Generic.List<CategoryModel>(catalog.Categories),
+                TopGames = new System.Collections.Generic.List<GameModel>(catalog.TopGames)
+            });
         }
     }
 }

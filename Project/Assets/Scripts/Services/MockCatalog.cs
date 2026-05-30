@@ -9,28 +9,28 @@ namespace Crashmania.Services
         {
             var luckyWeek = new List<GameModel>
             {
-                Game("lucky-twins", "Lucky Twins", "UI/Games/Top10/1", 82),
-                Game("lucky-apple", "Lucky Apple", "UI/Games/Top10/2", 91),
-                Game("lucky-lion", "Lucky Lion", "UI/Games/Top10/3", 64),
-                Game("bountiful-birds", "Bountiful Birds", "UI/Games/Homepage/bountiful-birds", 58),
-                Game("rise-up", "Rise Up", "UI/Games/Homepage/rise_up", 73)
+                Game("lucky-twins", "Lucky Twins", "UI/NativeSprites/MGSlots-Lucky_Twins_Wilds_Jackpots", 82),
+                Game("bountiful-birds", "Bountiful Birds", "UI/NativeSprites/MGSlots-Bountiful_Birds", 91),
+                Game("african-wilds", "African Wilds", "UI/NativeSprites/MGSlots-African_Wilds", 64),
+                Game("almighty-zeus", "Almighty Zeus", "UI/NativeSprites/MGSlots-Almighty_Zeus_Wilds", 58),
+                Game("carnaval-fiesta", "Carnaval Fiesta", "UI/NativeSprites/MGSlots-Carnaval_Fiesta", 73)
             };
 
             var crashGames = new List<GameModel>
             {
                 Game("tiltx", "Tilt X", "UI/Games/Homepage/tiltx", 44),
-                Game("astro-go", "Astro Go", "UI/Games/Homepage/astro_go", 69),
-                Game("skyride", "Skyride", "UI/Games/Homepage/skyride", 57),
+                Game("astro-go", "Astro Go", "UI/NativeSprites/Crash-astro_go_thumbnail", 69),
+                Game("skyride", "Skyride", "UI/NativeSprites/Crash-skyride_thumbnail", 57),
                 Game("swoosh-up", "Swoosh Up", "UI/Games/Homepage/swoosh_up", 61),
-                Game("crush-depth", "Crush Depth", "UI/Games/Homepage/crush_depth", 38)
+                Game("crush-depth", "Crush Depth", "UI/NativeSprites/Crash-crash_depth_thumbnail", 38)
             };
 
             var hotGames = new List<GameModel>
             {
-                Game("fight-x", "Fight X", "UI/Games/Homepage/fightX", 112),
+                Game("fight-x", "Fight X", "UI/NativeSprites/Crash-fightX_thumbnail", 112),
                 Game("moon-juggling", "Moon Juggling", "UI/Games/Homepage/moon_juggling", 87),
                 Game("slackliner", "Slackliner", "UI/Games/Homepage/slackliner", 52),
-                Game("astro-go-hot", "Astro Go", "UI/Games/Homepage/astro_go", 96),
+                Game("astro-go-hot", "Astro Go", "UI/NativeSprites/Crash-astro_go_thumbnail", 96),
                 Game("tiltx-hot", "Tilt X", "UI/Games/Homepage/tiltx", 75)
             };
 
@@ -38,9 +38,9 @@ namespace Crashmania.Services
             {
                 Banners = new List<BannerModel>
                 {
+                    Banner("front", "Lucky Twins", "UI/NativeSprites/MGSlots-Lucky_Twins_Wilds_Jackpots"),
                     Banner("mission", "Daily Mission", "UI/Promotions/Lobby/mission"),
                     Banner("lobby-bg", "Lucky Twins", "UI/Promotions/Lobby/lobby-bg"),
-                    Banner("front", "Welcome Offer", "UI/Promotions/Lobby/front-image"),
                     Banner("gift", "Gift", "UI/Promotions/Lobby/gift"),
                     Banner("gift-sweep", "Gift Sweep", "UI/Promotions/Lobby/gift-sweep")
                 },

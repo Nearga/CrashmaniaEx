@@ -156,38 +156,50 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 ## Phase 5 — Lobby Screen
 *Goal: Lobby displays game carousels loaded from mock data. Cards are tappable.*
 
+### 5.0 Boot Scene — Dev Scene Loader Helper
+*Dev-only quality-of-life component; introduces no new business logic or abstractions.*
+- [x] `Assets/Scripts/Boot/DevSceneLoader.cs` — `MonoBehaviour` on `[Startup]` in `Boot.unity`; wraps the existing startup flow with two inspector-only conveniences:
+  - `[SerializeField] string targetScene` — overrides the default `"Login"` destination so a developer can boot straight into any scene (e.g. `"Lobby"`, `"Game"`) without editing code. Falls back to `"Login"` when left empty.
+  - `[SerializeField] bool useMock` — when checked, registers `MockBackendService` instead of the real service before handing off to the existing `Startup.cs` logic. Guards the field with `#if UNITY_EDITOR` so it is stripped from production builds.
+  - Contains no pipeline, no new interfaces, and no new abstractions — it just sets the two values and calls into the already-existing `Startup` flow.
+
 ### 5.1 Mock Catalog Data
-- [ ] `Assets/Scripts/Services/MockCatalog.cs` — static class returning hardcoded `List<CategoryModel>`, `List<GameModel>`, `List<BannerModel>` (at minimum: Featured, Top 10, Crash Games, Slot Games categories; 8–10 game entries with placeholder thumbnails)
-- [ ] `MockBackendService.GetLobbyData()` returns `MockCatalog` data with simulated delay
+- [x] `Assets/Scripts/Services/MockCatalog.cs` — static class returning hardcoded `List<CategoryModel>`, `List<GameModel>`, `List<BannerModel>` (currently 5 banners, 5 chips, 3 visible carousels with 15 games)
+- [x] Phase 5 asset audit recorded in `Project/docs/phase5_asset_inventory.md`; mock game data now prefers exported Unity app sprites where available
+- [x] `MockBackendService.GetLobbyData()` returns `MockCatalog` data with simulated delay
 
 ### 5.2 PureMVC Wiring for Lobby
-- [ ] `Assets/Scripts/PureMvc/Proxies/CatalogProxy.cs` — holds `Categories`, `TopGames`, `Banners`; exposes `Search(query)` and `GetByCategory(id)`
-- [ ] `Assets/Scripts/PureMvc/Commands/LoadLobbyDataCommand.cs` — called on `SceneLoaded`="Lobby", populates `CatalogProxy`, fires `CatalogUpdated`
-- [ ] `LobbyView.cs` / `LobbyMediator.cs` — listens to `CatalogUpdated`, calls factory methods to spawn carousels
+- [x] `Assets/Scripts/PureMvc/Proxies/CatalogProxy.cs` — holds `Categories`, `TopGames`, `Banners`; exposes `Search(query)`, `GetCategory(id)`, and `GetGame(id)`
+- [x] `Assets/Scripts/PureMvc/Commands/Lobby/LoadLobbyDataCommand.cs` — called by `LobbySceneController.Show()`, populates `CatalogProxy`, fires `CatalogUpdated`
+- [x] `LobbyView.cs` / `LobbyMediator.cs` — listens to `CatalogUpdated`, binds data, spawns category chips and carousel/card prefab instances
 
 ### 5.3 Promo Banner Carousel
-- [ ] `Assets/UI/Prefabs/PromoBanner.prefab` — full-width `RawImage` + dot indicators
+- [x] `Assets/Resources/UI/Prefabs/PromoBanner.prefab` — reusable promo image view with resource sprite binding
+- [ ] Add real carousel paging/dot indicators; current lobby binds only the first banner
 - [ ] Auto-advance every 5s using DOTween Sequence; swipe gesture switches pages
 - [ ] `PromoBannerMediator` listens to `BannersUpdated` and loads images via URL (or placeholder sprites)
 
 ### 5.4 GameCard Prefab
-- [ ] `Assets/UI/Prefabs/GameCard.prefab` — `Button` → `RawImage` thumbnail + `TMP_Text` name label; width 280px (reference resolution)
-- [ ] `GameCardFactory.cs` — instantiates and configures `GameCard` from `GameModel`
-- [ ] DOTween scale punch on tap: `1.0 → 1.05 → 1.0` over 0.15s
-- [ ] Tap → `SendNotification(LobbyNotifications.LaunchGame, gameId)`
+- [x] `Assets/Resources/UI/Prefabs/GameCard.prefab` — `Button` + `Image` thumbnail + TMP labels, configured by `GameCardView.Bind(GameModel)`
+- [x] Repeated cards are instantiated from reusable prefabs by `GamesCarouselView`
+- [x] DOTween scale punch on tap: `1.0 → 1.05 → 1.0` over 0.15s
+- [x] Tap raises `GameSelected`; `LobbyMediator` sends `LobbyNotifications.LaunchGame`
 
 ### 5.5 GameCardTop10 Prefab
-- [ ] `Assets/UI/Prefabs/GameCardTop10.prefab` — horizontal layout with rank number `TMP_Text` (Saira Condensed Black, 96px) overlapping left of thumbnail; negative spacing for the overlap effect
+- [x] `Assets/Resources/UI/Prefabs/GameCardTop10.prefab` — separate reusable prefab for Lucky Week / top-style cards
+- [x] Reworked top-style card frame/rank treatment with exported Unity MG slot sprites
 
 ### 5.6 GamesCarousel Prefab
-- [ ] `Assets/UI/Prefabs/GamesCarousel.prefab` — Title `TMP_Text` + "View All" button + horizontal `ScrollRect` content pane
-- [ ] `Assets/Scripts/UI/Components/SnapScrollRect.cs` — snaps to nearest card on release using DOTween, 0.3s
+- [x] `Assets/Resources/UI/Prefabs/GamesCarousel.prefab` — Title `TMP_Text` + "View All" button + horizontal `ScrollRect` content pane + arrow buttons
+- [x] Left/right arrow nudge now clamps and eases horizontal content with DOTween
 - [ ] Left/right gradient fade `Image` overlays (pointer events disabled via `CanvasGroup.blocksRaycasts = false`)
-- [ ] `CarouselFactory.cs` — instantiates `GamesCarousel`, populates with `GameCard` children
+- [x] `GamesCarouselView` instantiates and populates `GameCard` children from `CategoryModel`
 
 ### 5.7 Sticky Search & Category Chips
-- [ ] Search `TMP_InputField` with 300ms debounce calling `CatalogProxy.Search(query)` → refreshes carousels
-- [ ] Horizontal `ScrollRect` of category chip buttons; active chip highlighted with `brandPurple`
+- [x] Search `TMP_InputField` is wired to `CatalogProxy.Search(query)` and refreshes results
+- [x] Added 300ms debounce and restore full category layout when the search field is cleared
+- [x] Horizontal `ScrollRect` of category chip buttons exists and filters to selected category
+- [x] Active chip visual state has final yellow/black screenshot-style highlight
 - [ ] Sticky behaviour via `LayoutElement` + scroll position listener (or fixed position approach)
 
 ### 5.8 Skeleton Loading Placeholders
@@ -195,8 +207,19 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [ ] `Assets/UI/Materials/ShimmerMaterial.mat` — URP Sprite shader with animated UV offset; `Mathf.PingPong` or shader property tween
 
 ### 5.9 Implement UI From Screenshots
-- [ ] `Research/app_patched/screenshots/Screenshots/2 Lobby` - 5 main games + 5 top games + 5 hot games + 5 promo banners + 5 category chips
-- [ ] Clicking any game should play a subtle sound effect and send a notification to the game loader to load the game.
+- [x] Runtime currently loads 5 Lucky Week games + 5 Crash Games + 5 Hot Games + 5 category chips + 5 banner records
+- [x] Visual pass against `Research/app_patched/screenshots/Screenshots/2 Lobby`: header/tab proportions, promo section, carousel sizing, and card framing were rebuilt through Unity MCP
+- [x] Clicking any game sends `LobbyNotifications.LaunchGame`
+- [ ] Add subtle sound effect on game tap once a source UI click clip is available
+- [ ] Wire `LaunchGame` to the Phase 7 game loader once that exists
+
+### 5.10 Remaining Work Plan
+- [x] Use Unity MCP to compare current Boot→Lobby screenshots against the three Lobby target screenshots before each visual pass.
+- [x] Finish shared lobby chrome: header, CC balance bar, right menu/gift block, and bottom tab bar proportions.
+- [x] Rebuild `Lobby.unity` scene-owned layout directly in hierarchy: mission/promo area, multipliers strip, category rail, and carousel spacing.
+- [x] Locate/download exact Lucky Twins promo and card art; if unavailable, document the gap and use closest raw/exported assets without screenshot crops.
+- [x] Add carousel arrow easing and search debounce.
+- [x] Add verifier checks for screenshot-critical scene sections, no builder dependency, card counts, and LaunchGame wiring.
 
 
 ---

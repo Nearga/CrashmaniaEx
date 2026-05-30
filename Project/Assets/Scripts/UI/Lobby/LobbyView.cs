@@ -17,11 +17,12 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private RectTransform categoryContent;
         [SerializeField] private RectTransform carouselContent;
         [SerializeField] private TMP_InputField searchInput;
-        [SerializeField] private TMP_Text recentMultipliersText;
+        [SerializeField] private RecentMultipliersView recentMultipliersView;
 
         private readonly List<CategoryChipView> chips = new();
         private LobbyDataResponse currentData;
         private string activeCategoryId = "all";
+        private Coroutine searchDebounceRoutine;
 
         public event Action<string> CategorySelected;
         public event Action<string> GameSelected;
@@ -34,7 +35,7 @@ namespace Crashmania.UI.Lobby
             if (categoryContent == null) categoryContent = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
             if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
             if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
-            if (recentMultipliersText == null) recentMultipliersText = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers/Text")?.GetComponent<TMP_Text>();
+            if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
 
             if (searchInput != null)
             {
@@ -47,6 +48,11 @@ namespace Crashmania.UI.Lobby
             if (searchInput != null)
             {
                 searchInput.onValueChanged.RemoveListener(OnSearchChanged);
+            }
+
+            if (searchDebounceRoutine != null)
+            {
+                StopCoroutine(searchDebounceRoutine);
             }
         }
 
@@ -72,6 +78,7 @@ namespace Crashmania.UI.Lobby
             carousel.BindSearchResults("SEARCH RESULTS", games, gameCardPrefab);
             carousel.GameSelected += id => GameSelected?.Invoke(id);
             carousel.ViewAllRequested += id => ViewAllSelected?.Invoke(id);
+            RebuildScrollableLayout();
         }
 
         private void RenderPromo()
@@ -84,10 +91,8 @@ namespace Crashmania.UI.Lobby
 
         private void RenderRecentMultipliers()
         {
-            if (recentMultipliersText != null)
-            {
-                recentMultipliersText.text = "RECENT MULTIPLIERS:  <color=#11D950>1.25x</color>     <color=#11D950>1.14x</color>     <color=#11D950>1.29x</color>     <color=#11D950>1.11x</color>     <color=#E93628>1.3x</color>";
-            }
+            // RecentMultipliersView.Start() populates itself with default data;
+            // when real multiplier data is available, call recentMultipliersView.Bind(values).
         }
 
         private void RenderCategories()
@@ -102,7 +107,7 @@ namespace Crashmania.UI.Lobby
             foreach (var category in currentData.Categories)
             {
                 var chip = Instantiate(categoryChipPrefab, categoryContent);
-                chip.Bind(category.Id, category.Name, category.Id == activeCategoryId);
+                chip.Bind(category.Id, category.Name.ToUpper(), category.Id == activeCategoryId);
                 chip.Selected += OnCategorySelected;
                 chips.Add(chip);
             }
@@ -128,11 +133,18 @@ namespace Crashmania.UI.Lobby
                 carousel.GameSelected += id => GameSelected?.Invoke(id);
                 carousel.ViewAllRequested += id => ViewAllSelected?.Invoke(id);
             }
+
+            RebuildScrollableLayout();
         }
 
         private void OnCategorySelected(string id)
         {
             activeCategoryId = id;
+            if (searchInput != null)
+            {
+                searchInput.SetTextWithoutNotify(string.Empty);
+            }
+
             foreach (var chip in chips)
             {
                 chip.SetActive(chip.CategoryId == id);
@@ -143,7 +155,44 @@ namespace Crashmania.UI.Lobby
 
         private void OnSearchChanged(string query)
         {
+            if (searchDebounceRoutine != null)
+            {
+                StopCoroutine(searchDebounceRoutine);
+            }
+
+            searchDebounceRoutine = StartCoroutine(DispatchSearchChanged(query));
+        }
+
+        private System.Collections.IEnumerator DispatchSearchChanged(string query)
+        {
+            yield return new WaitForSecondsRealtime(0.3f);
+            searchDebounceRoutine = null;
             SearchChanged?.Invoke(query);
+        }
+
+        private void RebuildScrollableLayout()
+        {
+            if (carouselContent == null)
+            {
+                return;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(carouselContent);
+
+            var layoutElement = carouselContent.GetComponent<LayoutElement>();
+            if (layoutElement != null)
+            {
+                layoutElement.preferredHeight = Mathf.Max(0f, LayoutUtility.GetPreferredHeight(carouselContent));
+            }
+
+            var contentRoot = carouselContent.parent as RectTransform;
+            if (contentRoot != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
+            }
+
+            Canvas.ForceUpdateCanvases();
         }
 
         private static void Clear(Transform target)

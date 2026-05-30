@@ -1,4 +1,5 @@
 using Crashmania.Config;
+using Crashmania.Boot;
 using Crashmania.Core;
 using Crashmania.PureMvc;
 using Crashmania.PureMvc.Notifications;
@@ -15,6 +16,7 @@ namespace Crashmania.Core
         [SerializeField] private DesignTokens designTokens;
 
         private NavigationService navigationService;
+        private DevSceneLoader sceneLoader;
 
         private void Awake()
         {
@@ -30,6 +32,8 @@ namespace Crashmania.Core
                 return;
             }
 
+            sceneLoader = GetComponent<DevSceneLoader>();
+
             var container = DependencyContainer.Instance;
             container.Clear();
             container.Register<AppConfig>(config);
@@ -39,7 +43,7 @@ namespace Crashmania.Core
                 container.Register<DesignTokens>(designTokens);
             }
 
-            container.Register<IBackendService>(new MockBackendService(config));
+            container.Register<IBackendService>(CreateBackendService(config));
 
             DOTween.Init(recycleAllByDefault: false, useSafeMode: true, logBehaviour: LogBehaviour.ErrorsOnly);
             DOTween.defaultEaseType = Ease.OutCubic;
@@ -50,7 +54,7 @@ namespace Crashmania.Core
             var facade = LobbyFacade.GetInstance();
             facade.Startup();
             ShellBootstrapper.EnsureShell(designTokens, config, facade);
-            facade.SendNotification(LobbyNotifications.NavigateTo, "Login");
+            facade.SendNotification(LobbyNotifications.NavigateTo, GetInitialSceneName());
         }
 
         private void Update()
@@ -66,6 +70,18 @@ namespace Crashmania.Core
             }
 
             LobbyFacade.GetInstance().SendNotification(LobbyNotifications.NavigateTo, "Lobby");
+        }
+
+        private IBackendService CreateBackendService(AppConfig config)
+        {
+            return sceneLoader != null
+                ? sceneLoader.CreateBackendService(config)
+                : new MockBackendService(config);
+        }
+
+        private string GetInitialSceneName()
+        {
+            return sceneLoader != null ? sceneLoader.TargetScene : "Login";
         }
     }
 }

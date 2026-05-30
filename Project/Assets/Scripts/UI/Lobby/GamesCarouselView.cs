@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Crashmania.Models;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,7 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private Button viewAllButton;
         [SerializeField] private Button previousButton;
         [SerializeField] private Button nextButton;
+        [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private RectTransform content;
 
         private string categoryId;
@@ -26,6 +28,7 @@ namespace Crashmania.UI.Lobby
             if (viewAllButton == null) viewAllButton = transform.Find("Header/ViewAllButton")?.GetComponent<Button>();
             if (previousButton == null) previousButton = transform.Find("Header/PreviousButton")?.GetComponent<Button>();
             if (nextButton == null) nextButton = transform.Find("Header/NextButton")?.GetComponent<Button>();
+            if (scrollRect == null) scrollRect = transform.Find("ScrollRect")?.GetComponent<ScrollRect>();
             if (content == null) content = transform.Find("ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
 
             if (viewAllButton != null) viewAllButton.onClick.AddListener(() => ViewAllRequested?.Invoke(categoryId));
@@ -95,8 +98,18 @@ namespace Crashmania.UI.Lobby
             }
 
             var position = content.anchoredPosition;
-            position.x += direction * -320f;
-            content.anchoredPosition = position;
+            position.x = Mathf.Clamp(position.x + direction * -320f, -GetMaxScrollOffset(), 0f);
+            content.DOAnchorPos(position, 0.18f).SetEase(Ease.OutCubic);
+        }
+
+        private float GetMaxScrollOffset()
+        {
+            if (scrollRect == null || scrollRect.viewport == null || content == null)
+            {
+                return 0f;
+            }
+
+            return Mathf.Max(0f, content.rect.width - scrollRect.viewport.rect.width);
         }
     }
 }

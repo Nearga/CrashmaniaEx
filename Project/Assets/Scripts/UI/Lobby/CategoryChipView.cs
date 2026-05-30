@@ -40,20 +40,26 @@ namespace Crashmania.UI.Lobby
         public void Bind(string id, string text, bool active)
         {
             categoryId = id;
+            if (label == null) label = transform.Find("Label")?.GetComponent<TMP_Text>();
             if (label != null) label.text = text;
             SetActive(active);
         }
 
         public void SetActive(bool active)
         {
+            if (background == null) background = GetComponent<Image>();
             if (background != null)
             {
-                background.color = active ? new Color(1f, 0.78f, 0.05f, 1f) : new Color(0.06f, 0.06f, 0.08f, 1f);
+                // Active has solid gold/yellow background; Inactive has fully transparent background
+                background.color = active
+                    ? new Color(1f, 0.79f, 0.12f, 1f)
+                    : new Color(0f, 0f, 0f, 0f);
             }
 
+            if (label == null) label = transform.Find("Label")?.GetComponent<TMP_Text>();
             if (label != null)
             {
-                label.color = active ? new Color(0.05f, 0.04f, 0.02f, 1f) : Color.white;
+                label.color = active ? Color.black : Color.white;
             }
         }
 

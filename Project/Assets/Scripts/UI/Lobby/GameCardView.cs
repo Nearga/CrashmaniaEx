@@ -45,16 +45,17 @@ namespace Crashmania.UI.Lobby
         {
             gameId = game != null ? game.Id : string.Empty;
             if (nameText != null) nameText.text = game != null ? game.Name : string.Empty;
-            if (onlineText != null) onlineText.text = game != null && game.OnlineCount > 0 ? game.OnlineCount.ToString() : string.Empty;
+            if (onlineText != null) onlineText.text = game != null && game.OnlineCount > 0 ? "<color=#11D950>👤</color> " + game.OnlineCount.ToString() : string.Empty;
             if (rankText != null) rankText.text = rank > 0 ? rank.ToString() : string.Empty;
 
             if (thumbnail != null)
             {
                 var sprite = game != null && !string.IsNullOrEmpty(game.ThumbnailResourcePath)
-                    ? Resources.Load<Sprite>(game.ThumbnailResourcePath)
-                    : null;
+                     ? Resources.Load<Sprite>(game.ThumbnailResourcePath)
+                     : null;
                 thumbnail.sprite = sprite;
-                thumbnail.color = sprite != null ? Color.white : new Color(0.08f, 0.09f, 0.12f, 1f);
+                // Use DesignTokens.bgCard signature blue-grey color (new Color(0.227f, 0.259f, 0.314f, 1f)) for fallback card thumbnail background
+                thumbnail.color = sprite != null ? Color.white : new Color(0.227f, 0.259f, 0.314f, 1f);
                 thumbnail.preserveAspect = true;
             }
         }

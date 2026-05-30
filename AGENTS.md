@@ -1,8 +1,12 @@
 # Repository Guidelines
 
+## First Source of Truth
+
+**STOP. Before any action — planning, editing, or verifying — call `view_file` on `Project/docs/project_constitution.md` and confirm you have read it.** Do not proceed until that file has been read in the current session. It overrides all other guidance in this file when the two conflict.
+
 ## Project Structure & Module Organization
 
-This repository is a Crashmania research and reconstruction workspace. `Research/raw/` stores original downloaded lobby and game assets; keep these files as source evidence and avoid editing them directly. `Research/deobfuscated/index/` contains processed web lobby bundles and annotations. `Research/deobfuscated/game/` contains AssetRipper output, including Unity assets and the exported project under `Research/deobfuscated/game/unity/ExportedProject/`. Reconstructed Unity scripts live in `Research/deobfuscated/game/unity/ExportedProject/Assets/Scripts/`, with Crashmania-specific code under `Assets/Scripts/Crashmania/`. Utility scripts are in `Research/scripts/`, and local third-party tooling is in `Research/tools/`.
+This repository is a Crashmania research and reconstruction workspace. `Project/` is the active Unity reconstruction project. `Project/Assets/Scenes/` contains canonical app scenes, `Project/Assets/Scripts/` contains runtime/editor C# code, and `Project/docs/` contains the working specifications, roadmap, asset inventories, and constitution. `Research/raw/` stores original downloaded lobby and game assets; keep these files as source evidence and avoid editing them directly. `Research/deobfuscated/index/` contains processed web lobby bundles and annotations. `Research/deobfuscated/game/` contains AssetRipper output, including Unity assets and the exported project under `Research/deobfuscated/game/unity/ExportedProject/`. Utility scripts are in `Research/scripts/`, and local third-party tooling is in `Research/tools/`.
 
 ## Build, Test, and Development Commands
 
@@ -12,7 +16,7 @@ This repository is a Crashmania research and reconstruction workspace. `Research
 - `node Research/scripts/06_fetch_mg_games.js`: refresh the MultiGame catalog data.
 - `./Research/tools/AssetRipper/AssetRipper.GUI.Free`: open AssetRipper for Unity extraction work.
 
-There is no top-level app build command in this checkout. For Unity reconstruction, open `Research/deobfuscated/game/unity/ExportedProject/` in the Unity Editor and validate from there.
+There is no top-level app build command in this checkout. For active Unity reconstruction, open `Project/` in the Unity Editor and validate from there. Treat `Research/deobfuscated/game/unity/ExportedProject/` as source evidence, not the active reconstruction project.
 
 ## Coding Style & Naming Conventions
 
@@ -27,6 +31,11 @@ No automated test suite is currently defined. Validate script changes by running
 Always use Unity MCP for Unity Editor work. Before changing scenes, prefabs, UI layout, GameObjects, components, or Unity scripts, inspect the live editor state with MCP resources/tools, including relevant scene hierarchy, selected/persistent objects, component values, console errors, and screenshots when visual fidelity matters. Do not guess layout or behavior blindly from file contents alone when the editor can verify it.
 
 If Unity MCP exposes an issue that can be fixed safely, fix it and re-check the editor state/console afterward. If Unity MCP is unavailable, disconnected, stale, blocked by compilation, or otherwise reporting something genuinely wrong, stop and tell the user exactly what is wrong and what must be opened, connected, compiled, or clarified before proceeding.
+
+**CRITICAL MULTI-PHASE ALIGNMENT WORKFLOW RULES**:
+1. **Always Verify in Active Play Mode**: For any scene or UI containing dynamic or runtime-instantiated contents (like the Lobby's game card lists, carousels, and category chips), screenshots MUST be captured in active Play Mode (`manage_editor(action="play")`, wait, take screenshot, then stop). Never make visual layout, padding, alignment, or completeness assertions based on static Edit Mode templates.
+2. **Proactive Console Exception Auditing**: Check the Unity editor console logs (`read_console`) immediately after *any* C# logic or UI changes, and specifically *during/after* Play Mode. Fix all unassigned references, compiler warnings, or runtime errors (e.g. unassigned TMP font atlas textures) immediately.
+3. **Typography & Asset Integrity**: Never force custom TMP font assets from `DesignTokens` onto UI components without first verifying that their atlas textures and dependencies are validly configured and assigned in the project resources.
 
 Avoid code-created UI components and child hierarchies for visual layout work. The point of visual editing is to split work cleanly between developers and artists: reusable UI should be built and adjusted as prefabs, while single-use UI should be laid out directly in the scene or prefab hierarchy. Runtime code may bind behavior, repair small non-visual settings, or populate data into existing slots, but it should not be the primary source of visual structure unless the user explicitly asks for generated UI.
 
