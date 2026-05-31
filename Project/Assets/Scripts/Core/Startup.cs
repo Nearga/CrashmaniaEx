@@ -1,3 +1,4 @@
+using System.Linq;
 using Crashmania.Config;
 using Crashmania.Boot;
 using Crashmania.Core;
@@ -8,6 +9,8 @@ using Crashmania.UI.Components;
 using Crashmania.UI.Shell;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace Crashmania.Core
 {
@@ -24,6 +27,7 @@ namespace Crashmania.Core
             Application.targetFrameRate = CanvasResolutionPolicy.TargetFrameRate;
 
             DontDestroyOnLoad(gameObject);
+            DisableDuplicateSceneServices();
 
             var config = Resources.Load<AppConfig>("AppConfig");
             if (config == null)
@@ -43,7 +47,14 @@ namespace Crashmania.Core
                 container.Register<DesignTokens>(designTokens);
             }
 
-            container.Register<IBackendService>(CreateBackendService(config));
+            var backendService = CreateBackendService(config);
+            container.Register<IBackendService>(backendService);
+            if (backendService is ICrashGameService crashGameService)
+            {
+                container.Register<ICrashGameService>(crashGameService);
+            }
+
+            container.Register<IGameLoader>(new EmbeddedGameLoader());
 
             DOTween.Init(recycleAllByDefault: false, useSafeMode: true, logBehaviour: LogBehaviour.ErrorsOnly);
             DOTween.defaultEaseType = Ease.OutCubic;
@@ -78,6 +89,34 @@ namespace Crashmania.Core
             }
 
             LobbyFacade.GetInstance().SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
+        }
+
+        private static void DisableDuplicateSceneServices()
+        {
+            var activeScene = SceneManager.GetActiveScene();
+
+            foreach (var eventSystem in FindObjectsByType<EventSystem>(FindObjectsInactive.Exclude))
+            {
+                if (eventSystem.gameObject.scene != activeScene)
+                {
+                    eventSystem.gameObject.SetActive(false);
+                }
+            }
+
+            var activeListener = FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude)
+                .FirstOrDefault(listener => listener.gameObject.scene == activeScene);
+            if (activeListener == null)
+            {
+                activeListener = FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude).FirstOrDefault();
+            }
+
+            foreach (var listener in FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude))
+            {
+                if (listener != activeListener)
+                {
+                    listener.enabled = false;
+                }
+            }
         }
 
         private IBackendService CreateBackendService(AppConfig config)

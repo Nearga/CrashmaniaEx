@@ -211,7 +211,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Visual pass against `Research/app_patched/screenshots/Screenshots/2 Lobby`: header/tab proportions, promo section, carousel sizing, and card framing were rebuilt through Unity MCP
 - [x] Clicking any game sends `LobbyNotifications.LaunchGame`
 - [ ] Add subtle sound effect on game tap once a source UI click clip is available
-- [ ] Wire `LaunchGame` to the Phase 7 game loader once that exists
+- [x] Wire `LaunchGame` to the Phase 7 game loader
 
 ### 5.10 Remaining Work Plan
 - [x] Use Unity MCP to compare current Boot→Lobby screenshots against the three Lobby target screenshots before each visual pass.
@@ -255,43 +255,70 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 *Goal: Tapping a game card loads the Game scene. Crash game runs its full loop.*
 
 ### 7.1 Game Loader
-- [ ] `Assets/Scripts/Services/IGameLoader.cs` — interface: `UniTask LoadGame(GameModel)`, `UniTask UnloadGame()`
-- [ ] `Assets/Scripts/Services/EmbeddedGameLoader.cs` — `SceneManager.LoadSceneAsync(game.SceneAddress, Additive)`
-- [ ] `Assets/Scripts/PureMvc/Proxies/ActiveGameProxy.cs` — holds active `GameModel` and `GameSession`
+- [x] `Assets/Scripts/Services/IGameLoader.cs` — interface: `UniTask LoadGame(GameModel)`, `UniTask UnloadGame()`
+- [x] `Assets/Scripts/Services/EmbeddedGameLoader.cs` — additive `SceneManager.LoadSceneAsync(game.SceneAddress, Additive)` with duplicate `EventSystem` / `AudioListener` sanitizing for editor multi-scene setups
+- [x] `Assets/Scripts/PureMvc/Proxies/ActiveGameProxy.cs` — holds active `GameModel` and `GameSession`
+- [x] `Startup` registers `IGameLoader` and `ICrashGameService` alongside the mock backend
 
 ### 7.2 LaunchGameCommand
-- [ ] `Assets/Scripts/PureMvc/Commands/Game/LaunchGameCommand.cs` — reads game from `CatalogProxy`, stores in `ActiveGameProxy`, navigates to `"Game"` scene, hides TabBar and HeaderOverlay
+- [x] `Assets/Scripts/PureMvc/Commands/Lobby/LaunchGameCommand.cs` resolves the selected game from `CatalogProxy`, starts a mock session, stores it in `ActiveGameProxy`, loads `Game.unity` additively, and sends `SceneLoaded("Game")` so shell overlays hide
+- [x] Direct Boot-to-Game dev flow works through `DevSceneLoader.targetScene = "Game"`; `GameSceneController` creates a safe mock session when no active game exists
 
 ### 7.3 Game Scene Canvas & Layout
-- [ ] `GameCanvas` with `SafeAreaPanel`
-- [ ] **Game Header** row: back button + Level Badge + CC/SC balance widget + Currency Toggle + Menu Button
-- [ ] **Viewport Container**: masked `RectTransform` occupying ~50% of portrait height. Contains the Round History horizontally scrollable pill badges in the top left corner.
-- [ ] **Active Bets Accordion**: collapsible vertical list of active players situated between the viewport and bet panels. Has a header (PLAYER, BET, MULTI, WIN).
-- [ ] **Dual Bet Container**: `VerticalLayoutGroup` with two `BetPanel` prefabs stacked vertically.
+- [x] `GameCanvas` with `SafeAreaPanel` and `1170 x 2532` / width-match CanvasScaler policy
+- [x] **Game Header** row: back button, level badge, CC/SC balance text, currency toggle button
+- [x] **Viewport Container**: masked `RectTransform` with round-history pill area, scrolling grid background, multiplier/status text, rocket visual, flame particles, and crash explosion object
+- [x] **Active Bets Accordion**: active-bets section with PLAYER / BET / MULTI / WIN header and runtime mock player rows
+- [x] **Dual Bet Container**: `VerticalLayoutGroup` with two `BetPanel` prefab instances stacked vertically
+- [x] Visual polish pass: replaced placeholder geometric rocket/menu treatment with extracted source art and retuned proportions against game references
+- [ ] Accordion behavior polish: add actual collapse/expand interaction if still desired after screenshot pass
 
 ### 7.4 Core Visual Components
-- [ ] `Assets/Scripts/UI/Components/ScrollingGridBackground.cs` — `RawImage` material UV offset, speed driven by `SetSpeedFactor(multiplier)` (per `spec_game.md §5.2`)
-- [ ] `Assets/Scripts/UI/Components/AccumulateToBalance.cs` — DOTween float tween on TMP text
-- [ ] `Assets/Scripts/Game/CrashCurveEvaluator.cs` — `GetMultiplierAtTime(t)` and `GetTimeAtMultiplier(m)` static helpers
-- [ ] Rocket sprite GameObject with `ParticleSystem` flame effect (intensity `emission.rateOverTime` = `multiplier * 5`)
-- [ ] Explosion prefab (deactivated by default); plays on crash
+- [x] `Assets/Scripts/UI/Components/ScrollingGridBackground.cs` — `RawImage` material UV offset, speed driven by `SetSpeedFactor(multiplier)`
+- [x] `Assets/Scripts/Game/CrashCurveEvaluator.cs` — `GetMultiplierAtTime(t)` and `GetTimeAtMultiplier(m)` static helpers
+- [x] `Assets/Scripts/Game/CrashGameController.cs` — implements `IGameController`, subscribes to the mock crash loop, and drives multiplier, rocket, history, player rows, and bet panels
+- [x] Rocket GameObject with flame `ParticleSystem`
+- [x] Crash explosion object deactivated by default and shown on crash
+- [x] Optional fidelity pass: flame emission now scales with multiplier; rocket/background/button/header placeholders use extracted game sprites
 
 ### 7.5 BetPanel Prefab & State Machine
-- [ ] `Assets/UI/Prefabs/BetPanel.prefab` — bet amount input with `[-]`/`[+]`, quick buttons (`10K`/`20K`/`40K`/etc.), autoplay toggle, action button
-- [ ] `BetPanelController.cs` — tracks 4 states: `Idle` → `"BET"` (blue), `Pending` → `"CANCEL BET"` (red/yellow), `InFlight` → `"CASHOUT [amount]"` (orange), `Won/Lost` → wait for next round
-- [ ] Action button is a `GradientImage` button with DOTween colour transition between states
+- [x] `Assets/Resources/UI/Prefabs/BetPanel.prefab` — bet amount display with `[-]`/`[+]`, quick buttons (`10K`/`20K`/`40K`/`60K`/`80K`), autoplay toggle, action button
+- [x] `Assets/Scripts/UI/Game/BetPanelController.cs` — tracks `Idle`, `Pending`, `InFlight`, `Won`, and `Lost` states
+- [x] Action button text/colour transitions with DOTween-backed `Image` colour changes
+- [x] Runtime smoke test placed a mock bet during `Preparation`
+- [x] Polish pass: replaced current template styling with extracted bet panel art; real autoplay behavior remains deferred unless required later
 
 ### 7.6 Crash Game Mock WebSocket Loop (`MockBackendService` extension)
-- [ ] `StartCrashGameLoop(AppConfig config)` — `async UniTask` infinite loop:
-  - **PREPARATION** (8s): countdown events every 0.5s; pre-calculate crash point using HMAC-SHA256 formula from `spec_backend.md §7.2`; accept/reject bets
-  - **FLIGHT** (dynamic): `while (currentMultiplier < crashPoint)` — tick every 50ms, call `CrashCurveEvaluator.GetMultiplierAtTime(elapsed)`, fire `GameMultiplierUpdate` event; check each pending bet for auto-cashout threshold
-  - **CRASHED** (2.5s): fire `GameEnd` event; settle all uncashed bets
-  - **INTERMISSION** (1.5s): clear player list; loop restarts
-- [ ] Mock 5–8 AI player names with random bet amounts placed during countdown
-- [ ] `CrashGameController.cs` — implements `IGameController`; subscribes to mock loop events; drives all visual state changes (per `spec_game.md §5.1`)
+- [x] `ICrashGameService` contract added for crash loop events and local place/cancel/cashout requests
+- [x] `MockBackendService` runs the local loop:
+  - **PREPARATION** (8s): countdown events every 0.5s; pre-calculates crash point using HMAC-SHA256 formula from `spec_backend.md §7.2`; accepts/rejects bets
+  - **FLIGHT** (dynamic): ticks every 50ms, evaluates `CrashCurveEvaluator.GetMultiplierAtTime(elapsed)`, emits multiplier updates, and resolves mock cashouts
+  - **CRASHED** (2.5s): emits round end and settles uncashed local bets as losses
+  - **INTERMISSION** (1.5s): resets and starts the next round
+- [x] Mock 5–8 AI player names with deterministic bet amounts/cashouts per round
+- [x] Local cashout/cancel/place bet paths are wired through `ICrashGameService`
 
 ### 7.7 Exit Game Flow
-- [ ] Back button → `ExitGameCommand` → `EmbeddedGameLoader.UnloadGame()` → navigate back to Lobby → restore TabBar and HeaderOverlay
+- [x] Back button → `ExitGameCommand` → `EmbeddedGameLoader.UnloadGame()` → navigate back to Lobby → restore TabBar and HeaderOverlay
+- [x] Runtime smoke test verified `Boot → Game → Back → Lobby` without new console errors/warnings
+
+### 7.8 Verification
+- [x] Added `Assets/Editor/Phase7GameVerifier.cs` with `Crashmania/Verify Phase 7 Game`
+- [x] Verifier checks contracts, commands, proxy, loader, `Game.unity` hierarchy, two `BetPanelController` instances, CanvasScaler policy, build settings, and UI/PureMVC boundaries
+- [x] `Crashmania/Verify Phase 7 Game` completed successfully
+- [x] Play Mode screenshot captured: `Assets/Screenshots/phase7_game_playmode_1170x2532.png`
+- [x] Fixed runtime duplicate `EventSystem` / `AudioListener` warnings in additive/editor multi-scene flows
+- [x] Fixed TMP missing-glyph warning by replacing the lobby online counter emoji with supported text
+
+### 7.9 Crash Room Visual Fidelity Pass
+- [x] Copied selected source art from `Research/deobfuscated/game/unity/ExportedProject/Assets` into `Assets/Resources/UI/Game/Extracted` without mutating `Research/`
+- [x] Added `docs/phase7_game_asset_inventory.md` mapping copied sprites/textures to scene usage and source screenshots
+- [x] Retuned `Game.unity` header, flight viewport, active bets, and dual bet panel hierarchy to use extracted sprites instead of blank geometric placeholders
+- [x] Updated `BetPanel.prefab` so future panel instances carry extracted container/button/amount art
+- [x] Extended `Crashmania/Verify Phase 7 Game` to assert imported art, assigned scene sprites, prefab art, CanvasScaler policy, and duplicate EventSystem/AudioListener safety
+- [ ] Remaining visual gap: replace the temporary extracted `rocket-start 1` crash burst with a closer explosion/VFX asset if one is identified
+- [ ] Remaining behavior gap: implement full autoplay only if later screenshots/product scope require it
+
 
 ---
 

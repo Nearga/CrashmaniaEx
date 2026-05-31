@@ -1,6 +1,7 @@
 using System.Linq;
 using PureMVC.Interfaces;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Crashmania.PureMvc.Scenes
 {
@@ -37,8 +38,10 @@ namespace Crashmania.PureMvc.Scenes
 
         private static IPureMvcScene FindActiveScene()
         {
+            var activeUnityScene = SceneManager.GetActiveScene();
             return Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include)
                 .OfType<IPureMvcScene>()
+                .OrderByDescending(scene => scene is MonoBehaviour behaviour && behaviour.gameObject.scene == activeUnityScene)
                 .FirstOrDefault(scene => scene is MonoBehaviour behaviour && behaviour.gameObject.scene.isLoaded);
         }
     }
