@@ -16,8 +16,15 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private Button nextButton;
         [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private RectTransform content;
+        [SerializeField] private Image leftFade;
+        [SerializeField] private Image rightFade;
 
         private string categoryId;
+        #pragma warning disable CS0414
+        private bool isSnapping;
+#pragma warning restore CS0414
+        private float cardWidth = 290f;
+        private float snapDuration = 0.3f;
 
         public event Action<string> ViewAllRequested;
         public event Action<string> GameSelected;
@@ -30,10 +37,21 @@ namespace Crashmania.UI.Lobby
             if (nextButton == null) nextButton = transform.Find("Header/NextButton")?.GetComponent<Button>();
             if (scrollRect == null) scrollRect = transform.Find("ScrollRect")?.GetComponent<ScrollRect>();
             if (content == null) content = transform.Find("ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
+            if (leftFade == null) leftFade = transform.Find("ScrollRect/LeftFade")?.GetComponent<Image>();
+            if (rightFade == null) rightFade = transform.Find("ScrollRect/RightFade")?.GetComponent<Image>();
 
             if (viewAllButton != null) viewAllButton.onClick.AddListener(() => ViewAllRequested?.Invoke(categoryId));
             if (previousButton != null) previousButton.onClick.AddListener(() => Nudge(-1));
             if (nextButton != null) nextButton.onClick.AddListener(() => Nudge(1));
+
+            if (scrollRect != null)
+            {
+                scrollRect.inertia = true;
+                scrollRect.decelerationRate = 0.01f;
+                scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+            }
+
+            UpdateFadeVisibility();
         }
 
         private void OnDestroy()
@@ -41,6 +59,11 @@ namespace Crashmania.UI.Lobby
             if (viewAllButton != null) viewAllButton.onClick.RemoveAllListeners();
             if (previousButton != null) previousButton.onClick.RemoveAllListeners();
             if (nextButton != null) nextButton.onClick.RemoveAllListeners();
+
+            if (scrollRect != null)
+            {
+                scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+            }
         }
 
         public void Bind(CategoryModel category, GameCardView gameCardPrefab, GameCardView topGameCardPrefab)
@@ -62,6 +85,9 @@ namespace Crashmania.UI.Lobby
                 card.Selected += id => GameSelected?.Invoke(id);
                 rank++;
             }
+
+            Canvas.ForceUpdateCanvases();
+            UpdateFadeVisibility();
         }
 
         public void BindSearchResults(string title, IReadOnlyList<GameModel> games, GameCardView gameCardPrefab)
@@ -80,6 +106,9 @@ namespace Crashmania.UI.Lobby
                 card.Bind(game);
                 card.Selected += id => GameSelected?.Invoke(id);
             }
+
+            Canvas.ForceUpdateCanvases();
+            UpdateFadeVisibility();
         }
 
         private static void Clear(Transform target)
@@ -97,9 +126,10 @@ namespace Crashmania.UI.Lobby
                 return;
             }
 
+            isSnapping = true;
             var position = content.anchoredPosition;
-            position.x = Mathf.Clamp(position.x + direction * -320f, -GetMaxScrollOffset(), 0f);
-            content.DOAnchorPos(position, 0.18f).SetEase(Ease.OutCubic);
+            position.x = Mathf.Clamp(position.x + direction * -cardWidth, -GetMaxScrollOffset(), 0f);
+            content.DOAnchorPos(position, snapDuration).SetEase(Ease.OutCubic).OnComplete(() => isSnapping = false);
         }
 
         private float GetMaxScrollOffset()
@@ -110,6 +140,29 @@ namespace Crashmania.UI.Lobby
             }
 
             return Mathf.Max(0f, content.rect.width - scrollRect.viewport.rect.width);
+        }
+
+        private void OnScrollValueChanged(Vector2 _)
+        {
+            UpdateFadeVisibility();
+        }
+
+        private void UpdateFadeVisibility()
+        {
+            if (content == null) return;
+
+            var maxOffset = GetMaxScrollOffset();
+            var currentX = -content.anchoredPosition.x;
+
+            if (leftFade != null)
+            {
+                leftFade.gameObject.SetActive(currentX > 1f);
+            }
+
+            if (rightFade != null)
+            {
+                rightFade.gameObject.SetActive(currentX < maxOffset - 1f);
+            }
         }
     }
 }

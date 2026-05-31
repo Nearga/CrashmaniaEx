@@ -38,11 +38,11 @@ namespace Crashmania.Services
             {
                 Banners = new List<BannerModel>
                 {
-                    Banner("front", "Lucky Twins", "UI/NativeSprites/MGSlots-Lucky_Twins_Wilds_Jackpots"),
-                    Banner("mission", "Daily Mission", "UI/Promotions/Lobby/mission"),
-                    Banner("lobby-bg", "Lucky Twins", "UI/Promotions/Lobby/lobby-bg"),
-                    Banner("gift", "Gift", "UI/Promotions/Lobby/gift"),
-                    Banner("gift-sweep", "Gift Sweep", "UI/Promotions/Lobby/gift-sweep")
+                    Banner("astro-go", "Astro Go", "UI/Games/Homepage/astro_go", "astro-go"),
+                    Banner("mission", "Daily Mission", "UI/Promotions/Lobby/mission", "tiltx"),
+                    Banner("lobby-bg", "Lucky Twins", "UI/Promotions/Lobby/lobby-bg", "lucky-twins"),
+                    Banner("gift", "Gift", "UI/Promotions/Lobby/gift", "skyride"),
+                    Banner("gift-sweep", "Gift Sweep", "UI/Promotions/Lobby/gift-sweep", "swoosh-up")
                 },
                 TopGames = luckyWeek,
                 Categories = new List<CategoryModel>
@@ -68,13 +68,14 @@ namespace Crashmania.Services
             };
         }
 
-        private static BannerModel Banner(string id, string title, string resourcePath)
+        private static BannerModel Banner(string id, string title, string resourcePath, string linkedGameId = null)
         {
             return new BannerModel
             {
                 Id = id,
                 Title = title,
-                ImageResourcePath = resourcePath
+                ImageResourcePath = resourcePath,
+                LinkedGameId = linkedGameId
             };
         }
 

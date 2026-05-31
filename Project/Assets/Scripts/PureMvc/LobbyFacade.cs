@@ -35,6 +35,7 @@ namespace Crashmania.PureMvc
             RegisterCommand(LobbyNotifications.NavigateToScene, () => new NavigateSceneCommand());
             RegisterCommand(LobbyNotifications.NavigateToTab, () => new NavigateLobbyTabCommand());
             RegisterCommand(LobbyNotifications.SceneLoaded, () => new SceneLoadedCommand());
+            RegisterCommand(LobbyNotifications.LaunchGame, () => new LaunchGameCommand());
             started = true;
         }
     }

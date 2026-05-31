@@ -135,9 +135,9 @@ These GameObjects are created once in Boot and survive all scene loads:
 ### 4.3 DOTween Animation Pass
 Review all animations against spec targets:
 - [x] Scene transitions: fade 0.25s in + 0.25s out
-- [ ] Card press: scale punch 0.15s
+- [x] Card press: scale punch 0.15s
 - [x] Balance counter: 0.5s ease-out cubic
-- [ ] Carousel snap: 0.3s
+- [x] Carousel snap: 0.3s (arrow buttons snap by card width with DOTween ease-out)
 - [x] Tab switch: color + scale 0.15s
 - [ ] Promo banner auto-advance: 0.4s slide
 
@@ -192,7 +192,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 ### 5.6 GamesCarousel Prefab
 - [x] `Assets/Resources/UI/Prefabs/GamesCarousel.prefab` — Title `TMP_Text` + "View All" button + horizontal `ScrollRect` content pane + arrow buttons
 - [x] Left/right arrow nudge now clamps and eases horizontal content with DOTween
-- [ ] Left/right gradient fade `Image` overlays (pointer events disabled via `CanvasGroup.blocksRaycasts = false`)
+- [x] Left/right gradient fade `Image` overlays (pointer events disabled via `CanvasGroup.blocksRaycasts = false`)
 - [x] `GamesCarouselView` instantiates and populates `GameCard` children from `CategoryModel`
 
 ### 5.7 Sticky Search & Category Chips
@@ -200,7 +200,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Added 300ms debounce and restore full category layout when the search field is cleared
 - [x] Horizontal `ScrollRect` of category chip buttons exists and filters to selected category
 - [x] Active chip visual state has final yellow/black screenshot-style highlight
-- [ ] Sticky behaviour via `LayoutElement` + scroll position listener (or fixed position approach)
+- [x] Sticky behaviour via scroll position listener (CategoryRail reparents to viewport when scrolled past)
 
 ### 5.8 Skeleton Loading Placeholders
 - [ ] `Assets/UI/Prefabs/SkeletonCard.prefab` — same dimensions as `GameCard` but `Image` with shimmer shader material
@@ -220,6 +220,11 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Locate/download exact Lucky Twins promo and card art; if unavailable, document the gap and use closest raw/exported assets without screenshot crops.
 - [x] Add carousel arrow easing and search debounce.
 - [x] Add verifier checks for screenshot-critical scene sections, no builder dependency, card counts, and LaunchGame wiring.
+
+### 5.11 MainPromo & Mission Pill Visual Pass
+- [ ] Improve MainPromo view: add proper background, reposition elements, remove visible gaps/holes between promo and adjacent sections
+- [ ] Improve Mission pill: add background styling, reposition, remove gaps
+- [ ] Match reference screenshot `Research/app_patched/screenshots/Screenshots/2 Lobby/Screenshot_20260527-184342.png`
 
 
 ---

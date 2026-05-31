@@ -16,6 +16,7 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private GameCardView topGameCardPrefab;
         [SerializeField] private RectTransform categoryContent;
         [SerializeField] private RectTransform carouselContent;
+        [SerializeField] private ScrollRect categoryScrollRect;
         [SerializeField] private TMP_InputField searchInput;
         [SerializeField] private RecentMultipliersView recentMultipliersView;
 
@@ -39,6 +40,13 @@ namespace Crashmania.UI.Lobby
         {
             if (promoBanner == null) promoBanner = transform.Find("ScrollRect/Viewport/Content/PromoSection/MainPromo")?.GetComponent<PromoBannerView>();
             if (categoryContent == null) categoryContent = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
+            
+            if (promoBanner != null)
+            {
+                promoBanner.CtaClicked += id => GameSelected?.Invoke(id);
+            }
+
+            if (categoryScrollRect == null) categoryScrollRect = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect")?.GetComponent<ScrollRect>();
             if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
             if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
             if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
@@ -175,6 +183,13 @@ namespace Crashmania.UI.Lobby
                 chip.Bind(category.Id, category.Name.ToUpper(), category.Id == activeCategoryId);
                 chip.Selected += OnCategorySelected;
                 chips.Add(chip);
+            }
+
+            // Reset chip scroll to left edge so first chip is visible
+            if (categoryScrollRect != null)
+            {
+                Canvas.ForceUpdateCanvases();
+                categoryScrollRect.horizontalNormalizedPosition = 0f;
             }
         }
 

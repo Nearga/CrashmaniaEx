@@ -36,5 +36,6 @@ namespace Crashmania.Models
         public string Title;
         public string ImageUrl;
         public string ImageResourcePath;
+        public string LinkedGameId;
     }
 }
