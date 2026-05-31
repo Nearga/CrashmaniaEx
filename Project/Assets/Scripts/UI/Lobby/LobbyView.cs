@@ -19,6 +19,7 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private ScrollRect categoryScrollRect;
         [SerializeField] private TMP_InputField searchInput;
         [SerializeField] private RecentMultipliersView recentMultipliersView;
+        [SerializeField] private StorePanelView storePanelView;
 
         [Header("Shell Tab Panels")]
         [SerializeField] private GameObject lobbyPanel;
@@ -35,6 +36,7 @@ namespace Crashmania.UI.Lobby
         public event Action<string> GameSelected;
         public event Action<string> ViewAllSelected;
         public event Action<string> SearchChanged;
+        public event Action<string> PurchaseRequested;
 
         private void Awake()
         {
@@ -50,6 +52,12 @@ namespace Crashmania.UI.Lobby
             if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
             if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
             if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
+            if (storePanelView == null) storePanelView = transform.Find("StorePanel")?.GetComponent<StorePanelView>();
+
+            if (storePanelView != null)
+            {
+                storePanelView.PurchaseRequested += id => PurchaseRequested?.Invoke(id);
+            }
 
             if (lobbyPanel == null)
             {
@@ -273,6 +281,14 @@ namespace Crashmania.UI.Lobby
             }
 
             Canvas.ForceUpdateCanvases();
+        }
+
+        public void RenderStore(List<StorePackage> packages)
+        {
+            if (storePanelView != null)
+            {
+                storePanelView.Render(packages);
+            }
         }
 
         public void ShowTab(string tabName)

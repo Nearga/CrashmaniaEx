@@ -1,5 +1,6 @@
 using Crashmania.Models;
 using Crashmania.PureMvc.Notifications;
+using Crashmania.PureMvc.Proxies;
 using Crashmania.UI.Shell;
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Mediator;
@@ -16,9 +17,27 @@ namespace Crashmania.PureMvc.Mediators
         {
         }
 
+        public override void OnRegister()
+        {
+            View.OnToggleCurrency += OnToggleCurrency;
+            
+            UpdateBalances(false);
+            UpdateCurrencyMode();
+        }
+
+        public override void OnRemove()
+        {
+            View.OnToggleCurrency -= OnToggleCurrency;
+        }
+
         public override string[] ListNotificationInterests()
         {
-            return new[] { LobbyNotifications.BalanceUpdated, LobbyNotifications.SceneLoaded };
+            return new[]
+            {
+                LobbyNotifications.BalanceUpdated,
+                LobbyNotifications.CurrencyModeChanged,
+                LobbyNotifications.SceneLoaded
+            };
         }
 
         public override void HandleNotification(INotification notification)
@@ -31,15 +50,41 @@ namespace Crashmania.PureMvc.Mediators
             switch (notification.Name)
             {
                 case LobbyNotifications.BalanceUpdated:
-                    if (notification.Body is PlayerProfile profile)
-                    {
-                        View.SetBalances(profile, animate: true);
-                    }
-
+                    UpdateBalances(true);
+                    break;
+                case LobbyNotifications.CurrencyModeChanged:
+                    UpdateCurrencyMode();
                     break;
                 case LobbyNotifications.SceneLoaded:
                     View.SetVisibleForScene(notification.Body as string);
                     break;
+            }
+        }
+
+        private void OnToggleCurrency()
+        {
+            var settings = Facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
+            if (settings == null) return;
+
+            var nextMode = settings.ActiveCurrency == CurrencyMode.CC ? CurrencyMode.SC : CurrencyMode.CC;
+            settings.SetCurrencyMode(nextMode);
+        }
+
+        private void UpdateBalances(bool animate)
+        {
+            var balanceProxy = Facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
+            if (balanceProxy != null)
+            {
+                View.SetBalances(balanceProxy.BalanceCC, balanceProxy.BalanceSC, animate);
+            }
+        }
+
+        private void UpdateCurrencyMode()
+        {
+            var settings = Facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
+            if (settings != null)
+            {
+                View.SetActiveCurrency(settings.ActiveCurrency);
             }
         }
     }

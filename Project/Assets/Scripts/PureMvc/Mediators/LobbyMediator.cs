@@ -4,6 +4,7 @@ using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Proxies;
 using Crashmania.Services;
 using Crashmania.UI.Lobby;
+using Cysharp.Threading.Tasks;
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Mediator;
 
@@ -30,12 +31,17 @@ namespace Crashmania.PureMvc.Mediators
             View.GameSelected += OnGameSelected;
             View.ViewAllSelected += OnViewAllSelected;
             View.SearchChanged += OnSearchChanged;
+            View.PurchaseRequested += OnPurchaseRequested;
 
             // Initialize target tab panel state from NavigationService
             var navigationService = ServiceLocator.Resolve<NavigationService>();
             if (navigationService != null)
             {
                 View.ShowTab(navigationService.TargetTab);
+                if (navigationService.TargetTab == "Store")
+                {
+                    LoadStoreData().Forget();
+                }
             }
 
             // Instantly render cached catalog if available to avoid layout jumps
@@ -57,6 +63,7 @@ namespace Crashmania.PureMvc.Mediators
             View.GameSelected -= OnGameSelected;
             View.ViewAllSelected -= OnViewAllSelected;
             View.SearchChanged -= OnSearchChanged;
+            View.PurchaseRequested -= OnPurchaseRequested;
         }
 
         public override string[] ListNotificationInterests()
@@ -73,7 +80,12 @@ namespace Crashmania.PureMvc.Mediators
 
             if (notification.Name == LobbyNotifications.ShowTab)
             {
-                View.ShowTab(notification.Body as string);
+                var tab = notification.Body as string;
+                View.ShowTab(tab);
+                if (tab == "Store")
+                {
+                    LoadStoreData().Forget();
+                }
                 return;
             }
 
@@ -93,6 +105,20 @@ namespace Crashmania.PureMvc.Mediators
                     TopGames = new System.Collections.Generic.List<GameModel>(catalog.TopGames)
                 });
             }
+        }
+
+        private async UniTaskVoid LoadStoreData()
+        {
+            var backend = ServiceLocator.Resolve<IBackendService>();
+            if (backend == null) return;
+
+            var packages = await backend.GetStorePackages();
+            View.RenderStore(packages);
+        }
+
+        private void OnPurchaseRequested(string packageId)
+        {
+            SendNotification(LobbyNotifications.PurchaseItem, packageId);
         }
 
         private void OnCategorySelected(string categoryId)

@@ -30,12 +30,15 @@ namespace Crashmania.PureMvc
 
             RegisterProxy(new AuthProxy());
             RegisterProxy(new CatalogProxy());
+            RegisterProxy(new BalanceProxy());
+            RegisterProxy(new SettingsProxy());
             RegisterCommand(LobbyNotifications.LoginRequest, () => new LoginCommand());
             RegisterCommand(LobbyNotifications.LoadLobbyData, () => new LoadLobbyDataCommand());
             RegisterCommand(LobbyNotifications.NavigateToScene, () => new NavigateSceneCommand());
             RegisterCommand(LobbyNotifications.NavigateToTab, () => new NavigateLobbyTabCommand());
             RegisterCommand(LobbyNotifications.SceneLoaded, () => new SceneLoadedCommand());
             RegisterCommand(LobbyNotifications.LaunchGame, () => new LaunchGameCommand());
+            RegisterCommand(LobbyNotifications.PurchaseItem, () => new PurchaseStoreItemCommand());
             started = true;
         }
     }

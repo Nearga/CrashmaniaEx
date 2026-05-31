@@ -13,6 +13,7 @@ namespace Crashmania.PureMvc.Notifications
         public const string LobbyDataLoaded = "LobbyDataLoaded";
         public const string LoadLobbyData = "LoadLobbyData";
         public const string BalanceUpdated = "BalanceUpdated";
+        public const string CurrencyModeChanged = "CurrencyModeChanged";
         public const string CatalogUpdated = "CatalogUpdated";
         public const string LaunchGame = "LaunchGame";
         public const string GameLoaded = "GameLoaded";

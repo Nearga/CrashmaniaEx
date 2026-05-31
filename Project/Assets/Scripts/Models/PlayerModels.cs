@@ -1,5 +1,11 @@
 namespace Crashmania.Models
 {
+    public enum CurrencyMode
+    {
+        CC,
+        SC
+    }
+
     public enum LoginProvider
     {
         Email,

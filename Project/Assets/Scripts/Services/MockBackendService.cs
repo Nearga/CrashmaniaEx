@@ -58,13 +58,36 @@ namespace Crashmania.Services
         public async UniTask<List<StorePackage>> GetStorePackages()
         {
             await Delay();
-            return new List<StorePackage>();
+            return new List<StorePackage>
+            {
+                new() { Id = "pack-1", Name = "Tiny Pack", CoinsCC = 110000, BonusSC = 2, PriceLabel = "$1.99" },
+                new() { Id = "pack-2", Name = "Small Pack", CoinsCC = 250000, BonusSC = 5, PriceLabel = "$4.99" },
+                new() { Id = "pack-3", Name = "Medium Pack", CoinsCC = 550000, BonusSC = 10, PriceLabel = "$9.99" },
+                new() { Id = "pack-4", Name = "Large Pack", CoinsCC = 1200000, BonusSC = 20, PriceLabel = "$19.99" },
+                new() { Id = "pack-5", Name = "Super Pack", CoinsCC = 3500000, BonusSC = 50, PriceLabel = "$49.99" },
+                new() { Id = "pack-6", Name = "Mega Pack", CoinsCC = 7500000, BonusSC = 100, PriceLabel = "$99.99" }
+            };
         }
 
         public async UniTask<PurchaseResult> PurchasePackage(string packageId)
         {
             await Delay();
-            return new PurchaseResult { Success = true };
+            
+            // For mock purposes, we find the package to get the amounts to credit
+            var packages = await GetStorePackages();
+            var package = packages.Find(p => p.Id == packageId);
+            
+            if (package == null) return new PurchaseResult { Success = false, ErrorMessage = "Package not found" };
+
+            profile.BalanceCC += package.CoinsCC;
+            profile.BalanceSC += package.BonusSC;
+
+            return new PurchaseResult 
+            { 
+                Success = true, 
+                CreditedCC = package.CoinsCC, 
+                CreditedSC = package.BonusSC 
+            };
         }
 
         public async UniTask<BonusStatus> GetBonusStatus(BonusType type)

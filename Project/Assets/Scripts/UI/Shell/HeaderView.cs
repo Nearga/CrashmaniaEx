@@ -8,11 +8,27 @@ namespace Crashmania.UI.Shell
     {
         [SerializeField] private AccumulateToBalance ccBalance;
         [SerializeField] private AccumulateToBalance scBalance;
+        [SerializeField] private GameObject ccHighlight;
+        [SerializeField] private GameObject scHighlight;
+        [SerializeField] private UnityEngine.UI.Button toggleButton;
+
+        public event System.Action OnToggleCurrency;
 
         private void Awake()
         {
             if (ccBalance == null) ccBalance = transform.Find("Safe Area/Header Bar/CC Balance/CC Value")?.GetComponent<AccumulateToBalance>();
             if (scBalance == null) scBalance = transform.Find("Safe Area/Header Bar/SC Balance/SC Value")?.GetComponent<AccumulateToBalance>();
+            
+            if (toggleButton != null)
+            {
+                toggleButton.onClick.AddListener(() => OnToggleCurrency?.Invoke());
+            }
+        }
+
+        public void SetActiveCurrency(CurrencyMode mode)
+        {
+            if (ccHighlight != null) ccHighlight.SetActive(mode == CurrencyMode.CC);
+            if (scHighlight != null) scHighlight.SetActive(mode == CurrencyMode.SC);
         }
 
         public void SetBalances(PlayerProfile profile, bool animate)

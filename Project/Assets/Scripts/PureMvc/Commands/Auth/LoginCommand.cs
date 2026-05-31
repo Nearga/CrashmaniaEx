@@ -41,7 +41,9 @@ namespace Crashmania.PureMvc.Commands.Auth
                 var authProxy = Facade.RetrieveProxy(AuthProxy.Name) as AuthProxy;
                 authProxy?.SetAuthenticated(response);
 
-                SendNotification(LobbyNotifications.BalanceUpdated, response.Profile);
+                var balanceProxy = Facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
+                balanceProxy?.Initialize(response.Profile.BalanceCC, response.Profile.BalanceSC);
+
                 SendNotification(LobbyNotifications.LoginSuccess, response.Profile);
             }
             catch (System.Exception exception)
