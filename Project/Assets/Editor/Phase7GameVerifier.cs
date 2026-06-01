@@ -46,16 +46,15 @@ namespace Crashmania.Editor
         {
             "GameCanvas",
             "GameCanvas/SafeAreaPanel",
-            "GameCanvas/SafeAreaPanel/HeaderOverlay",
-            "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar",
-            "GameCanvas/SafeAreaPanel/ViewportContainer",
-            "GameCanvas/SafeAreaPanel/ViewportContainer/HistoryContent",
-            "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket",
-            "GameCanvas/SafeAreaPanel/ActiveBetsAccordion",
-            "GameCanvas/SafeAreaPanel/ActiveBetsAccordion/PlayerRowsContent",
+            "GameCanvas/SafeAreaPanel/Header Bar",
+            "GameCanvas/SafeAreaPanel/GameViewportContainer",
+            "GameCanvas/SafeAreaPanel/GameViewportContainer/HistoryContent",
+            "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket",
             "GameCanvas/SafeAreaPanel/DualBetContainer",
             "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A",
-            "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B"
+            "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B",
+            "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion",
+            "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion/ScrollArea/PlayerRowsContent"
         };
 
         [MenuItem("Crashmania/Verify Phase 7 Game")]
@@ -154,17 +153,25 @@ namespace Crashmania.Editor
                 throw new InvalidOperationException($"Game scene must contain exactly two BetPanelController instances. Found: {betPanels.Length}");
             }
 
-            // Relaxed header check since it's now a prefab instance
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/ViewportContainer", 427f, 807f, 36f);
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/ActiveBetsAccordion", 1234f, 222f, 36f);
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer", 1472f, 715f, 42f);
+            Canvas.ForceUpdateCanvases();
+            var dualBetContainer = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/DualBetContainer")?.GetComponent<RectTransform>();
+            if (dualBetContainer != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(dualBetContainer);
+            }
+
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/Header Bar", 0f, 160f, 36f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer", 160f, 807f, 36f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer", 967f, 1114f, 42f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion", 728f, 386f, 42f);
             
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/ViewportContainer");
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/ActiveBetsAccordion");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/Header Bar");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion");
             AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A");
             AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B");
 
-            var rocketImage = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket")?.GetComponent<Image>();
+            var rocketImage = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket")?.GetComponent<Image>();
             if (rocketImage == null || rocketImage.sprite == null || !rocketImage.preserveAspect)
             {
                 throw new InvalidOperationException("Rocket must use an aspect-preserved sprite image.");
@@ -212,7 +219,7 @@ namespace Crashmania.Editor
 
         private static void AssertAnimationFidelityObjects(Scene scene, GameObject canvas)
         {
-            var rocket = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket");
+            var rocket = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket");
             if (rocket == null || rocket.GetComponent<CrashRocketAnimator>() == null)
             {
                 throw new InvalidOperationException("Rocket must carry CrashRocketAnimator for Phase 7.11 animation fidelity recovery.");
@@ -225,15 +232,15 @@ namespace Crashmania.Editor
 
             var requiredLayers = new[]
             {
-                "GameCanvas/SafeAreaPanel/ViewportContainer/CountdownBackground",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/FlightSpaceBackground",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/Asteroids",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/Stars",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/Planet",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/GroundOrMoonLayer",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/SpeedLines",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/CrashTint",
-                "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket/RocketGlow"
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/CountdownBackground",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/FlightSpaceBackground",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/Asteroids",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/Stars",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/Planet",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/GroundOrMoonLayer",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/SpeedLines",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/CrashTint",
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket/RocketGlow"
             };
 
             foreach (var path in requiredLayers)

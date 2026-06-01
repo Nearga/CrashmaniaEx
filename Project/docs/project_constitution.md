@@ -106,6 +106,7 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 
 - Read this constitution first.
 - Use Unity MCP for Unity work.
+- Do not guess through missing, stale, or contradictory evidence. If required context, screenshots, editor state, or tool results are unavailable or unreliable, stop and report the concrete error/blocker before proceeding.
 - Keep visual layouts artist-editable in scenes/prefabs.
 - Keep PureMVC boundaries clean.
 - Do not mutate source evidence in `Research/`.
@@ -115,4 +116,3 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 ## Known Solutions
 
 Before investigating a bug or issue, check `Project/docs/project_solutions.md`. It contains a log of previously diagnosed problems and their verified fixes. If you diagnose and fix a new issue, append it to that file in the same format.
-

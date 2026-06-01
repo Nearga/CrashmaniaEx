@@ -36,6 +36,12 @@ namespace Crashmania.Game
         [SerializeField] private CrashRocketAnimator rocketAnimator;
         [SerializeField] private CrashBackgroundAnimator backgroundAnimator;
 
+        [Header("Layout Baselines")]
+        [SerializeField] private Vector2 fallbackRocketCountdownPosition = new(490f, -590f);
+        [SerializeField] private Vector2 fallbackRocketLaunchPosition = new(520f, -515f);
+        [SerializeField] private Vector2 fallbackRocketFlightTargetPosition = new(835f, -210f);
+        [SerializeField] private float fallbackRocketCountdownRotation = 0f;
+
         [Header("Lists")]
         [SerializeField] private RectTransform historyContent;
         [SerializeField] private GameObject historyBadgePrefab;
@@ -50,6 +56,11 @@ namespace Crashmania.Game
         private SettingsProxy settings;
         private double balanceCc;
         private double balanceSc;
+        private RectTransform multiplierTextRect;
+        private RectTransform statusTextRect;
+        private Vector2 multiplierTextBasePosition;
+        private Vector2 statusTextBasePosition;
+        private int lastCountdownRoundNonce = int.MinValue;
 
         public event Action<double, double> OnBalanceChanged;
         public event Action OnRequestExit;
@@ -94,6 +105,11 @@ namespace Crashmania.Game
 
             if (backButton != null) backButton.onClick.AddListener(() => OnRequestExit?.Invoke());
             if (currencyToggleButton != null) currencyToggleButton.onClick.AddListener(ToggleCurrency);
+
+            multiplierTextRect = multiplierText != null ? multiplierText.rectTransform : null;
+            statusTextRect = statusText != null ? statusText.rectTransform : null;
+            multiplierTextBasePosition = multiplierTextRect != null ? multiplierTextRect.anchoredPosition : Vector2.zero;
+            statusTextBasePosition = statusTextRect != null ? statusTextRect.anchoredPosition : Vector2.zero;
         }
 
         public void Initialize(GameSession session, SettingsProxy settingsProxy)
@@ -124,6 +140,7 @@ namespace Crashmania.Game
             }
 
             ResetFlightVisuals();
+            ResetCounterTransforms();
         }
 
         public void OnBalanceUpdated(double newCC, double newSC)
@@ -179,7 +196,13 @@ namespace Crashmania.Game
 
         private void OnCountdownTick(CrashCountdownEvent countdown)
         {
-            if (statusText != null) statusText.text = $"NEXT ROUND IN {countdown.SecondsRemaining:0.0}s";
+            if (countdown.RoundNonce != lastCountdownRoundNonce)
+            {
+                lastCountdownRoundNonce = countdown.RoundNonce;
+                ResetCounterTransforms();
+            }
+
+            if (statusText != null) statusText.text = $"NEXT ROUND";
             if (multiplierText != null)
             {
                 multiplierText.color = Color.white;
@@ -204,6 +227,7 @@ namespace Crashmania.Game
 
         private void OnRoundStarted(CrashRoundStartedEvent started)
         {
+            ResetCounterTransforms();
             if (statusText != null) statusText.text = "FLIGHT";
             if (rocketAnimator != null || backgroundAnimator != null)
             {
@@ -227,6 +251,8 @@ namespace Crashmania.Game
             if (multiplierText != null)
             {
                 multiplierText.text = $"{update.Multiplier:F2}x";
+                multiplierText.transform.DOKill();
+                multiplierText.transform.localScale = Vector3.one;
                 multiplierText.transform.DOPunchScale(Vector3.one * 0.05f, 0.1f, 1, 0.5f);
             }
 
@@ -275,7 +301,7 @@ namespace Crashmania.Game
             if (update.Multiplier < 1.1)
             {
                 // Launch phase
-                rocketTransform.DOAnchorPos(new Vector2(-150f, -100f), duration).SetEase(Ease.OutSine);
+                rocketTransform.DOAnchorPos(fallbackRocketLaunchPosition, duration).SetEase(Ease.OutSine);
                 rocketTransform.DORotate(new Vector3(0f, 0f, 5f), duration).SetEase(Ease.OutSine);
             }
             else
@@ -288,8 +314,8 @@ namespace Crashmania.Game
                 float noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
 
                 Vector2 targetPos = new Vector2(
-                    Mathf.Lerp(-150f, 250f, progress) + noiseX,
-                    Mathf.Lerp(-100f, 250f, Mathf.Sqrt(progress)) + noiseY
+                    Mathf.Lerp(fallbackRocketLaunchPosition.x, fallbackRocketFlightTargetPosition.x, progress) + noiseX,
+                    Mathf.Lerp(fallbackRocketLaunchPosition.y, fallbackRocketFlightTargetPosition.y, Mathf.Sqrt(progress)) + noiseY
                 );
 
                 float targetRot = Mathf.Lerp(5f, 25f, progress);
@@ -304,6 +330,7 @@ namespace Crashmania.Game
             if (statusText != null) statusText.text = "CRASHED";
             if (multiplierText != null)
             {
+                multiplierText.transform.DOKill();
                 multiplierText.color = new Color(1f, 0.18f, 0.24f);
                 multiplierText.text = $"CRASHED\n@ {ended.CrashPoint:F2}x";
                 multiplierText.transform.localScale = Vector3.one;
@@ -440,13 +467,34 @@ namespace Crashmania.Game
         {
             if (rocketTransform != null)
             {
-                rocketTransform.anchoredPosition = new Vector2(-310f, -190f);
-                rocketTransform.localRotation = Quaternion.Euler(0f, 0f, -8f);
+                rocketTransform.DOKill();
+                rocketTransform.anchoredPosition = fallbackRocketCountdownPosition;
+                rocketTransform.localRotation = Quaternion.Euler(0f, 0f, fallbackRocketCountdownRotation);
+                rocketTransform.localScale = Vector3.one;
             }
 
             if (flameParticles != null) flameParticles.Stop();
             if (explosionObject != null) explosionObject.SetActive(false);
             if (scrollingGrid != null) scrollingGrid.SetSpeedFactor(1f);
+        }
+
+        private void ResetCounterTransforms()
+        {
+            if (multiplierTextRect != null)
+            {
+                multiplierTextRect.DOKill();
+                multiplierTextRect.anchoredPosition = multiplierTextBasePosition;
+                multiplierTextRect.localRotation = Quaternion.identity;
+                multiplierTextRect.localScale = Vector3.one;
+            }
+
+            if (statusTextRect != null)
+            {
+                statusTextRect.DOKill();
+                statusTextRect.anchoredPosition = statusTextBasePosition;
+                statusTextRect.localRotation = Quaternion.identity;
+                statusTextRect.localScale = Vector3.one;
+            }
         }
 
         private T FindDeep<T>(string objectName) where T : Component

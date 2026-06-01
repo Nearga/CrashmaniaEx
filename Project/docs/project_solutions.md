@@ -220,6 +220,27 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 
 **Verified**: 2026-05-31, Lobby scene. No visible gaps between MissionPill and MainPromo. Badges visible. PromoSection height reduced to 784px. No console errors.
 
+---
+
+## Game Countdown Jitter and Drifting Counter/Rocket Baselines
+
+**Symptom**:
+- During the pre-game countdown, background layer motion appeared delayed or jittery.
+- After several game rounds, the counter could remain offset or scaled from prior multiplier punch animation.
+- The game rocket/counter start layout no longer matched the visual reference: counter belonged in the upper game area and the rocket in the lower game area.
+
+**Root cause**:
+- `CrashBackgroundAnimator.ShowCountdown()` killed all background tweens and restarted fades/positions on every countdown tick, producing stepwise motion at the service tick cadence.
+- `CrashGameController` and `CrashRocketAnimator` used hardcoded old rocket positions, and multiplier punch tweens were not killed before resetting the counter.
+- `Phase7GameVerifier` still referenced older scene hierarchy names, so it no longer verified the current Game scene structure.
+
+**Fix**:
+- Made countdown background motion continuous in `Update()` while countdown is active, and only starts fades/tween resets when entering countdown state.
+- Added runtime reset of counter `RectTransform` position, rotation, scale, and active tweens at countdown/round boundaries.
+- Moved `Game.unity` counter objects to the upper game viewport and rocket to the lower game viewport, then aligned rocket animation baselines with those scene positions.
+- Updated `Phase7GameVerifier` to current hierarchy names and forced a layout rebuild before measuring layout-driven panels.
+
+**Verified**: 2026-06-01, Game scene. Captured Play Mode screenshot `Assets/Screenshots/game_after_layout_play_retry.png`, ran `Crashmania/Verify Phase 7 Game`, and confirmed console clean after clearing MCP/tooling log noise.
 
 
 

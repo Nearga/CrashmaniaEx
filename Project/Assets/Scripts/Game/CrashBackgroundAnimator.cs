@@ -19,6 +19,8 @@ namespace Crashmania.Game
         private Vector2 starBasePosition;
         private Vector2 planetBasePosition;
         private Vector2 groundBasePosition;
+        private bool isCountdownActive;
+        private float countdownSecondsRemaining;
 
         private void Awake()
         {
@@ -29,6 +31,15 @@ namespace Crashmania.Game
             ShowCountdown(8f);
         }
 
+        private void Update()
+        {
+            if (isCountdownActive)
+            {
+                AnimateCountdownLayers();
+                ApplyCountdownUrgency();
+            }
+        }
+
         private void OnDisable()
         {
             KillTweens();
@@ -36,25 +47,26 @@ namespace Crashmania.Game
 
         public void ShowCountdown(float secondsRemaining)
         {
-            KillTweens();
-            Fade(countdownBackground, 1f, 0.15f);
-            Fade(flightSpaceBackground, 0.75f, 0.2f);
-            Fade(speedLines, 0f, 0.1f);
-            Fade(crashTint, 0f, 0.1f);
-            SetPosition(asteroids, asteroidBasePosition + new Vector2(Mathf.Sin(Time.time) * 10f, 0f));
-            SetPosition(stars, starBasePosition);
-            SetPosition(planet, planetBasePosition);
-            SetPosition(groundOrMoonLayer, groundBasePosition);
+            countdownSecondsRemaining = secondsRemaining;
 
-            var urgency = Mathf.Clamp01((5f - secondsRemaining) / 5f);
-            if (countdownBackground != null)
+            if (!isCountdownActive)
             {
-                countdownBackground.transform.localScale = Vector3.one * Mathf.Lerp(1f, 1.035f, urgency);
+                isCountdownActive = true;
+                KillTweens();
+                Fade(countdownBackground, 1f, 0.15f);
+                Fade(flightSpaceBackground, 0.75f, 0.2f);
+                Fade(speedLines, 0f, 0.1f);
+                Fade(crashTint, 0f, 0.1f);
             }
+
+            AnimateCountdownLayers();
+            ApplyCountdownUrgency();
         }
 
         public void ShowLaunch()
         {
+            isCountdownActive = false;
+            KillTweens();
             Fade(countdownBackground, 0.15f, 0.35f);
             Fade(flightSpaceBackground, 1f, 0.25f);
             Fade(speedLines, 0.24f, 0.25f);
@@ -66,6 +78,7 @@ namespace Crashmania.Game
 
         public void UpdateFlight(double multiplier)
         {
+            isCountdownActive = false;
             var t = Mathf.Clamp01((float)((multiplier - 1.0) / 10.0));
             Fade(flightSpaceBackground, 1f, 0.08f);
             Fade(speedLines, Mathf.Lerp(0.18f, 0.48f, t), 0.08f);
@@ -79,6 +92,8 @@ namespace Crashmania.Game
 
         public void ShowCrash()
         {
+            isCountdownActive = false;
+            KillTweens();
             Fade(speedLines, 0f, 0.12f);
             Fade(crashTint, 0.42f, 0.1f);
             if (asteroids != null)
@@ -94,8 +109,27 @@ namespace Crashmania.Game
 
         public void ShowIntermission()
         {
+            isCountdownActive = false;
             Fade(crashTint, 0f, 0.35f);
             Fade(speedLines, 0f, 0.2f);
+        }
+
+        private void AnimateCountdownLayers()
+        {
+            var time = Time.time;
+            SetPosition(stars, starBasePosition + new Vector2(Mathf.Sin(time * 0.28f) * 8f, Mathf.Cos(time * 0.22f) * 4f));
+            SetPosition(asteroids, asteroidBasePosition + new Vector2(Mathf.Sin(time * 0.5f) * 16f, Mathf.Cos(time * 0.42f) * 8f));
+            SetPosition(planet, planetBasePosition + new Vector2(Mathf.Sin(time * 0.18f) * 5f, Mathf.Cos(time * 0.16f) * 3f));
+            SetPosition(groundOrMoonLayer, groundBasePosition + new Vector2(Mathf.Sin(time * 0.2f) * 10f, Mathf.Cos(time * 0.18f) * 5f));
+        }
+
+        private void ApplyCountdownUrgency()
+        {
+            var urgency = Mathf.Clamp01((5f - countdownSecondsRemaining) / 5f);
+            if (countdownBackground != null)
+            {
+                countdownBackground.transform.localScale = Vector3.one * Mathf.Lerp(1f, 1.035f, urgency);
+            }
         }
 
         private static Vector2 GetPosition(RectTransform target)

@@ -14,6 +14,10 @@ namespace Crashmania.Game
         [SerializeField] private ParticleSystem flameParticles;
         [SerializeField] private GameObject explosionObject;
         [SerializeField] private GameObject optionalSpineRoot;
+        [SerializeField] private Vector2 countdownAnchoredPosition = new(490f, -590f);
+        [SerializeField] private Vector2 launchAnchoredPosition = new(520f, -515f);
+        [SerializeField] private Vector2 flightTargetAnchoredPosition = new(835f, -210f);
+        [SerializeField] private float countdownRotationDegrees = 0f;
 
         private Sequence idleSequence;
         private Sequence launchSequence;
@@ -69,8 +73,8 @@ namespace Crashmania.Game
 
             SetGlowVisible(true, 0.18f);
             rocketTransform.DOKill();
-            rocketTransform.anchoredPosition = new Vector2(-310f, -190f);
-            rocketTransform.localRotation = Quaternion.Euler(0f, 0f, -8f);
+            rocketTransform.anchoredPosition = countdownAnchoredPosition;
+            rocketTransform.localRotation = Quaternion.Euler(0f, 0f, countdownRotationDegrees);
             rocketTransform.localScale = Vector3.one;
             EnsureIdleTween(secondsRemaining);
 
@@ -107,7 +111,7 @@ namespace Crashmania.Game
             }
 
             launchSequence = DOTween.Sequence()
-                .Join(rocketTransform.DOAnchorPos(new Vector2(-150f, -100f), 0.28f).SetEase(Ease.OutBack))
+                .Join(rocketTransform.DOAnchorPos(launchAnchoredPosition, 0.28f).SetEase(Ease.OutBack))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 6f), 0.28f).SetEase(Ease.OutSine))
                 .Join(rocketTransform.DOScale(new Vector3(1.04f, 0.96f, 1f), 0.12f).SetLoops(2, LoopType.Yoyo));
         }
@@ -128,8 +132,8 @@ namespace Crashmania.Game
             var noiseX = Mathf.Sin(Time.time * 3.2f) * Mathf.Lerp(6f, 18f, progress);
             var noiseY = Mathf.Cos(Time.time * 2.7f) * Mathf.Lerp(8f, 22f, progress);
             var targetPos = new Vector2(
-                Mathf.Lerp(-150f, 285f, progress) + noiseX,
-                Mathf.Lerp(-100f, 265f, lift) + noiseY
+                Mathf.Lerp(launchAnchoredPosition.x, flightTargetAnchoredPosition.x, progress) + noiseX,
+                Mathf.Lerp(launchAnchoredPosition.y, flightTargetAnchoredPosition.y, lift) + noiseY
             );
 
             rocketTransform.DOAnchorPos(targetPos, 0.06f).SetEase(Ease.Linear);
@@ -196,10 +200,10 @@ namespace Crashmania.Game
 
             var bobHeight = secondsRemaining <= 3f ? 18f : 10f;
             idleSequence = DOTween.Sequence()
-                .Append(rocketTransform.DOAnchorPosY(-190f + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 4f), 0.65f).SetEase(Ease.InOutSine))
-                .Append(rocketTransform.DOAnchorPosY(-190f - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
-                .Join(rocketTransform.DORotate(new Vector3(0f, 0f, -8f), 0.65f).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Join(rocketTransform.DORotate(new Vector3(0f, 0f, countdownRotationDegrees), 0.65f).SetEase(Ease.InOutSine))
                 .SetLoops(-1);
         }
 

@@ -61,7 +61,7 @@ namespace Crashmania.Editor
                     throw new InvalidOperationException($"Could not open scene: {scenePath}");
                 }
 
-                var scalers = UnityEngine.Object.FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                var scalers = UnityEngine.Object.FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include);
                 if (scalers.Length == 0)
                 {
                     throw new InvalidOperationException($"{scenePath} has no CanvasScaler.");
