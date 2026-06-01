@@ -8,6 +8,7 @@ using Crashmania.Services;
 using Crashmania.UI.Components;
 using Crashmania.UI.Game;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +31,10 @@ namespace Crashmania.Game
         [SerializeField] private ParticleSystem flameParticles;
         [SerializeField] private GameObject explosionObject;
         [SerializeField] private ScrollingGridBackground scrollingGrid;
+
+        [Header("Animation Fidelity")]
+        [SerializeField] private CrashRocketAnimator rocketAnimator;
+        [SerializeField] private CrashBackgroundAnimator backgroundAnimator;
 
         [Header("Lists")]
         [SerializeField] private RectTransform historyContent;
@@ -61,6 +66,8 @@ namespace Crashmania.Game
             rocketTransform ??= FindDeep<RectTransform>("Rocket");
             flameParticles ??= FindDeep<ParticleSystem>("FlameParticles");
             scrollingGrid ??= FindDeep<ScrollingGridBackground>("GridBackground");
+            rocketAnimator ??= GetComponentInChildren<CrashRocketAnimator>(true);
+            backgroundAnimator ??= GetComponentInChildren<CrashBackgroundAnimator>(true);
 
             if (explosionObject == null)
             {
@@ -184,14 +191,30 @@ namespace Crashmania.Game
                 panel?.OnCountdown();
             }
 
-            ResetFlightVisuals();
+            if (rocketAnimator != null || backgroundAnimator != null)
+            {
+                rocketAnimator?.ShowCountdown(countdown.SecondsRemaining);
+                backgroundAnimator?.ShowCountdown(countdown.SecondsRemaining);
+            }
+            else
+            {
+                ResetFlightVisuals();
+            }
         }
 
         private void OnRoundStarted(CrashRoundStartedEvent started)
         {
             if (statusText != null) statusText.text = "FLIGHT";
-            if (flameParticles != null) flameParticles.Play();
-            if (explosionObject != null) explosionObject.SetActive(false);
+            if (rocketAnimator != null || backgroundAnimator != null)
+            {
+                rocketAnimator?.ShowLaunch();
+                backgroundAnimator?.ShowLaunch();
+            }
+            else
+            {
+                if (flameParticles != null) flameParticles.Play();
+                if (explosionObject != null) explosionObject.SetActive(false);
+            }
 
             foreach (var panel in betPanels)
             {
@@ -199,14 +222,12 @@ namespace Crashmania.Game
             }
         }
 
-private void OnMultiplierUpdated(CrashMultiplierEvent update)
+        private void OnMultiplierUpdated(CrashMultiplierEvent update)
         {
             if (multiplierText != null)
             {
-                multiplierText.color = Color.white;
                 multiplierText.text = $"{update.Multiplier:F2}x";
-                var pulse = 1f + 0.04f * Mathf.Sin(Time.time * 20f);
-                multiplierText.transform.localScale = new Vector3(pulse, pulse, 1f);
+                multiplierText.transform.DOPunchScale(Vector3.one * 0.05f, 0.1f, 1, 0.5f);
             }
 
             if (scrollingGrid != null)
@@ -214,29 +235,67 @@ private void OnMultiplierUpdated(CrashMultiplierEvent update)
                 scrollingGrid.SetSpeedFactor((float)update.Multiplier);
             }
 
-            if (flameParticles != null)
+            if (backgroundAnimator != null)
             {
-                var emission = flameParticles.emission;
-                var intensity = Mathf.Clamp01((float)((update.Multiplier - 1.0) / 4.0));
-                emission.rateOverTime = Mathf.Lerp(35f, 160f, intensity);
-                if (!flameParticles.isPlaying)
-                {
-                    flameParticles.Play();
-                }
+                backgroundAnimator.UpdateFlight(update.Multiplier);
             }
 
-            if (rocketTransform != null)
+            if (rocketAnimator != null)
             {
-                var t = Mathf.Clamp01(update.ElapsedSeconds / 2.0f);
-                var x = Mathf.Lerp(-330f, 130f, t);
-                var y = Mathf.Lerp(-210f, 185f, t * t);
-                rocketTransform.anchoredPosition = new Vector2(x, y);
-                rocketTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-8f, 18f, t));
+                rocketAnimator.UpdateFlight(update);
+            }
+            else if (flameParticles != null)
+            {
+                var emission = flameParticles.emission;
+                var intensity = Mathf.Clamp01((float)((update.Multiplier - 1.0) / 10.0));
+                emission.rateOverTime = Mathf.Lerp(40f, 200f, intensity);
+                if (!flameParticles.isPlaying) flameParticles.Play();
+            }
+
+            if (rocketAnimator == null)
+            {
+                UpdateRocketPosition(update);
             }
 
             foreach (var panel in betPanels)
             {
                 panel?.OnMultiplierUpdated(update.Multiplier);
+            }
+        }
+
+        private void UpdateRocketPosition(CrashMultiplierEvent update)
+        {
+            if (rocketTransform == null) return;
+
+            // Kill any existing tween to avoid conflicts
+            rocketTransform.DOKill();
+
+            float duration = 0.05f; // Match multiplier tick rate
+
+            if (update.Multiplier < 1.1)
+            {
+                // Launch phase
+                rocketTransform.DOAnchorPos(new Vector2(-150f, -100f), duration).SetEase(Ease.OutSine);
+                rocketTransform.DORotate(new Vector3(0f, 0f, 5f), duration).SetEase(Ease.OutSine);
+            }
+            else
+            {
+                // Flight phase: Dynamic mapping of multiplier to viewport space
+                float progress = Mathf.Clamp01((float)((update.Multiplier - 1.0) / 20.0)); // Reach top-right at 20x
+                
+                // Add some "floaty" noise using Sine
+                float noiseX = Mathf.Sin(Time.time * 3f) * 10f;
+                float noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
+
+                Vector2 targetPos = new Vector2(
+                    Mathf.Lerp(-150f, 250f, progress) + noiseX,
+                    Mathf.Lerp(-100f, 250f, Mathf.Sqrt(progress)) + noiseY
+                );
+
+                float targetRot = Mathf.Lerp(5f, 25f, progress);
+
+                rocketTransform.DOAnchorPos(targetPos, duration).SetEase(Ease.Linear);
+                rocketTransform.DORotate(new Vector3(0f, 0f, targetRot), duration).SetEase(Ease.Linear);
             }
         }
 
@@ -250,14 +309,25 @@ private void OnMultiplierUpdated(CrashMultiplierEvent update)
                 multiplierText.transform.localScale = Vector3.one;
             }
 
-            if (flameParticles != null) flameParticles.Stop();
-            if (explosionObject != null) explosionObject.SetActive(true);
+            if (rocketAnimator != null || backgroundAnimator != null)
+            {
+                rocketAnimator?.ShowCrash();
+                backgroundAnimator?.ShowCrash();
+            }
+            else
+            {
+                if (flameParticles != null) flameParticles.Stop();
+                if (explosionObject != null) explosionObject.SetActive(true);
+            }
+
             AddHistoryPill(ended.CrashPoint);
         }
 
         private void OnIntermissionStarted(int roundNonce)
         {
             if (statusText != null) statusText.text = "RESETTING";
+            rocketAnimator?.ShowIntermission();
+            backgroundAnimator?.ShowIntermission();
         }
 
         private void OnBetResolved(CrashBetResolution resolution)

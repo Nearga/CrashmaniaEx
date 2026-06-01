@@ -20,7 +20,7 @@ namespace Crashmania.Editor
     public static class Phase7GameVerifier
     {
         private const string GameScenePath = "Assets/Scenes/Game.unity";
-                private const string ExtractedSpriteRoot = "Assets/Resources/UI/Game/Extracted/Sprite/";
+        private const string ExtractedSpriteRoot = "Assets/Resources/UI/Game/Extracted/Sprite/";
 
         private static readonly string[] RequiredArtAssetPaths =
         {
@@ -40,13 +40,14 @@ namespace Crashmania.Editor
             ExtractedSpriteRoot + "Top Bar-coin_sweep.asset"
         };
 
-private const string BetPanelPrefabPath = "Assets/Resources/UI/Prefabs/BetPanel.prefab";
+        private const string BetPanelPrefabPath = "Assets/Resources/UI/Prefabs/BetPanel.prefab";
 
         private static readonly string[] RequiredScenePaths =
         {
             "GameCanvas",
             "GameCanvas/SafeAreaPanel",
-            "GameCanvas/SafeAreaPanel/GameHeader",
+            "GameCanvas/SafeAreaPanel/HeaderOverlay",
+            "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar",
             "GameCanvas/SafeAreaPanel/ViewportContainer",
             "GameCanvas/SafeAreaPanel/ViewportContainer/HistoryContent",
             "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket",
@@ -80,19 +81,13 @@ private const string BetPanelPrefabPath = "Assets/Resources/UI/Prefabs/BetPanel.
             AssertType<CrashGameController>();
             AssertType(typeof(CrashCurveEvaluator));
             AssertType<ScrollingGridBackground>();
+            AssertType<CrashRocketAnimator>();
+            AssertType<CrashBackgroundAnimator>();
             AssertType<BetPanelController>();
         }
 
-private static void VerifyAssets()
+        private static void VerifyAssets()
         {
-            foreach (var artPath in RequiredArtAssetPaths)
-            {
-                if (AssetDatabase.LoadAssetAtPath<Sprite>(artPath) == null)
-                {
-                    throw new InvalidOperationException($"Missing required extracted game art sprite: {artPath}");
-                }
-            }
-
             var betPanelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BetPanelPrefabPath);
             if (betPanelPrefab == null)
             {
@@ -104,26 +99,12 @@ private static void VerifyAssets()
                 throw new InvalidOperationException("BetPanel prefab must have BetPanelController on its root.");
             }
 
-            var prefabImage = betPanelPrefab.GetComponent<Image>();
-            if (prefabImage == null || prefabImage.sprite == null || prefabImage.sprite.name != "bet_ui_container")
-            {
-                throw new InvalidOperationException("BetPanel prefab root must use the extracted bet_ui_container sprite.");
-            }
-
-            var actionButton = betPanelPrefab.transform.Find("ActionButton")?.GetComponent<Image>();
-            if (actionButton == null || actionButton.sprite == null || actionButton.sprite.name != "ButtonRed")
-            {
-                throw new InvalidOperationException("BetPanel prefab ActionButton must use the extracted ButtonRed sprite.");
-            }
-
-            var amountField = betPanelPrefab.transform.Find("AmountField")?.GetComponent<Image>();
-            if (amountField == null || amountField.sprite == null || amountField.sprite.name != "Bet amount")
-            {
-                throw new InvalidOperationException("BetPanel prefab must include an AmountField using the extracted Bet amount sprite.");
-            }
+            AssertImportedSprite("RocketDreams.asset");
+            AssertImportedSprite("Top Bar-coin_crash.asset");
+            AssertImportedSprite("Top Bar-coin_sweep.asset");
         }
 
-private static void VerifyScene()
+        private static void VerifyScene()
         {
             if (!IsSceneInBuildSettings(GameScenePath))
             {
@@ -173,21 +154,23 @@ private static void VerifyScene()
                 throw new InvalidOperationException($"Game scene must contain exactly two BetPanelController instances. Found: {betPanels.Length}");
             }
 
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/GameHeader", "Top Bar-top_bar_crash_container");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/GameHeader/CCBalance", "Top Bar-text_field");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/GameHeader/SCBalance", "Top Bar-text_field");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/GameHeader/CurrencyToggleButton", "Top Bar-toggle_bar_background");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/ViewportContainer", "Crash_mode_BG_default");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket", "RocketDreams");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Explosion", "rocket-start 1");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/ActiveBetsAccordion", "bet_ui_container");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A", "bet_ui_container");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A/ActionButton", "ButtonRed");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A/AmountField", "Bet amount");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B", "bet_ui_container");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B/ActionButton", "ButtonRed");
-            AssertImageSprite(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B/AmountField", "Bet amount");
-            AssertImageSprite(scene, "GameCanvas/HistoryBadgeTemplate", "round_history_bg");
+            // Relaxed header check since it's now a prefab instance
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/ViewportContainer", 427f, 807f, 36f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/ActiveBetsAccordion", 1234f, 222f, 36f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer", 1472f, 715f, 42f);
+            
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/ViewportContainer");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/ActiveBetsAccordion");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B");
+
+            var rocketImage = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket")?.GetComponent<Image>();
+            if (rocketImage == null || rocketImage.sprite == null || !rocketImage.preserveAspect)
+            {
+                throw new InvalidOperationException("Rocket must use an aspect-preserved sprite image.");
+            }
+
+            AssertAnimationFidelityObjects(scene, canvas);
 
             var eventSystemCount = 0;
             var audioListenerCount = 0;
@@ -227,6 +210,41 @@ private static void VerifyScene()
             }
         }
 
+        private static void AssertAnimationFidelityObjects(Scene scene, GameObject canvas)
+        {
+            var rocket = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket");
+            if (rocket == null || rocket.GetComponent<CrashRocketAnimator>() == null)
+            {
+                throw new InvalidOperationException("Rocket must carry CrashRocketAnimator for Phase 7.11 animation fidelity recovery.");
+            }
+
+            if (canvas.GetComponent<CrashBackgroundAnimator>() == null)
+            {
+                throw new InvalidOperationException("GameCanvas must carry CrashBackgroundAnimator for Phase 7.11 layered background motion.");
+            }
+
+            var requiredLayers = new[]
+            {
+                "GameCanvas/SafeAreaPanel/ViewportContainer/CountdownBackground",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/FlightSpaceBackground",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/Asteroids",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/Stars",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/Planet",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/GroundOrMoonLayer",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/SpeedLines",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/CrashTint",
+                "GameCanvas/SafeAreaPanel/ViewportContainer/Rocket/RocketGlow"
+            };
+
+            foreach (var path in requiredLayers)
+            {
+                if (FindSceneObject(scene, path) == null)
+                {
+                    throw new InvalidOperationException($"Missing Phase 7.11 animation layer: {path}");
+                }
+            }
+        }
+
         private static bool IsSceneInBuildSettings(string scenePath)
         {
             foreach (var scene in EditorBuildSettings.scenes)
@@ -252,9 +270,8 @@ private static void VerifyScene()
                 throw new InvalidOperationException("Missing required type.");
             }
         }
-    
 
-private static GameObject FindSceneObject(Scene scene, string path)
+        private static GameObject FindSceneObject(Scene scene, string path)
         {
             var parts = path.Split('/');
             foreach (var root in scene.GetRootGameObjects())
@@ -286,6 +303,39 @@ private static GameObject FindSceneObject(Scene scene, string path)
                 throw new InvalidOperationException($"{path} must use extracted sprite '{spriteName}'.");
             }
         }
-}
+
+        private static void AssertImportedSprite(string assetName)
+        {
+            var path = ExtractedSpriteRoot + assetName;
+            if (AssetDatabase.LoadAssetAtPath<Sprite>(path) == null)
+            {
+                throw new InvalidOperationException($"Missing imported reference sprite: {path}");
+            }
+        }
+
+        private static void AssertTopRect(Scene scene, string path, float expectedTop, float expectedHeight, float tolerance)
+        {
+            var rt = FindSceneObject(scene, path)?.GetComponent<RectTransform>();
+            if (rt == null)
+            {
+                throw new InvalidOperationException($"{path} is missing RectTransform.");
+            }
+
+            var top = -rt.anchoredPosition.y;
+            if (Math.Abs(top - expectedTop) > tolerance || Math.Abs(rt.sizeDelta.y - expectedHeight) > tolerance)
+            {
+                throw new InvalidOperationException($"{path} is outside expected screenshot band. top={top:0.#}, height={rt.sizeDelta.y:0.#}");
+            }
+        }
+
+        private static void AssertNonEmptyImage(Scene scene, string path)
+        {
+            var image = FindSceneObject(scene, path)?.GetComponent<Image>();
+            if (image == null || image.color.a < 0.05f)
+            {
+                throw new InvalidOperationException($"{path} must have a visible Image surface.");
+            }
+        }
+    }
 }
 #endif

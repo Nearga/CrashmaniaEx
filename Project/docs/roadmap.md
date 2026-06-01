@@ -267,19 +267,19 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 ### 7.3 Game Scene Canvas & Layout
 - [x] `GameCanvas` with `SafeAreaPanel` and `1170 x 2532` / width-match CanvasScaler policy
 - [x] **Game Header** row: back button, level badge, CC/SC balance text, currency toggle button
-- [x] **Viewport Container**: masked `RectTransform` with round-history pill area, scrolling grid background, multiplier/status text, rocket visual, flame particles, and crash explosion object
+- [x] **Viewport Container**: masked `RectTransform` with round-history pill area, scrolling grid background, multiplier/status text, rocket visual, flame particles, and crash explosion object; this proves the functional shell exists, not final animation fidelity
 - [x] **Active Bets Accordion**: active-bets section with PLAYER / BET / MULTI / WIN header and runtime mock player rows
 - [x] **Dual Bet Container**: `VerticalLayoutGroup` with two `BetPanel` prefab instances stacked vertically
-- [x] Visual polish pass: replaced placeholder geometric rocket/menu treatment with extracted source art and retuned proportions against game references
+- [x] Visual polish pass: replaced placeholder geometric rocket/menu treatment with extracted source art and retuned proportions against game references; the rocket is still static extracted art unless Phase 7.11 animator fallback or recovered Spine assets are present
 - [ ] Accordion behavior polish: add actual collapse/expand interaction if still desired after screenshot pass
 
 ### 7.4 Core Visual Components
-- [x] `Assets/Scripts/UI/Components/ScrollingGridBackground.cs` — `RawImage` material UV offset, speed driven by `SetSpeedFactor(multiplier)`
+- [x] `Assets/Scripts/UI/Components/ScrollingGridBackground.cs` — `RawImage` material UV offset, speed driven by `SetSpeedFactor(multiplier)`; useful motion fallback, not the original layered space/countdown scene
 - [x] `Assets/Scripts/Game/CrashCurveEvaluator.cs` — `GetMultiplierAtTime(t)` and `GetTimeAtMultiplier(m)` static helpers
 - [x] `Assets/Scripts/Game/CrashGameController.cs` — implements `IGameController`, subscribes to the mock crash loop, and drives multiplier, rocket, history, player rows, and bet panels
-- [x] Rocket GameObject with flame `ParticleSystem`
-- [x] Crash explosion object deactivated by default and shown on crash
-- [x] Optional fidelity pass: flame emission now scales with multiplier; rocket/background/button/header placeholders use extracted game sprites
+- [x] Rocket GameObject with flame `ParticleSystem`; presence only, not source-faithful rocket animation
+- [x] Crash explosion object deactivated by default and shown on crash; still uses temporary `rocket-start 1` art until a closer VFX source is identified
+- [x] Optional fidelity pass: flame emission now scales with multiplier; rocket/background/button/header placeholders use extracted game sprites, but animated background/rocket state still requires Phase 7.11
 
 ### 7.5 BetPanel Prefab & State Machine
 - [x] `Assets/Resources/UI/Prefabs/BetPanel.prefab` — bet amount display with `[-]`/`[+]`, quick buttons (`10K`/`20K`/`40K`/`60K`/`80K`), autoplay toggle, action button
@@ -306,7 +306,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Added `Assets/Editor/Phase7GameVerifier.cs` with `Crashmania/Verify Phase 7 Game`
 - [x] Verifier checks contracts, commands, proxy, loader, `Game.unity` hierarchy, two `BetPanelController` instances, CanvasScaler policy, build settings, and UI/PureMVC boundaries
 - [x] `Crashmania/Verify Phase 7 Game` completed successfully
-- [x] Play Mode screenshot captured: `Assets/Screenshots/phase7_game_playmode_1170x2532.png`
+- [x] Play Mode screenshot captured: `Assets/Screenshots/phase7_game_playmode_1170x2532.png`; single-frame acceptance does not validate animated state transitions
 - [x] Fixed runtime duplicate `EventSystem` / `AudioListener` warnings in additive/editor multi-scene flows
 - [x] Fixed TMP missing-glyph warning by replacing the lobby online counter emoji with supported text
 
@@ -318,6 +318,29 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Extended `Crashmania/Verify Phase 7 Game` to assert imported art, assigned scene sprites, prefab art, CanvasScaler policy, and duplicate EventSystem/AudioListener safety
 - [ ] Remaining visual gap: replace the temporary extracted `rocket-start 1` crash burst with a closer explosion/VFX asset if one is identified
 - [ ] Remaining behavior gap: implement full autoplay only if later screenshots/product scope require it
+
+
+### 7.10 Crash Room Graphics Recovery
+- [x] Captured broken baseline screenshot: `Assets/Screenshots/phase7_game_broken_baseline_720x1600.png`
+- [x] Added `docs/phase7_game_reference_map.md` with `720 x 1600` screenshot bands mapped to the `1170 x 2532` Unity canvas
+- [x] Recovered `Game.unity` layout from screenshot proportions instead of stretching extracted atlas sprites across large surfaces
+- [x] Rebuilt large game/header/viewport/active-bets/bet-panel surfaces as reference-colored scene-owned UI panels
+- [x] Kept extracted sprites only for small icons and the aspect-preserved rocket where they fit the reference
+- [x] Updated `BetPanel.prefab` to use non-stretched screenshot-style solid/tinted controls
+- [x] Relaxed Phase 7 verifier away from forced large-surface sprite checks; it now checks layout bands, visible surfaces, controller refs, CanvasScaler, duplicate listener safety, and PureMVC boundaries
+- [x] Captured recovery screenshots: `phase7_game_recovery_playmode_720x1600.png`, `phase7_game_recovery_playmode_750x1334.png`, `phase7_game_recovery_playmode_1170x2532.png`
+- [x] Band sanity check: broken baseline had 4 dark middle bands; recovery screenshots have 0 dark middle bands
+- [x] Play Mode acceptance passed: Boot-to-Game, countdown/flight/crash, cancel, cashout win, lost state, Back-to-Lobby
+
+### 7.11 Animation Fidelity Recovery
+- [x] Spine feasibility audit: extracted project contains `spine-unity` / `spine-csharp` runtime source and raw build strings mention Spine animation fields, but no usable rocket `.json`, `.skel.bytes`, `.atlas.txt`, or `_SkeletonData` assets were found
+- [x] Do not install Spine only for decoration; keep Spine as source-preferred if real skeleton data is recovered or provided later
+- [x] Added `CrashRocketAnimator` passive component for pseudo-Spine fallback: countdown idle bob, launch squash/tilt, multiplier-driven flight drift, flame intensity, glow pulse, crash hide/burst, and intermission reset
+- [x] Added `CrashBackgroundAnimator` passive component for scene-owned layered background state: countdown, flight, crash tint, intermission, and multiplier-driven parallax
+- [x] Refactored `CrashGameController` to delegate visual state to the passive animators while keeping mock crash loop, betting, balance, history, and PureMVC behavior unchanged
+- [x] Built and wired editable scene layers under `ViewportContainer`: `CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, `CrashTint`, and `Rocket/RocketGlow`
+- [x] Extended Play Mode verification with timed probes for countdown, later flight (`5.50x` / `20.65x` observed), crash, and intermission/reset frames; captured `screenshot-20260601-124420.png`, `screenshot-20260601-124441.png`, and `screenshot-20260601-124456.png`
+- [ ] Replace `rocket-start 1` crash burst with a closer original VFX asset if one is identified
 
 
 ---

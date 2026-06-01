@@ -27,5 +27,8 @@ Target screenshots for visual comparison live in `Research/app_patched/screensho
 
 ## Known Gaps
 - No screenshot crop assets are used.
+- Spine runtime source is present in the AssetRipper export and the raw WebGL build strings mention Spine animation fields, but no importable `.json`, `.skel.bytes`, `.atlas.txt`, or `_SkeletonData` rocket assets were found in `Project/Assets`, `Research/raw/game/unity_crash_game`, or `Research/deobfuscated/game/unity/ExportedProject/Assets` during the Phase 7.11 audit.
+- The rocket animation therefore uses the available `RocketDreams` sprite plus layered glow, flame particles, squash/tilt, launch bob, and drift tweens as a pseudo-Spine fallback.
+- The flight background uses scene-owned layered UI objects (`CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, `CrashTint`) instead of a recovered Spine background.
 - The crash burst uses the closest extracted `rocket-start 1` sprite until a more exact explosion/VFX source is identified.
 - Autoplay remains a visual toggle in this pass; no new autoplay gameplay loop was added.
