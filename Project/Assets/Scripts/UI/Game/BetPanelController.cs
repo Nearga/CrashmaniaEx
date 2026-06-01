@@ -33,6 +33,9 @@ namespace Crashmania.UI.Game
 
         public string PanelId => panelId;
         public BetPanelState State => state;
+        public double BetAmount => betAmount;
+        public CurrencyMode Currency => currency;
+        public double CurrentMultiplier => currentMultiplier;
 
         private void Awake()
         {
@@ -72,6 +75,16 @@ namespace Crashmania.UI.Game
             currency = activeCurrency;
             Render();
         }
+
+public void RestoreRuntimeState(BetPanelState nextState, double amount, CurrencyMode activeCurrency, double multiplier)
+        {
+            betAmount = Math.Max(1000.0, amount);
+            currency = activeCurrency;
+            currentMultiplier = Math.Max(1.0, multiplier);
+            state = nextState;
+            Render();
+        }
+
 
         public void OnCountdown()
         {

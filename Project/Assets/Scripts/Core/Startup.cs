@@ -23,8 +23,7 @@ namespace Crashmania.Core
 
         private void Awake()
         {
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = CanvasResolutionPolicy.TargetFrameRate;
+            MobileResolutionPolicy.ApplyRuntimePolicy();
 
             DontDestroyOnLoad(gameObject);
             DisableDuplicateSceneServices();

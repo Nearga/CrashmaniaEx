@@ -17,6 +17,8 @@ namespace Crashmania.Game
 
         private Sequence idleSequence;
         private Sequence launchSequence;
+        private float canvasHeight;
+        private Canvas cachedRootCanvas;
 
         public bool HasSpineFallback => optionalSpineRoot != null;
 
@@ -36,6 +38,44 @@ namespace Crashmania.Game
             {
                 flameParticles = rocketTransform.GetComponentInChildren<ParticleSystem>(true);
             }
+
+            RefreshCanvasHeight();
+        }
+
+        private void OnEnable()
+        {
+            RefreshCanvasHeight();
+        }
+
+        private void Update()
+        {
+            RefreshCanvasHeight();
+        }
+
+        private void RefreshCanvasHeight()
+        {
+            if (cachedRootCanvas == null)
+            {
+                cachedRootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
+            }
+
+            if (cachedRootCanvas != null)
+            {
+                var rect = cachedRootCanvas.GetComponent<RectTransform>();
+                if (rect != null && rect.rect.height > 0f)
+                {
+                    canvasHeight = rect.rect.height;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convert a design-space Y coordinate (authored at 2532px canvas height)
+        /// to the current canvas height proportionally.
+        /// </summary>
+        private float SY(float designY)
+        {
+            return designY * (canvasHeight / 2532f);
         }
 
         private void OnDisable()
@@ -69,7 +109,7 @@ namespace Crashmania.Game
 
             SetGlowVisible(true, 0.18f);
             rocketTransform.DOKill();
-            rocketTransform.anchoredPosition = new Vector2(-310f, -190f);
+            rocketTransform.anchoredPosition = new Vector2(SY(-310f), SY(-190f));
             rocketTransform.localRotation = Quaternion.Euler(0f, 0f, -8f);
             rocketTransform.localScale = Vector3.one;
             EnsureIdleTween(secondsRemaining);
@@ -107,7 +147,7 @@ namespace Crashmania.Game
             }
 
             launchSequence = DOTween.Sequence()
-                .Join(rocketTransform.DOAnchorPos(new Vector2(-150f, -100f), 0.28f).SetEase(Ease.OutBack))
+                .Join(rocketTransform.DOAnchorPos(new Vector2(SY(-150f), SY(-100f)), 0.28f).SetEase(Ease.OutBack))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 6f), 0.28f).SetEase(Ease.OutSine))
                 .Join(rocketTransform.DOScale(new Vector3(1.04f, 0.96f, 1f), 0.12f).SetLoops(2, LoopType.Yoyo));
         }
@@ -128,8 +168,8 @@ namespace Crashmania.Game
             var noiseX = Mathf.Sin(Time.time * 3.2f) * Mathf.Lerp(6f, 18f, progress);
             var noiseY = Mathf.Cos(Time.time * 2.7f) * Mathf.Lerp(8f, 22f, progress);
             var targetPos = new Vector2(
-                Mathf.Lerp(-150f, 285f, progress) + noiseX,
-                Mathf.Lerp(-100f, 265f, lift) + noiseY
+                Mathf.Lerp(SY(-150f), SY(285f), progress) + noiseX,
+                Mathf.Lerp(SY(-100f), SY(265f), lift) + noiseY
             );
 
             rocketTransform.DOAnchorPos(targetPos, 0.06f).SetEase(Ease.Linear);
@@ -194,11 +234,12 @@ namespace Crashmania.Game
                 return;
             }
 
-            var bobHeight = secondsRemaining <= 3f ? 18f : 10f;
+            var bobHeight = secondsRemaining <= 3f ? SY(18f) : SY(10f);
+            var baseY = SY(-190f);
             idleSequence = DOTween.Sequence()
-                .Append(rocketTransform.DOAnchorPosY(-190f + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(baseY + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 4f), 0.65f).SetEase(Ease.InOutSine))
-                .Append(rocketTransform.DOAnchorPosY(-190f - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(baseY - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, -8f), 0.65f).SetEase(Ease.InOutSine))
                 .SetLoops(-1);
         }

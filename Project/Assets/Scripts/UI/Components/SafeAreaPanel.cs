@@ -15,6 +15,11 @@ namespace Crashmania.UI.Components
             ApplySafeArea();
         }
 
+        private void Update()
+        {
+            ApplySafeArea();
+        }
+
         private void OnRectTransformDimensionsChange()
         {
             if (rectTransform == null)

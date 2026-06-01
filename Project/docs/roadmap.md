@@ -410,6 +410,50 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
   - Logout → Login screen
 
 
+## Phase 11 - Visual polishing
+
+### 11.1 Recommended Unity Resolution Strategy for iPhone Games
+- [x] Keep the Lobby, Login, Store, Gifts, and Account flow portrait-only for the current demo; treat portrait iPhone as the app shell source of truth.
+- [x] Keep the current project UI baseline of `1170 x 2532` for screenshot-faithful portrait reconstruction, while documenting that generic new mobile projects may choose `1080 x 1920` as a common portrait baseline.
+- [x] Standardize portrait runtime UI canvases on `CanvasScaler`: `Scale With Screen Size`, `Match Width Or Height`, `matchWidthOrHeight = 0.0`, so narrow iPhones do not clip horizontally.
+- [x] Refactor `SceneOrientationPolicy` from a static class with hardcoded scene names to a `MonoBehaviour` with an `OrientationMode` enum (`ForcePortrait`, `PortraitOrLandscape`) placed on each scene's Canvas. All non-Game scenes use `ForcePortrait`; Game scene uses `PortraitOrLandscape`. Orientation is applied in `Awake()` so it takes effect on scene load without manual calls from `Startup` or `NavigationService`.
+- [ ] Treat `Screen.safeArea` as an interactive-content constraint only: apply it to headers, tab bars, buttons, bet panels, history pills, and scrollable content, but keep decorative full-screen backgrounds outside the safe-area wrapper so they bleed behind notches and home indicators.
+- [ ] Validate portrait screens against the required device matrix: `750 x 1334`, `1170 x 2532`, one 19.5:9 notch/Dynamic Island preset, and one Pro Max-style tall preset.
+- [ ] Use anchors, layout groups, aspect-ratio preservation, and min/max constraints instead of hardcoded pixel offsets when UI must adapt between iPhone aspect ratios.
+- [ ] Keep inspectable artwork at source aspect ratio; avoid stretching sprites to cover large surfaces unless they are authored as sliced, tiled, or intentionally abstract backgrounds.
+- [ ] Keep all high-density text on TextMeshPro SDF assets; avoid legacy Unity Text, and verify TMP atlas textures are valid before forcing custom font assets.
+- [x] Disable Canvas `Pixel Perfect` on production mobile canvases; prioritize stable high-frequency UI updates for multipliers, balances, history pills, and betting controls over pixel-art snapping.
+- [x] Add a runtime render-resolution policy for iOS: target 60 FPS, clamp high-end crash-game rendering to a maximum long side around `1440p`, reserve `1080p` caps for future heavy 3D scenes, and preserve aspect ratio when downscaling.
+- [ ] Consider iOS Player Settings `Resolution Scaling Mode = Fixed DPI` with target DPI in the `200-300` range as an alternative or supplement to programmatic `Screen.SetResolution` caps.
+- [ ] Use ASTC texture compression for iOS UI art: `4x4` for critical UI/icons/text-adjacent elements and `6x6`/`8x8` for gradients, large backgrounds, and less inspectable decorative art.
+- [ ] Group common casino UI sprites (bet buttons, chip icons, history pill frames, top-bar icons) into Sprite Atlases to reduce draw calls and keep static betting UI batchable.
+- [x] Support both portrait and landscape as separate visual layouts driven by one logic layer: `Portrait_LayoutRoot` and `Landscape_LayoutRoot` under a shared safe-area wrapper (Dual-Root Strategy).
+- [x] Use `CrashGameLayoutView` to automatically resolve UI references for the active root via deep-find, ensuring logic-view decoupling and robustness to hierarchy changes.
+- [x] Implement state snapshots in `CrashGameController` to capture and restore user UI state (bet amounts, auto-cashout values) during orientation transitions.
+- [x] Keep Crash game business/runtime logic orientation-agnostic: multiplier updates, bets, balances, history, and player rows should bind to whichever visual root is active, not duplicate game state per orientation.
+- [x] Portrait Crash layout rule: graph/multiplier in the top ~45%, recent crash history in the middle ~10%, and bet dashboard / cash-out controls in the bottom ~45% for thumb reachability.
+- [x] Landscape Crash layout rule: graph/multiplier uses the left ~60%, while betting dashboard plus live bets/history/chat use the right ~40%; landscape canvases may use `matchWidthOrHeight = 1.0` to protect vertical controls from clipping.
+- [x] Add a `DynamicOrientationManager` plan for Game scene only: detect `Screen.width` / `Screen.height` changes, toggle portrait and landscape roots, refresh TMP/graph layout hooks, and leave non-game scenes portrait-locked.
+- [ ] Decide graph rendering strategy before landscape implementation: either adapt the 2D/3D graph camera per orientation, or render the graph into a `RenderTexture` displayed through `RawImage` in both visual roots to avoid camera framing bugs.
+- [x] Add verifier coverage for production canvases: reference resolution, width/height match policy by orientation, `Pixel Perfect` off, safe-area wrapper placement, no decorative background constrained by safe area, and no legacy UI Text.
+- [ ] Capture MCP Play Mode screenshots for each target portrait preset, plus both Crash game orientations once landscape exists, and compare against reference screenshots or approved Unity baselines before TestFlight.
+
+### 11.2 Game Scene Structural Layout
+- [x] Rename `ViewportContainer` to `GameViewportContainer` and ensure it is the fixed anchor for game visuals.
+- [x] Implement Portrait Layout:
+    - `GameViewportContainer`: Full screen width, positioned directly under the header.
+    - `DualBetContainer`: Two bet panels arranged **horizontally** directly under the viewport.
+    - `ActiveBetsHistory` (Player List): Positioned under the bet panels, occupying the remaining space (scrollable).
+- [x] Implement Landscape Layout (Ref: `03_crash_game_1002_desktop.png`):
+    - `ActiveBetsHistory` (Player List): Vertical column on the **left**.
+    - `GameViewportContainer`: Main content area on the **right/center**.
+    - `DualBetContainer`: Two bet panels arranged horizontally directly **under** the `GameViewportContainer`.
+- [x] Update `DynamicOrientationManager` and `CrashGameLayoutView` to support these specific anchor and parent relationships.
+- [x] Verify vertical scrolling for the player list when it extends beyond the screen bounds.
+
+
+
+
 ---
 
 
