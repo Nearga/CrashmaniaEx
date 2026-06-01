@@ -412,6 +412,13 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ---
 
+## Phase 11 — Visual Polishing
+*Goal: Final UI/UX refinements and animation tuning.*
+
+### 11.1 Game Scene UI Layout Refinement
+- [x] Move `ActiveBetsAccordion` under `DualBetContainer`
+- [x] Make `ActiveBetsAccordion` scrollable for large record sets
+- [x] Add header to the Game scene (reuse one from the lobby) and adjust position of `GameViewportContainer` (also, rename it from `ViewportContainer`)
 
 
 ---
