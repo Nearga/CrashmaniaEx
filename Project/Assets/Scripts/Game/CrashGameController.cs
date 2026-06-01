@@ -17,11 +17,6 @@ namespace Crashmania.Game
 {
     public sealed class CrashGameController : MonoBehaviour, IGameController
     {
-        [Header("Orientation Layouts")]
-        [SerializeField] private DynamicOrientationManager orientationManager;
-        [SerializeField] private CrashGameLayoutView portraitLayout;
-        [SerializeField] private CrashGameLayoutView landscapeLayout;
-
         [Header("Header")]
         [SerializeField] private Button backButton;
         [SerializeField] private Button currencyToggleButton;
@@ -51,75 +46,54 @@ namespace Crashmania.Game
         [SerializeField] private BetPanelController[] betPanels;
 
         private readonly List<GameObject> playerRows = new();
-        private readonly List<double> historyPoints = new();
-        private readonly List<CrashPlayerBet> latestPlayerBets = new();
         private ICrashGameService service;
         private SettingsProxy settings;
-        private CrashGameLayoutView activeLayout;
         private double balanceCc;
         private double balanceSc;
-        private string currentTitle = "CRASH";
-        private string currentStatus = "WAITING";
-        private string currentMultiplierText = "1.00x";
-        private Color currentMultiplierColor = Color.white;
-        private CrashGamePhase currentPhase = CrashGamePhase.Preparation;
-        private float lastCountdownSeconds = 8f;
-        private CrashMultiplierEvent lastMultiplierUpdate = new(0, 0f, 1.0);
-        private double lastCrashPoint = 1.0;
-        private float canvasHeight;
-        private const float DesignHeight = 2532f;
-        private Canvas cachedRootCanvas;
 
         public event Action<double, double> OnBalanceChanged;
         public event Action OnRequestExit;
 
         private void Awake()
         {
-            ResolveLayouts();
-            if (orientationManager != null)
+            backButton ??= FindDeep<Button>("BackButton");
+            currencyToggleButton ??= FindDeep<Button>("CurrencyToggleButton");
+            titleText ??= FindDeep<TMP_Text>("GameTitle");
+            ccBalanceText ??= FindDeep<TMP_Text>("CCBalanceText");
+            scBalanceText ??= FindDeep<TMP_Text>("SCBalanceText");
+            multiplierText ??= FindDeep<TMP_Text>("MultiplierText");
+            statusText ??= FindDeep<TMP_Text>("StatusText");
+            rocketTransform ??= FindDeep<RectTransform>("Rocket");
+            flameParticles ??= FindDeep<ParticleSystem>("FlameParticles");
+            scrollingGrid ??= FindDeep<ScrollingGridBackground>("GridBackground");
+            rocketAnimator ??= GetComponentInChildren<CrashRocketAnimator>(true);
+            backgroundAnimator ??= GetComponentInChildren<CrashBackgroundAnimator>(true);
+
+            if (explosionObject == null)
             {
-                orientationManager.OrientationChanged += OnOrientationChanged;
+                var explosion = FindDeep<Transform>("Explosion");
+                explosionObject = explosion != null ? explosion.gameObject : null;
             }
 
-            BindActiveLayout(ResolveActiveLayout(), false);
-            RefreshCanvasHeight();
-        }
-
-        private void Update()
-        {
-            RefreshCanvasHeight();
-        }
-
-        private void RefreshCanvasHeight()
-        {
-            if (cachedRootCanvas == null)
+            if (historyContent == null)
             {
-                cachedRootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
+                var history = FindDeep<RectTransform>("HistoryContent");
+                historyContent = history;
             }
 
-            if (cachedRootCanvas != null)
+            if (playerRowsContent == null)
             {
-                var rect = cachedRootCanvas.GetComponent<RectTransform>();
-                if (rect != null && rect.rect.height > 0f)
-                {
-                    canvasHeight = rect.rect.height;
-                }
-            }
-        }
-
-        private float SY(float designY)
-        {
-            return designY * (canvasHeight / DesignHeight);
-        }
-
-        private void OnDestroy()
-        {
-            if (orientationManager != null)
-            {
-                orientationManager.OrientationChanged -= OnOrientationChanged;
+                var rows = FindDeep<RectTransform>("PlayerRowsContent");
+                playerRowsContent = rows;
             }
 
-            UnbindActiveControls();
+            if (betPanels == null || betPanels.Length == 0)
+            {
+                betPanels = GetComponentsInChildren<BetPanelController>(true);
+            }
+
+            if (backButton != null) backButton.onClick.AddListener(() => OnRequestExit?.Invoke());
+            if (currencyToggleButton != null) currencyToggleButton.onClick.AddListener(ToggleCurrency);
         }
 
         public void Initialize(GameSession session, SettingsProxy settingsProxy)
@@ -128,9 +102,10 @@ namespace Crashmania.Game
             service = ServiceLocator.Resolve<ICrashGameService>();
             var config = ServiceLocator.Resolve<AppConfig>();
 
-            currentTitle = string.IsNullOrWhiteSpace(session?.GameId) ? "CRASH" : session.GameId.ToUpperInvariant();
-            BindActiveLayout(ResolveActiveLayout(), false);
-            RenderCurrentState();
+            if (titleText != null)
+            {
+                titleText.text = string.IsNullOrWhiteSpace(session?.GameId) ? "CRASH" : session.GameId.ToUpperInvariant();
+            }
 
             if (service != null)
             {
@@ -138,7 +113,16 @@ namespace Crashmania.Game
                 service.StartLoop(config).Forget();
             }
 
-            InitializeActiveBetPanels(null);
+            var activeCurrency = settings != null ? settings.ActiveCurrency : CurrencyMode.CC;
+            for (var i = 0; i < betPanels.Length; i++)
+            {
+                var panel = betPanels[i];
+                if (panel == null) continue;
+                panel.Initialize(i == 0 ? "BetPanelA" : "BetPanelB", service, activeCurrency);
+                panel.BetAccepted += OnBetAccepted;
+                panel.BetCancelled += OnBetCancelled;
+            }
+
             ResetFlightVisuals();
         }
 
@@ -146,7 +130,8 @@ namespace Crashmania.Game
         {
             balanceCc = newCC;
             balanceSc = newSC;
-            RenderBalance();
+            if (ccBalanceText != null) ccBalanceText.text = FormatAmount(balanceCc);
+            if (scBalanceText != null) scBalanceText.text = balanceSc.ToString("0.00");
         }
 
         public void OnSettingsChanged(bool musicOn, bool sfxOn)
@@ -162,7 +147,12 @@ namespace Crashmania.Game
                 service = null;
             }
 
-            UnbindActiveControls();
+            foreach (var panel in betPanels)
+            {
+                if (panel == null) continue;
+                panel.BetAccepted -= OnBetAccepted;
+                panel.BetCancelled -= OnBetCancelled;
+            }
         }
 
         private void Subscribe(ICrashGameService crashService)
@@ -187,154 +177,14 @@ namespace Crashmania.Game
             crashService.BetResolved -= OnBetResolved;
         }
 
-        private void OnOrientationChanged(bool isPortrait)
-        {
-            var snapshots = CapturePanelSnapshots();
-            BindActiveLayout(ResolveActiveLayout(), false);
-            InitializeActiveBetPanels(snapshots);
-            RenderCurrentState();
-        }
-
-        private void BindActiveLayout(CrashGameLayoutView layout, bool preservePanelState)
-        {
-            var snapshots = preservePanelState ? CapturePanelSnapshots() : null;
-            UnbindActiveControls();
-            activeLayout = layout;
-
-            if (activeLayout != null)
-            {
-                activeLayout.ResolveReferences();
-                backButton = activeLayout.BackButton;
-                currencyToggleButton = activeLayout.CurrencyToggleButton;
-                titleText = activeLayout.TitleText;
-                ccBalanceText = activeLayout.CcBalanceText;
-                scBalanceText = activeLayout.ScBalanceText;
-                multiplierText = activeLayout.MultiplierText;
-                statusText = activeLayout.StatusText;
-                rocketTransform = activeLayout.RocketTransform;
-                flameParticles = activeLayout.FlameParticles;
-                explosionObject = activeLayout.ExplosionObject;
-                scrollingGrid = activeLayout.ScrollingGrid;
-                rocketAnimator = activeLayout.RocketAnimator;
-                backgroundAnimator = activeLayout.BackgroundAnimator;
-                historyContent = activeLayout.HistoryContent;
-                playerRowsContent = activeLayout.PlayerRowsContent;
-                betPanels = activeLayout.BetPanels;
-            }
-            else
-            {
-                ResolveFallbackReferences();
-            }
-
-            historyBadgePrefab ??= FindDeepGameObject("HistoryBadgeTemplate");
-            playerRowPrefab ??= FindDeepGameObject("PlayerRowTemplate");
-            BindActiveControls();
-            InitializeActiveBetPanels(snapshots);
-        }
-
-        private void BindActiveControls()
-        {
-            if (backButton != null) backButton.onClick.AddListener(HandleBackPressed);
-            if (currencyToggleButton != null) currencyToggleButton.onClick.AddListener(ToggleCurrency);
-
-            if (betPanels == null)
-            {
-                return;
-            }
-
-            foreach (var panel in betPanels)
-            {
-                if (panel == null) continue;
-                panel.BetAccepted += OnBetAccepted;
-                panel.BetCancelled += OnBetCancelled;
-            }
-        }
-
-        private void UnbindActiveControls()
-        {
-            if (backButton != null) backButton.onClick.RemoveListener(HandleBackPressed);
-            if (currencyToggleButton != null) currencyToggleButton.onClick.RemoveListener(ToggleCurrency);
-
-            if (betPanels == null)
-            {
-                return;
-            }
-
-            foreach (var panel in betPanels)
-            {
-                if (panel == null) continue;
-                panel.BetAccepted -= OnBetAccepted;
-                panel.BetCancelled -= OnBetCancelled;
-            }
-        }
-
-        private void InitializeActiveBetPanels(IReadOnlyList<BetPanelSnapshot> snapshots)
-        {
-            if (betPanels == null || service == null)
-            {
-                return;
-            }
-
-            var activeCurrency = settings != null ? settings.ActiveCurrency : CurrencyMode.CC;
-            for (var i = 0; i < betPanels.Length; i++)
-            {
-                var panel = betPanels[i];
-                if (panel == null) continue;
-
-                var panelId = i == 0 ? "BetPanelA" : "BetPanelB";
-                panel.Initialize(panelId, service, activeCurrency);
-                var snapshot = FindSnapshot(snapshots, panelId, i);
-                if (snapshot.HasValue)
-                {
-                    panel.RestoreRuntimeState(snapshot.Value.State, snapshot.Value.Amount, snapshot.Value.Currency, snapshot.Value.Multiplier);
-                }
-            }
-        }
-
-        private List<BetPanelSnapshot> CapturePanelSnapshots()
-        {
-            var snapshots = new List<BetPanelSnapshot>();
-            if (betPanels == null)
-            {
-                return snapshots;
-            }
-
-            for (var i = 0; i < betPanels.Length; i++)
-            {
-                var panel = betPanels[i];
-                if (panel == null) continue;
-                snapshots.Add(new BetPanelSnapshot(panel.PanelId, i, panel.State, panel.BetAmount, panel.Currency, panel.CurrentMultiplier));
-            }
-
-            return snapshots;
-        }
-
-        private static BetPanelSnapshot? FindSnapshot(IReadOnlyList<BetPanelSnapshot> snapshots, string panelId, int index)
-        {
-            if (snapshots == null)
-            {
-                return null;
-            }
-
-            foreach (var snapshot in snapshots)
-            {
-                if (snapshot.PanelId == panelId || snapshot.Index == index)
-                {
-                    return snapshot;
-                }
-            }
-
-            return null;
-        }
-
         private void OnCountdownTick(CrashCountdownEvent countdown)
         {
-            currentPhase = CrashGamePhase.Preparation;
-            lastCountdownSeconds = countdown.SecondsRemaining;
-            currentStatus = $"NEXT ROUND IN {countdown.SecondsRemaining:0.0}s";
-            currentMultiplierText = countdown.SecondsRemaining.ToString("0.0");
-            currentMultiplierColor = Color.white;
-            RenderTexts();
+            if (statusText != null) statusText.text = $"NEXT ROUND IN {countdown.SecondsRemaining:0.0}s";
+            if (multiplierText != null)
+            {
+                multiplierText.color = Color.white;
+                multiplierText.text = countdown.SecondsRemaining.ToString("0.0");
+            }
 
             foreach (var panel in betPanels)
             {
@@ -354,10 +204,7 @@ namespace Crashmania.Game
 
         private void OnRoundStarted(CrashRoundStartedEvent started)
         {
-            currentPhase = CrashGamePhase.Flight;
-            currentStatus = "FLIGHT";
-            RenderTexts();
-
+            if (statusText != null) statusText.text = "FLIGHT";
             if (rocketAnimator != null || backgroundAnimator != null)
             {
                 rocketAnimator?.ShowLaunch();
@@ -377,14 +224,9 @@ namespace Crashmania.Game
 
         private void OnMultiplierUpdated(CrashMultiplierEvent update)
         {
-            currentPhase = CrashGamePhase.Flight;
-            lastMultiplierUpdate = update;
-            currentMultiplierText = $"{update.Multiplier:F2}x";
-            currentMultiplierColor = Color.white;
-            RenderTexts();
-
             if (multiplierText != null)
             {
+                multiplierText.text = $"{update.Multiplier:F2}x";
                 multiplierText.transform.DOPunchScale(Vector3.one * 0.05f, 0.1f, 1, 0.5f);
             }
 
@@ -425,23 +267,32 @@ namespace Crashmania.Game
         {
             if (rocketTransform == null) return;
 
+            // Kill any existing tween to avoid conflicts
             rocketTransform.DOKill();
-            const float duration = 0.05f;
+
+            float duration = 0.05f; // Match multiplier tick rate
 
             if (update.Multiplier < 1.1)
             {
-                rocketTransform.DOAnchorPos(new Vector2(SY(-150f), SY(-100f)), duration).SetEase(Ease.OutSine);
+                // Launch phase
+                rocketTransform.DOAnchorPos(new Vector2(-150f, -100f), duration).SetEase(Ease.OutSine);
                 rocketTransform.DORotate(new Vector3(0f, 0f, 5f), duration).SetEase(Ease.OutSine);
             }
             else
             {
-                var progress = Mathf.Clamp01((float)((update.Multiplier - 1.0) / 20.0));
-                var noiseX = Mathf.Sin(Time.time * 3f) * 10f;
-                var noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
-                var targetPos = new Vector2(
-                    Mathf.Lerp(SY(-150f), SY(250f), progress) + noiseX,
-                    Mathf.Lerp(SY(-100f), SY(250f), Mathf.Sqrt(progress)) + noiseY);
-                var targetRot = Mathf.Lerp(5f, 25f, progress);
+                // Flight phase: Dynamic mapping of multiplier to viewport space
+                float progress = Mathf.Clamp01((float)((update.Multiplier - 1.0) / 20.0)); // Reach top-right at 20x
+                
+                // Add some "floaty" noise using Sine
+                float noiseX = Mathf.Sin(Time.time * 3f) * 10f;
+                float noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
+
+                Vector2 targetPos = new Vector2(
+                    Mathf.Lerp(-150f, 250f, progress) + noiseX,
+                    Mathf.Lerp(-100f, 250f, Mathf.Sqrt(progress)) + noiseY
+                );
+
+                float targetRot = Mathf.Lerp(5f, 25f, progress);
 
                 rocketTransform.DOAnchorPos(targetPos, duration).SetEase(Ease.Linear);
                 rocketTransform.DORotate(new Vector3(0f, 0f, targetRot), duration).SetEase(Ease.Linear);
@@ -450,15 +301,11 @@ namespace Crashmania.Game
 
         private void OnRoundEnded(CrashRoundEndedEvent ended)
         {
-            currentPhase = CrashGamePhase.Crashed;
-            lastCrashPoint = ended.CrashPoint;
-            currentStatus = "CRASHED";
-            currentMultiplierText = $"CRASHED\n@ {ended.CrashPoint:F2}x";
-            currentMultiplierColor = new Color(1f, 0.18f, 0.24f);
-            RenderTexts();
-
+            if (statusText != null) statusText.text = "CRASHED";
             if (multiplierText != null)
             {
+                multiplierText.color = new Color(1f, 0.18f, 0.24f);
+                multiplierText.text = $"CRASHED\n@ {ended.CrashPoint:F2}x";
                 multiplierText.transform.localScale = Vector3.one;
             }
 
@@ -473,14 +320,12 @@ namespace Crashmania.Game
                 if (explosionObject != null) explosionObject.SetActive(true);
             }
 
-            AddHistoryPill(ended.CrashPoint, true);
+            AddHistoryPill(ended.CrashPoint);
         }
 
         private void OnIntermissionStarted(int roundNonce)
         {
-            currentPhase = CrashGamePhase.Intermission;
-            currentStatus = "RESETTING";
-            RenderTexts();
+            if (statusText != null) statusText.text = "RESETTING";
             rocketAnimator?.ShowIntermission();
             backgroundAnimator?.ShowIntermission();
         }
@@ -529,11 +374,6 @@ namespace Crashmania.Game
             }
         }
 
-        private void HandleBackPressed()
-        {
-            OnRequestExit?.Invoke();
-        }
-
         private void ToggleCurrency()
         {
             if (settings == null)
@@ -552,13 +392,6 @@ namespace Crashmania.Game
 
         private void RenderPlayers(IReadOnlyList<CrashPlayerBet> bets)
         {
-            latestPlayerBets.Clear();
-            latestPlayerBets.AddRange(bets);
-            RenderPlayersIntoActiveLayout();
-        }
-
-        private void RenderPlayersIntoActiveLayout()
-        {
             if (playerRowsContent == null || playerRowPrefab == null)
             {
                 return;
@@ -566,17 +399,14 @@ namespace Crashmania.Game
 
             foreach (var row in playerRows)
             {
-                if (row != null)
-                {
-                    DestroyRuntimeObject(row);
-                }
+                Destroy(row);
             }
 
             playerRows.Clear();
-            var count = Mathf.Min(8, latestPlayerBets.Count);
+            var count = Mathf.Min(8, bets.Count);
             for (var i = 0; i < count; i++)
             {
-                var bet = latestPlayerBets[i];
+                var bet = bets[i];
                 var row = Instantiate(playerRowPrefab, playerRowsContent);
                 row.SetActive(true);
                 SetText(row, "PlayerText", bet.PlayerName);
@@ -587,17 +417,8 @@ namespace Crashmania.Game
             }
         }
 
-        private void AddHistoryPill(double crashPoint, bool record)
+        private void AddHistoryPill(double crashPoint)
         {
-            if (record)
-            {
-                historyPoints.Add(crashPoint);
-                if (historyPoints.Count > 30)
-                {
-                    historyPoints.RemoveAt(0);
-                }
-            }
-
             if (historyContent == null || historyBadgePrefab == null)
             {
                 return;
@@ -615,29 +436,11 @@ namespace Crashmania.Game
             pill.transform.SetAsFirstSibling();
         }
 
-        private void RebuildHistory()
-        {
-            if (historyContent == null || historyBadgePrefab == null)
-            {
-                return;
-            }
-
-            for (var i = historyContent.childCount - 1; i >= 0; i--)
-            {
-                DestroyRuntimeObject(historyContent.GetChild(i).gameObject);
-            }
-
-            for (var i = 0; i < historyPoints.Count; i++)
-            {
-                AddHistoryPill(historyPoints[i], false);
-            }
-        }
-
         private void ResetFlightVisuals()
         {
             if (rocketTransform != null)
             {
-                rocketTransform.anchoredPosition = new Vector2(SY(-310f), SY(-190f));
+                rocketTransform.anchoredPosition = new Vector2(-310f, -190f);
                 rocketTransform.localRotation = Quaternion.Euler(0f, 0f, -8f);
             }
 
@@ -646,129 +449,14 @@ namespace Crashmania.Game
             if (scrollingGrid != null) scrollingGrid.SetSpeedFactor(1f);
         }
 
-        private void RenderCurrentState()
-        {
-            RenderTexts();
-            RenderBalance();
-            RebuildHistory();
-            RenderPlayersIntoActiveLayout();
-
-            switch (currentPhase)
-            {
-                case CrashGamePhase.Preparation:
-                    rocketAnimator?.ShowCountdown(lastCountdownSeconds);
-                    backgroundAnimator?.ShowCountdown(lastCountdownSeconds);
-                    break;
-                case CrashGamePhase.Flight:
-                    rocketAnimator?.UpdateFlight(lastMultiplierUpdate);
-                    backgroundAnimator?.UpdateFlight(lastMultiplierUpdate.Multiplier);
-                    if (rocketAnimator == null)
-                    {
-                        UpdateRocketPosition(lastMultiplierUpdate);
-                    }
-                    break;
-                case CrashGamePhase.Crashed:
-                    rocketAnimator?.ShowCrash();
-                    backgroundAnimator?.ShowCrash();
-                    break;
-                case CrashGamePhase.Intermission:
-                    rocketAnimator?.ShowIntermission();
-                    backgroundAnimator?.ShowIntermission();
-                    break;
-            }
-        }
-
-        private void RenderTexts()
-        {
-            if (titleText != null) titleText.text = currentTitle;
-            if (statusText != null) statusText.text = currentStatus;
-            if (multiplierText != null)
-            {
-                multiplierText.color = currentMultiplierColor;
-                multiplierText.text = currentMultiplierText;
-            }
-        }
-
-        private void RenderBalance()
-        {
-            if (ccBalanceText != null) ccBalanceText.text = FormatAmount(balanceCc);
-            if (scBalanceText != null) scBalanceText.text = balanceSc.ToString("0.00");
-        }
-
-        private void ResolveLayouts()
-        {
-            orientationManager ??= GetComponent<DynamicOrientationManager>();
-            if (portraitLayout == null || landscapeLayout == null)
-            {
-                foreach (var layout in GetComponentsInChildren<CrashGameLayoutView>(true))
-                {
-                    if (layout.name == "Portrait_LayoutRoot") portraitLayout ??= layout;
-                    if (layout.name == "Landscape_LayoutRoot") landscapeLayout ??= layout;
-                }
-            }
-        }
-
-        private CrashGameLayoutView ResolveActiveLayout()
-        {
-            ResolveLayouts();
-            if (orientationManager != null && orientationManager.ActiveRoot != null)
-            {
-                var layout = orientationManager.ActiveRoot.GetComponent<CrashGameLayoutView>();
-                if (layout != null)
-                {
-                    return layout;
-                }
-            }
-
-            if (portraitLayout != null && portraitLayout.gameObject.activeInHierarchy) return portraitLayout;
-            if (landscapeLayout != null && landscapeLayout.gameObject.activeInHierarchy) return landscapeLayout;
-            return portraitLayout != null ? portraitLayout : landscapeLayout;
-        }
-
-        private void ResolveFallbackReferences()
-        {
-            backButton ??= FindDeep<Button>("BackButton");
-            currencyToggleButton ??= FindDeep<Button>("CurrencyToggleButton");
-            titleText ??= FindDeep<TMP_Text>("GameTitle");
-            ccBalanceText ??= FindDeep<TMP_Text>("CCBalanceText");
-            scBalanceText ??= FindDeep<TMP_Text>("SCBalanceText");
-            multiplierText ??= FindDeep<TMP_Text>("MultiplierText");
-            statusText ??= FindDeep<TMP_Text>("StatusText");
-            rocketTransform ??= FindDeep<RectTransform>("Rocket");
-            flameParticles ??= FindDeep<ParticleSystem>("FlameParticles");
-            scrollingGrid ??= FindDeep<ScrollingGridBackground>("GridBackground");
-            rocketAnimator ??= GetComponentInChildren<CrashRocketAnimator>(true);
-            backgroundAnimator ??= GetComponentInChildren<CrashBackgroundAnimator>(true);
-            historyContent ??= FindDeep<RectTransform>("HistoryContent");
-            playerRowsContent ??= FindDeep<RectTransform>("PlayerRowsContent");
-            betPanels ??= GetComponentsInChildren<BetPanelController>(true);
-
-            if (explosionObject == null)
-            {
-                explosionObject = FindDeepGameObject("Explosion");
-            }
-        }
-
         private T FindDeep<T>(string objectName) where T : Component
         {
-            foreach (var child in GetComponentsInChildren<Transform>(true))
+            var transforms = GetComponentsInChildren<Transform>(true);
+            foreach (var child in transforms)
             {
                 if (child.name == objectName && child.TryGetComponent(out T component))
                 {
                     return component;
-                }
-            }
-
-            return null;
-        }
-
-        private GameObject FindDeepGameObject(string objectName)
-        {
-            foreach (var child in GetComponentsInChildren<Transform>(true))
-            {
-                if (child.name == objectName)
-                {
-                    return child.gameObject;
                 }
             }
 
@@ -793,43 +481,6 @@ namespace Crashmania.Game
             if (amount >= 1000000.0) return $"{amount / 1000000.0:0.#}M";
             if (amount >= 1000.0) return $"{amount / 1000.0:0.#}K";
             return amount.ToString("0");
-        }
-
-        private static void DestroyRuntimeObject(GameObject target)
-        {
-            if (target == null)
-            {
-                return;
-            }
-
-            if (Application.isPlaying)
-            {
-                Destroy(target);
-            }
-            else
-            {
-                DestroyImmediate(target);
-            }
-        }
-
-        private readonly struct BetPanelSnapshot
-        {
-            public BetPanelSnapshot(string panelId, int index, BetPanelState state, double amount, CurrencyMode currency, double multiplier)
-            {
-                PanelId = panelId;
-                Index = index;
-                State = state;
-                Amount = amount;
-                Currency = currency;
-                Multiplier = multiplier;
-            }
-
-            public string PanelId { get; }
-            public int Index { get; }
-            public BetPanelState State { get; }
-            public double Amount { get; }
-            public CurrencyMode Currency { get; }
-            public double Multiplier { get; }
         }
     }
 }

@@ -109,15 +109,14 @@ namespace Crashmania.Editor
             }
         }
 
-private static void VerifyPortraitOnly()
+        private static void VerifyPortraitOnly()
         {
-            if (PlayerSettings.defaultInterfaceOrientation != UIOrientation.AutoRotation ||
-                !PlayerSettings.allowedAutorotateToPortrait ||
-                PlayerSettings.allowedAutorotateToPortraitUpsideDown ||
-                !PlayerSettings.allowedAutorotateToLandscapeLeft ||
-                !PlayerSettings.allowedAutorotateToLandscapeRight)
+            if (PlayerSettings.defaultInterfaceOrientation != UIOrientation.Portrait ||
+                PlayerSettings.allowedAutorotateToLandscapeLeft ||
+                PlayerSettings.allowedAutorotateToLandscapeRight ||
+                PlayerSettings.allowedAutorotateToPortraitUpsideDown)
             {
-                throw new InvalidOperationException("iOS orientation settings must allow Game landscape while runtime policy locks all non-game scenes to portrait.");
+                throw new InvalidOperationException("iOS orientation settings must be portrait-only.");
             }
         }
 
