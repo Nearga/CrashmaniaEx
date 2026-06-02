@@ -114,6 +114,16 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 - Do not reintroduce layout builder scripts for Phase 5-style scene work.
 - If Unity MCP or the editor is unavailable, stale, compiling, or broken, tell the user exactly what is blocking safe work.
 
-## Known Solutions
+## Technical Integrity & Efficiency Mandates
 
-Before investigating a bug or issue, check `Project/docs/project_solutions.md`. It contains a log of previously diagnosed problems and their verified fixes. If you diagnose and fix a new issue, append it to that file in the same format.
+### 1. UI Reconstruction Policy
+- **Threshold for Reconstruction**: If a UI component (e.g., TextMesh Pro, Button) fails to render or behave correctly after two surgical property edits, **do not continue patching**. Immediately destroy the component and recreate it from scratch via script. This bypasses hidden serialization corruption.
+- **Prefab Synchronicity**: Always verify if scene instances are disconnected from their source prefabs (`PrefabUtility.GetPrefabInstanceStatus`). If disconnected and corrupted, delete and re-instantiate from the prefab rather than attempting to fix overrides.
+
+### 2. Asset Health Verification
+- **Font Sanity Checks**: Before implementing features using project font assets, perform a 1-turn "sanity check" by creating a temporary `GameObject` with the font to ensure atlas textures and materials are valid and generating meshes.
+- **Batch Reference Binding**: Use single-execution "Bootstrap" scripts to find and link multiple serialized references in a component, rather than making sequential tool calls. This reduces tool-overhead and prevents partial state errors.
+
+### 3. Verification Rigor
+- **Mesh Validation**: When verifying text visibility, use `execute_code` to check `mesh.vertexCount > 0`. Never rely solely on screenshots if the rendering pipeline is suspect.
+- **Redundancy Cleanup**: After any scene-level re-instantiation, explicitly search for and delete duplicate GameObjects by name or component type to prevent "ghost" UI elements.

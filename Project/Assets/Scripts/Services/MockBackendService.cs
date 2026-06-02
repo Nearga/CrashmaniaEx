@@ -187,7 +187,8 @@ namespace Crashmania.Services
                 BetAmount = amount,
                 Currency = currency,
                 PanelId = panelId,
-                IsLocalPlayer = true
+                IsLocalPlayer = true,
+                AutoCashOutMultiplier = autoCashOutMultiplier
             };
 
             localBets[panelId] = bet;
@@ -329,6 +330,21 @@ namespace Crashmania.Services
                     bet.IsCashedOut = true;
                     bet.Multiplier = multiplier;
                     bet.WinAmount = Math.Floor(bet.BetAmount * multiplier);
+                }
+            }
+
+            // Auto-cashout local player bets when multiplier reaches their configured threshold
+            foreach (var kvp in localBets)
+            {
+                var bet = kvp.Value;
+                if (bet.IsCashedOut || !bet.AutoCashOutMultiplier.HasValue)
+                {
+                    continue;
+                }
+
+                if (multiplier >= bet.AutoCashOutMultiplier.Value)
+                {
+                    ResolveBet(bet, true, multiplier);
                 }
             }
 

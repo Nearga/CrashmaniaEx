@@ -31,6 +31,34 @@ namespace Crashmania.Models
         public bool IsCashedOut;
         public bool IsLocalPlayer;
         public string PanelId;
+        public double? AutoCashOutMultiplier;
+    }
+
+    [Serializable]
+    public sealed class AutoplaySettings
+    {
+        public bool Enabled;
+        public int SelectedRoundCountIndex; // 0=∞, 1=10, 2=25, 3=50, 4=100
+        public int RemainingRounds = -1;    // -1 = infinite
+        public double CashOutMultiplier = 1.5;
+
+        public static readonly int[] RoundCounts = { -1, 10, 25, 50, 100 };
+        public const double MinCashOutMultiplier = 1.1;
+        public const double CashOutStep = 0.1;
+        public const double MaxCashOutMultiplier = 100.0;
+
+        public int GetRoundCount()
+        {
+            return RoundCounts[SelectedRoundCountIndex];
+        }
+
+        public void Reset()
+        {
+            Enabled = false;
+            SelectedRoundCountIndex = 0;
+            RemainingRounds = -1;
+            CashOutMultiplier = 1.5;
+        }
     }
 
     public readonly struct CrashCountdownEvent

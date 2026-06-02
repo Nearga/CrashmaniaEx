@@ -169,6 +169,7 @@ namespace Crashmania.Game
                 if (panel == null) continue;
                 panel.BetAccepted -= OnBetAccepted;
                 panel.BetCancelled -= OnBetCancelled;
+                panel.ResetAutoplay();
             }
         }
 

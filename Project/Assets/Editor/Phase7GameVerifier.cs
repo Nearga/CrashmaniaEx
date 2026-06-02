@@ -1,7 +1,8 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
-using Crashmania.Game;
+using Crashmania.Game;using Crashmania.Models;
+
 using Crashmania.PureMvc.Commands.Game;
 using Crashmania.PureMvc.Commands.Lobby;
 using Crashmania.PureMvc.Proxies;
@@ -63,6 +64,7 @@ namespace Crashmania.Editor
             VerifyTypes();
             VerifyAssets();
             VerifyScene();
+            VerifyAutoplay();
             VerifyPureMvcBoundaries();
             Debug.Log("[Phase7GameVerifier] Phase 7 game verification completed.");
         }
@@ -83,6 +85,7 @@ namespace Crashmania.Editor
             AssertType<CrashRocketAnimator>();
             AssertType<CrashBackgroundAnimator>();
             AssertType<BetPanelController>();
+            AssertType(typeof(AutoplaySettings));
         }
 
         private static void VerifyAssets()
@@ -196,6 +199,55 @@ namespace Crashmania.Editor
             {
                 throw new InvalidOperationException($"Game scene must not contain duplicate AudioListeners. Found: {audioListenerCount}");
             }
+        }
+
+        private static void VerifyAutoplay()
+        {
+            // Verify AutoplaySettings model fields
+            var settings = new AutoplaySettings();
+            if (!settings.Enabled)
+            {
+                // Default should be disabled — that's correct
+            }
+
+            if (AutoplaySettings.RoundCounts.Length != 5)
+            {
+                throw new InvalidOperationException("AutoplaySettings.RoundCounts must have 5 entries (∞, 10, 25, 50, 100).");
+            }
+
+            if (AutoplaySettings.RoundCounts[0] != -1)
+            {
+                throw new InvalidOperationException("AutoplaySettings.RoundCounts[0] must be -1 (infinite).");
+            }
+
+            if (AutoplaySettings.MinCashOutMultiplier > 1.1 || AutoplaySettings.MaxCashOutMultiplier < 100.0)
+            {
+                throw new InvalidOperationException("AutoplaySettings cash-out multiplier bounds are incorrect.");
+            }
+
+            // Verify CrashPlayerBet has AutoCashOutMultiplier field
+            var bet = new CrashPlayerBet();
+            bet.AutoCashOutMultiplier = 2.5;
+            if (bet.AutoCashOutMultiplier != 2.5)
+            {
+                throw new InvalidOperationException("CrashPlayerBet.AutoCashOutMultiplier must be settable.");
+            }
+
+            // Verify BetPanelController has ResetAutoplay method
+            var resetMethod = typeof(BetPanelController).GetMethod("ResetAutoplay");
+            if (resetMethod == null)
+            {
+                throw new InvalidOperationException("BetPanelController must have a public ResetAutoplay method for Phase 11.2.");
+            }
+
+            // Verify Autoplay property exists
+            var autoplayProp = typeof(BetPanelController).GetProperty("Autoplay");
+            if (autoplayProp == null || autoplayProp.PropertyType != typeof(AutoplaySettings))
+            {
+                throw new InvalidOperationException("BetPanelController must have an Autoplay property of type AutoplaySettings.");
+            }
+
+            Debug.Log("[Phase7GameVerifier] Phase 11.2 autoplay verification passed.");
         }
 
         private static void VerifyPureMvcBoundaries()

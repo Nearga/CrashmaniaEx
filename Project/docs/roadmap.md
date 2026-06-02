@@ -412,13 +412,42 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ---
 
-## Phase 11 — Visual Polishing
+## Phase 11 — Quality Polishing
 *Goal: Final UI/UX refinements and animation tuning.*
 
 ### 11.1 Game Scene UI Layout Refinement
 - [x] Move `ActiveBetsAccordion` under `DualBetContainer`
 - [x] Make `ActiveBetsAccordion` scrollable for large record sets
 - [x] Add header to the Game scene (reuse one from the lobby) and adjust position of `GameViewportContainer` (also, rename it from `ViewportContainer`)
+
+### 11.2 Crash Game Autoplay Submenu
+*Goal: tapping the autoplay control expands a compact bet-panel submenu that matches the reference screenshot and can repeatedly place/cash out mock Crash bets without breaking manual play.*
+- [x] Use Unity MCP Play Mode screenshots as the visual source of truth before and after implementation; verify the submenu in the active runtime bet panel, not only in the edit-mode prefab.
+- [x] Add `AutoplaySettings` data class to `CrashGameModels.cs`: enabled flag, selected round count index (0=∞, 1=10, 2=25, 3=50, 4=100), remaining rounds (-1=∞), cash-out multiplier (default 1.5x, min 1.1x, step 0.1x, max 100x).
+- [x] Add `AutoCashOutMultiplier` nullable double field to `CrashPlayerBet` model.
+- [x] Update `MockBackendService.PlaceBet()` to store `autoCashOutMultiplier` into `CrashPlayerBet.AutoCashOutMultiplier`.
+- [x] Update `MockBackendService` flight tick loop to auto-resolve local player bets when `CurrentMultiplier >= bet.AutoCashOutMultiplier`.
+- [x] Update `BetPanel.prefab` with artist-editable submenu hierarchy (initially code-created in `BetPanelController.Awake()`, to be migrated to prefab via Unity MCP):
+  - Collapsed state: existing autoplay toggle + `AUTOPLAY` label in the bottom-left of each bet panel.
+  - Expanded state: `AutoplaySubmenu` GameObject with `RoundPresets` horizontal group (∞, 10, 25, 50, 100 buttons) and `CashOutRow` ([-], value, [+] controls).
+  - Preserve existing bet amount controls, quick bet buttons, and main `BET` action button proportions.
+- [x] Add autoplay state and logic to `BetPanelController`:
+  - `[SerializeField]` refs for submenu GameObject, round preset buttons, cash-out multiplier text, and increment/decrement buttons.
+  - Toggle click expands/collapses submenu with 0.15s DOTween animation; selecting a preset enables autoplay and highlights the selected button.
+  - Cash-out multiplier ±buttons adjust in 0.1x steps, clamped to [1.1x, 100x].
+  - Auto-place during PREPARATION when autoplay enabled and panel is Idle (immediately on `OnCountdown` transition to Idle).
+  - Auto-cashout during FLIGHT when `currentMultiplier >= autoplay.CashOutMultiplier`.
+  - After round resolution, decrement finite round counts; stop at zero; infinite continues.
+  - Manual cancel/cashout/disable toggle → cancel bet if Pending, cash out if InFlight, then deterministic Idle state.
+  - New public `ResetAutoplay()` method for clean shutdown.
+- [x] Update `CrashGameController.Shutdown()` to call `panel.ResetAutoplay()` on each bet panel.
+- [x] Keep PureMVC boundaries clean: `BetPanelController` remains a passive UI/game component; no direct facade access.
+- [x] Add verification coverage to `Crashmania/Verify Phase 7 Game` or a Phase 11 verifier for the submenu hierarchy, required button references, CanvasScaler policy, and two bet-panel instances.
+- [x] Run Play Mode validation at `1170 x 2532` and a smaller portrait size:
+  - open submenu, choose `10`, adjust cash-out multiplier, let one round auto-place and auto-cash-out;
+  - verify finite count decrements, infinity does not decrement, manual disable stops new bets, and Back-to-Lobby clears autoplay state;
+  - check console in Edit and Play Mode after script/prefab changes and fix all new warnings/errors.
+- [x] Migrate code-created submenu hierarchy to `BetPanel.prefab` via Unity MCP for artist editability.
 
 
 ---
