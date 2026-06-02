@@ -15,10 +15,18 @@ namespace Crashmania.Game
         [SerializeField] private Graphic speedLines;
         [SerializeField] private Graphic crashTint;
 
+        [Header("Moon Preparation Background")]
+        [SerializeField] private Vector2 moonPlanetFlightOffset = new(-96f, -420f);
+        [SerializeField] private Vector2 moonGroundFlightOffset = new(-150f, -640f);
+        [SerializeField] private float launchMoonProgress = 0.18f;
+        [SerializeField] private float moonFlightMultiplierRange = 7f;
+
         private Vector2 asteroidBasePosition;
         private Vector2 starBasePosition;
         private Vector2 planetBasePosition;
         private Vector2 groundBasePosition;
+        private CanvasGroup planetGroup;
+        private CanvasGroup groundOrMoonGroup;
         private bool isCountdownActive;
         private float countdownSecondsRemaining;
 
@@ -28,6 +36,8 @@ namespace Crashmania.Game
             starBasePosition = GetPosition(stars);
             planetBasePosition = GetPosition(planet);
             groundBasePosition = GetPosition(groundOrMoonLayer);
+            planetGroup = GetOrAddCanvasGroup(planet);
+            groundOrMoonGroup = GetOrAddCanvasGroup(groundOrMoonLayer);
             ShowCountdown(8f);
         }
 
@@ -57,6 +67,8 @@ namespace Crashmania.Game
                 Fade(flightSpaceBackground, 0.75f, 0.2f);
                 Fade(speedLines, 0f, 0.1f);
                 Fade(crashTint, 0f, 0.1f);
+                FadeGroup(planetGroup, 0f, 0.1f);
+                FadeGroup(groundOrMoonGroup, 1f, 0.1f);
             }
 
             AnimateCountdownLayers();
@@ -70,9 +82,16 @@ namespace Crashmania.Game
             Fade(countdownBackground, 0.15f, 0.35f);
             Fade(flightSpaceBackground, 1f, 0.25f);
             Fade(speedLines, 0.24f, 0.25f);
+            FadeGroup(planetGroup, 1f, 0.35f);
+            FadeGroup(groundOrMoonGroup, 0.15f, 0.45f);
             if (groundOrMoonLayer != null)
             {
-                groundOrMoonLayer.DOAnchorPos(groundBasePosition + new Vector2(-24f, -32f), 0.45f).SetEase(Ease.OutSine);
+                groundOrMoonLayer.DOAnchorPos(GetMoonGroundPosition(launchMoonProgress), 0.55f).SetEase(Ease.OutSine);
+            }
+
+            if (planet != null)
+            {
+                planet.DOAnchorPos(GetMoonPlanetPosition(launchMoonProgress), 0.55f).SetEase(Ease.OutSine);
             }
         }
 
@@ -83,11 +102,16 @@ namespace Crashmania.Game
             Fade(flightSpaceBackground, 1f, 0.08f);
             Fade(speedLines, Mathf.Lerp(0.18f, 0.48f, t), 0.08f);
             Fade(crashTint, 0f, 0.08f);
+            FadeGroup(planetGroup, 1f, 0.08f);
+            FadeGroup(groundOrMoonGroup, Mathf.Lerp(0.1f, 0f, GetMoonFlightProgress(multiplier)), 0.08f);
+
+            planet?.DOKill();
+            groundOrMoonLayer?.DOKill();
 
             SetPosition(stars, starBasePosition + new Vector2(-120f * t + Mathf.Sin(Time.time * 0.7f) * 8f, -36f * t));
             SetPosition(asteroids, asteroidBasePosition + new Vector2(-210f * t + Mathf.Sin(Time.time * 1.1f) * 18f, -82f * t));
-            SetPosition(planet, planetBasePosition + new Vector2(-84f * t, -42f * t));
-            SetPosition(groundOrMoonLayer, groundBasePosition + new Vector2(-170f * t, -90f * t));
+            SetPosition(planet, GetMoonPlanetPosition(GetMoonFlightProgress(multiplier)));
+            SetPosition(groundOrMoonLayer, GetMoonGroundPosition(GetMoonFlightProgress(multiplier)));
         }
 
         public void ShowCrash()
@@ -96,6 +120,7 @@ namespace Crashmania.Game
             KillTweens();
             Fade(speedLines, 0f, 0.12f);
             Fade(crashTint, 0.42f, 0.1f);
+            FadeGroup(groundOrMoonGroup, 0f, 0.1f);
             if (asteroids != null)
             {
                 asteroids.DOShakeAnchorPos(0.18f, 18f, 12, 80f);
@@ -112,6 +137,7 @@ namespace Crashmania.Game
             isCountdownActive = false;
             Fade(crashTint, 0f, 0.35f);
             Fade(speedLines, 0f, 0.2f);
+            FadeGroup(groundOrMoonGroup, 0f, 0.2f);
         }
 
         private void AnimateCountdownLayers()
@@ -121,6 +147,24 @@ namespace Crashmania.Game
             SetPosition(asteroids, asteroidBasePosition + new Vector2(Mathf.Sin(time * 0.5f) * 16f, Mathf.Cos(time * 0.42f) * 8f));
             SetPosition(planet, planetBasePosition + new Vector2(Mathf.Sin(time * 0.18f) * 5f, Mathf.Cos(time * 0.16f) * 3f));
             SetPosition(groundOrMoonLayer, groundBasePosition + new Vector2(Mathf.Sin(time * 0.2f) * 10f, Mathf.Cos(time * 0.18f) * 5f));
+        }
+
+        private Vector2 GetMoonPlanetPosition(float progress)
+        {
+            var eased = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(progress));
+            return planetBasePosition + (moonPlanetFlightOffset * eased);
+        }
+
+        private Vector2 GetMoonGroundPosition(float progress)
+        {
+            var eased = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(progress));
+            return groundBasePosition + (moonGroundFlightOffset * eased);
+        }
+
+        private float GetMoonFlightProgress(double multiplier)
+        {
+            var range = Mathf.Max(0.1f, moonFlightMultiplierRange);
+            return Mathf.Clamp01(launchMoonProgress + (float)((multiplier - 1.0) / range));
         }
 
         private void ApplyCountdownUrgency()
@@ -156,6 +200,32 @@ namespace Crashmania.Game
             graphic.DOFade(Mathf.Clamp01(alpha), duration);
         }
 
+        private static void FadeGroup(CanvasGroup group, float alpha, float duration)
+        {
+            if (group == null)
+            {
+                return;
+            }
+
+            group.DOKill();
+            group.DOFade(Mathf.Clamp01(alpha), duration);
+        }
+
+        private static CanvasGroup GetOrAddCanvasGroup(RectTransform target)
+        {
+            if (target == null)
+            {
+                return null;
+            }
+
+            if (!target.TryGetComponent(out CanvasGroup group))
+            {
+                group = target.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            return group;
+        }
+
         private void KillTweens()
         {
             countdownBackground?.DOKill();
@@ -166,6 +236,8 @@ namespace Crashmania.Game
             stars?.DOKill();
             planet?.DOKill();
             groundOrMoonLayer?.DOKill();
+            planetGroup?.DOKill();
+            groundOrMoonGroup?.DOKill();
         }
     }
 }

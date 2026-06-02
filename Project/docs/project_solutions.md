@@ -242,6 +242,79 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 
 **Verified**: 2026-06-01, Game scene. Captured Play Mode screenshot `Assets/Screenshots/game_after_layout_play_retry.png`, ran `Crashmania/Verify Phase 7 Game`, and confirmed console clean after clearing MCP/tooling log noise.
 
+---
 
+## Game Starfield Not Visible After Source-Asset Swap
 
+**Symptom**:
+- The Game scene background appeared to have no visible stars.
+- The saved verification artifact `Assets/Screenshots/game_intro_stars_mountains_play_retry.png` also did not plainly show stars.
 
+**Root cause**:
+- `GameViewportContainer/Stars` used the exported `BG` sprite from `IntroScreen.png`, but it rendered at sibling index 2.
+- The blue/slate flight tint layers and `GridBackground` rendered later at sibling indices 7-10 with significant opacity, covering and dimming the starfield.
+- The original `BG` sprite also includes a dark opaque background, so simply moving it above the bands would darken the whole game viewport instead of only restoring stars.
+
+**Fix**:
+- Created `Assets/Resources/UI/Game/Extracted/Texture2D/IntroScreen_StarsOnly.png`, a transparent star-only overlay derived from the exported `IntroScreen.png` `BG` sprite rect.
+- Assigned the transparent overlay to `GameViewportContainer/Stars`.
+- Moved `Stars` to render after `GridBackground` but before `HistoryContent`, `MultiplierText`, `StatusText`, and `Rocket`.
+
+**Verified**: 2026-06-02, Game scene. `Stars` now renders above the tint/grid layers using the transparent source-derived overlay. Reopened Play Mode screenshot artifact `Assets/Screenshots/game_intro_stars_mountains_play_retry.png` and confirmed the stars are plainly visible. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing screenshot/capture render backend noise.
+
+---
+
+## Game Moon Background Hidden During Preparation / Not Escaping During Flight
+
+**Symptom**:
+- The moon/horizon background was not clearly visible during the preparation/countdown phase.
+- When launch/flight was forced, the moon layer could remain near the preparation position instead of moving down like the rocket was leaving the moon surface.
+
+**Root cause**:
+- `GroundOrMoonLayer` rendered under the blue/slate tint and grid layers, so the clean moon/horizon art was muted.
+- Moving the rectangular `Planet` layer above the tints exposed it as a large UI rectangle, so it was not suitable as the visible foreground moon layer.
+- `CrashBackgroundAnimator.ShowLaunch()` started DOTween anchor-position tweens for the moon layers; `UpdateFlight()` then set flight positions while those launch tweens could continue and pull the layers back upward.
+
+**Fix**:
+- Kept `Planet` under the tint stack and moved `GroundOrMoonLayer` above `GridBackground`, with `Stars` above it and foreground UI still above both.
+- Added explicit moon flight offsets to `CrashBackgroundAnimator`: countdown keeps the moon/horizon at the preparation base, launch starts a downward escape, and multiplier updates push it farther down.
+- Killed `planet` and `groundOrMoonLayer` tweens at the start of `UpdateFlight()` before applying multiplier-driven positions.
+
+**Verified**: 2026-06-02, Game scene. Reopened Play Mode screenshot artifact `Assets/Screenshots/game_moon_preparation_play_retry.png` and confirmed the moon/horizon is visible during preparation. Forced `ShowLaunch()` + `UpdateFlight(8.0)`, waited long enough for the old tween race to recur, and confirmed live positions remained at `GroundOrMoonLayer=(-150, -640)` and `Planet=(-96, -420)`. Reopened `Assets/Screenshots/game_moon_flight_play_verified.png` and confirmed the moon/horizon layer had moved down/out of the prep position. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing stale Play Mode/tooling log entries.
+
+---
+
+## Rocket Animating During Countdown Before Round Start
+
+**Symptom**:
+- During the pre-round countdown/preparation phase, the rocket bobbed/rotated, pulsed its glow, and played flame particles before the round had started.
+
+**Root cause**:
+- `CrashRocketAnimator.ShowCountdown()` started `EnsureIdleTween()`, enabled a pulsing `RocketGlow`, and played `FlameParticles`.
+- Those effects made the rocket look like it was already launching during preparation.
+
+**Fix**:
+- Changed `ShowCountdown()` to kill active rocket tweens, park the rocket at `countdownAnchoredPosition`, reset rotation/scale, hide the glow, and stop/clear flame particles.
+- Left `ShowLaunch()` and `UpdateFlight()` responsible for starting flame, glow, movement, rotation, and scale changes after the round starts.
+
+**Verified**: 2026-06-02, Game scene. In Play Mode, forced `ShowCountdown(6f)` and confirmed immediately and after a wait that the rocket stayed at `(490, -590)`, rotation `(0, 0, 0)`, scale `(1, 1, 1)`, `flamePlaying=false`, `glowActive=false`, and no DOTween activity on the rocket/glow. Forced `ShowLaunch()` afterward and confirmed launch still moved the rocket to `(520, -515)` with flame active. Reopened screenshot artifact `Assets/Screenshots/game_rocket_static_countdown_play.png`. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully.
+
+---
+
+## Game Flight Background Clouds Mixing With Planet / Missing Debris Source
+
+**Symptom**:
+- During forced flight visual checks, the moon/cloud preparation layer could remain visually mixed with the flight-space planet.
+- The target screenshot `Research/raw/index_screenshots/03_crash_game/03_crash_game_1004_mobile.png` shows meteor/rock pieces and a tube fragment, but manual and automated source searches did not find matching standalone 2D sprites.
+
+**Root cause**:
+- `GroundOrMoonLayer` and `Planet` were both full-viewport layers without separate alpha ownership, so preparation artwork could still appear during flight.
+- `Planet` and `Asteroids` were placeholder tinted `round_history_bg` images, not recovered planet/debris art.
+- The exported source evidence contains `IntroScreen.png` atlas art and primitive mesh names (`Sphere`, `Icosphere`, `Cylinder`, `pCylinder1`) but no named meteor, asteroid, tube, pipe, or debris sprites.
+
+**Fix**:
+- Added CanvasGroup control in `CrashBackgroundAnimator` so countdown shows `GroundOrMoonLayer` and hides `Planet`, while launch/flight fades `GroundOrMoonLayer` out and `Planet` in.
+- Added `Assets/Resources/UI/Game/Extracted/Texture2D/IntroScreen_FlightPlanet.png`, a source-derived fallback crop from the exported `IntroScreen.png` atlas.
+- Moved `Planet` above the blue/grid overlay stack so it can render during flight without preparation clouds.
+
+**Verified**: 2026-06-02, Game scene. Forced `CrashBackgroundAnimator.ShowLaunch()` and `UpdateFlight(8.0)` in Play Mode and reopened `Assets/Screenshots/game_background_forced_flight_planet_final_attempt.png`; the preparation cloud/mountain layer was no longer visible over the flight planet. The exact tube/rock/meteor pieces remain a source-asset blocker: no standalone matching sprites were found, so no screenshot-cropped or invented debris assets were added.

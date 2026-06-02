@@ -71,21 +71,18 @@ namespace Crashmania.Game
                 optionalSpineRoot.SetActive(false);
             }
 
-            SetGlowVisible(true, 0.18f);
+            KillTweens();
+            SetGlowVisible(false, 0f);
             rocketTransform.DOKill();
             rocketTransform.anchoredPosition = countdownAnchoredPosition;
             rocketTransform.localRotation = Quaternion.Euler(0f, 0f, countdownRotationDegrees);
             rocketTransform.localScale = Vector3.one;
-            EnsureIdleTween(secondsRemaining);
 
             if (flameParticles != null)
             {
                 var emission = flameParticles.emission;
-                emission.rateOverTime = 28f;
-                if (!flameParticles.isPlaying)
-                {
-                    flameParticles.Play();
-                }
+                emission.rateOverTime = 0f;
+                flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
         }
 

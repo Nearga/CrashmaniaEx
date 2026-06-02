@@ -202,7 +202,7 @@ namespace Crashmania.Game
                 ResetCounterTransforms();
             }
 
-            if (statusText != null) statusText.text = $"NEXT ROUND";
+            if (statusText != null) statusText.text = $"NEXT ROUND IN";
             if (multiplierText != null)
             {
                 multiplierText.color = Color.white;
@@ -327,7 +327,7 @@ namespace Crashmania.Game
 
         private void OnRoundEnded(CrashRoundEndedEvent ended)
         {
-            if (statusText != null) statusText.text = "CRASHED";
+            if (statusText != null) statusText.text = "";
             if (multiplierText != null)
             {
                 multiplierText.transform.DOKill();
