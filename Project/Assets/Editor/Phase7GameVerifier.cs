@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
-using Crashmania.Game;using Crashmania.Models;
-
+using Crashmania.Game;
+using Crashmania.Models;
 using Crashmania.PureMvc.Commands.Game;
 using Crashmania.PureMvc.Commands.Lobby;
 using Crashmania.PureMvc.Proxies;
@@ -10,6 +10,7 @@ using Crashmania.PureMvc.Scenes;
 using Crashmania.Services;
 using Crashmania.UI.Components;
 using Crashmania.UI.Game;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -42,6 +43,15 @@ namespace Crashmania.Editor
         };
 
         private const string BetPanelPrefabPath = "Assets/Resources/UI/Prefabs/BetPanel.prefab";
+
+        private static readonly string[] ApprovedFontAssetPaths =
+        {
+            "Assets/UI/Fonts/TMP/Murecho-Regular SDF.asset",
+            "Assets/UI/Fonts/TMP/Murecho-SemiBold SDF.asset",
+            "Assets/UI/Fonts/TMP/Murecho-Bold SDF.asset",
+            "Assets/UI/Fonts/TMP/Murecho-Black SDF.asset",
+            "Assets/UI/Fonts/TMP/SairaCondensed-Black SDF.asset"
+        };
 
         private static readonly string[] RequiredScenePaths =
         {
@@ -90,6 +100,8 @@ namespace Crashmania.Editor
 
         private static void VerifyAssets()
         {
+            AssertApprovedFontAssets();
+
             var betPanelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BetPanelPrefabPath);
             if (betPanelPrefab == null)
             {
@@ -104,6 +116,7 @@ namespace Crashmania.Editor
             AssertImportedSprite("RocketDreams.asset");
             AssertImportedSprite("Top Bar-coin_crash.asset");
             AssertImportedSprite("Top Bar-coin_sweep.asset");
+            AssertPrefabTextFonts(betPanelPrefab, BetPanelPrefabPath);
         }
 
         private static void VerifyScene()
@@ -181,6 +194,7 @@ namespace Crashmania.Editor
             }
 
             AssertAnimationFidelityObjects(scene, canvas);
+            AssertSceneTextFonts(scene, canvas);
 
             var eventSystemCount = 0;
             var audioListenerCount = 0;
@@ -199,6 +213,157 @@ namespace Crashmania.Editor
             {
                 throw new InvalidOperationException($"Game scene must not contain duplicate AudioListeners. Found: {audioListenerCount}");
             }
+        }
+
+        private static void AssertApprovedFontAssets()
+        {
+            foreach (var path in ApprovedFontAssetPaths)
+            {
+                var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+                if (font == null)
+                {
+                    throw new InvalidOperationException($"Missing approved TMP font asset: {path}");
+                }
+
+                AssertFontAssetHealth(font, path);
+                AssertFontCanGenerateMesh(font, path);
+            }
+        }
+
+        private static void AssertFontAssetHealth(TMP_FontAsset font, string context)
+        {
+            if (font.atlasTextures == null || font.atlasTextures.Length == 0 || font.atlasTextures[0] == null)
+            {
+                throw new InvalidOperationException($"{context} has no valid TMP atlas texture.");
+            }
+
+            if (font.material == null)
+            {
+                throw new InvalidOperationException($"{context} has no TMP material.");
+            }
+
+            if (!font.material.HasProperty("_MainTex") || font.material.GetTexture("_MainTex") == null)
+            {
+                throw new InvalidOperationException($"{context} TMP material has no _MainTex.");
+            }
+
+            if (font.characterTable == null || font.characterTable.Count == 0 ||
+                font.glyphTable == null || font.glyphTable.Count == 0)
+            {
+                throw new InvalidOperationException($"{context} has no TMP character/glyph data.");
+            }
+        }
+
+        private static void AssertFontCanGenerateMesh(TMP_FontAsset font, string context)
+        {
+            var canvasObject = new GameObject("TMP Font Sanity Canvas", typeof(RectTransform), typeof(Canvas));
+            canvasObject.hideFlags = HideFlags.HideAndDontSave;
+            var canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            var textObject = new GameObject("TMP Font Sanity Text", typeof(RectTransform));
+            textObject.hideFlags = HideFlags.HideAndDontSave;
+            textObject.transform.SetParent(canvasObject.transform, false);
+
+            try
+            {
+                var text = textObject.AddComponent<TextMeshProUGUI>();
+                text.font = font;
+                text.fontSharedMaterial = font.material;
+                text.text = "ABC123 1.25x BET + -";
+                text.fontSize = 32f;
+                text.rectTransform.sizeDelta = new Vector2(600f, 120f);
+                text.ForceMeshUpdate(true, true);
+
+                if (text.mesh == null || text.mesh.vertexCount == 0)
+                {
+                    throw new InvalidOperationException($"{context} failed TMP mesh generation.");
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(textObject);
+                UnityEngine.Object.DestroyImmediate(canvasObject);
+            }
+        }
+
+        private static void AssertPrefabTextFonts(GameObject prefab, string context)
+        {
+            foreach (var text in prefab.GetComponentsInChildren<TMP_Text>(true))
+            {
+                AssertTextUsesApprovedFont(text, $"{context}/{GetTransformPath(text.transform, prefab.transform)}", validateMesh: false);
+            }
+        }
+
+        private static void AssertSceneTextFonts(Scene scene, GameObject canvas)
+        {
+            foreach (var text in canvas.GetComponentsInChildren<TMP_Text>(true))
+            {
+                AssertTextUsesApprovedFont(text, $"{scene.path}/{GetTransformPath(text.transform, canvas.transform)}", validateMesh: true);
+            }
+        }
+
+        private static void AssertTextUsesApprovedFont(TMP_Text text, string context, bool validateMesh)
+        {
+            if (text.font == null)
+            {
+                throw new InvalidOperationException($"{context} has no TMP font asset.");
+            }
+
+            var path = AssetDatabase.GetAssetPath(text.font);
+            if (Array.IndexOf(ApprovedFontAssetPaths, path) < 0)
+            {
+                throw new InvalidOperationException($"{context} uses non-approved TMP font '{text.font.name}' at '{path}'.");
+            }
+
+            AssertFontAssetHealth(text.font, context);
+
+            if (text.fontSharedMaterial == null)
+            {
+                throw new InvalidOperationException($"{context} has no TMP shared material assigned.");
+            }
+
+            if (!text.fontSharedMaterial.HasProperty("_MainTex") || text.fontSharedMaterial.GetTexture("_MainTex") == null)
+            {
+                throw new InvalidOperationException($"{context} TMP shared material has no _MainTex.");
+            }
+
+            if (!validateMesh || !text.gameObject.activeInHierarchy || string.IsNullOrEmpty(text.text))
+            {
+                return;
+            }
+
+            try
+            {
+                text.ForceMeshUpdate(true, true);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"{context} failed TMP mesh update: {ex.Message}", ex);
+            }
+
+            if (text.mesh == null || text.mesh.vertexCount == 0)
+            {
+                throw new InvalidOperationException($"{context} generated an empty TMP mesh.");
+            }
+        }
+
+        private static string GetTransformPath(Transform target, Transform root)
+        {
+            var path = target.name;
+            var current = target.parent;
+            while (current != null && current != root.parent)
+            {
+                path = current.name + "/" + path;
+                if (current == root)
+                {
+                    break;
+                }
+
+                current = current.parent;
+            }
+
+            return path;
         }
 
         private static void VerifyAutoplay()

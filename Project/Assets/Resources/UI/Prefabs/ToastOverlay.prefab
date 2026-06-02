@@ -205,6 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d27205145d5749aaadb74c8d07284a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.ToastView
+  panel: {fileID: 0}
+  messageText: {fileID: 0}
 --- !u!1 &7802800909410273151
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,8 +274,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fc80f5676eb2744b7bd28a3eaeabe1f7, type: 2}
+  m_sharedMaterial: {fileID: 362605726687966965, guid: fc80f5676eb2744b7bd28a3eaeabe1f7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

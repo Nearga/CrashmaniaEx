@@ -1286,7 +1286,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_UseReflectionProbes: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -1391,8 +1391,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -1516,8 +1532,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -1641,8 +1673,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -1772,9 +1820,21 @@ PrefabInstance:
       propertyPath: m_text
       value: Top 10 Games
       objectReference: {fileID: 0}
+    - target: {fileID: 1916328201059881435, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 2446253473251632733, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       propertyPath: m_Name
       value: Top10Carousel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4610810269610069218, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975220649557018805, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       propertyPath: m_Pivot.x
@@ -1856,37 +1916,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8344050249605343271, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6794729915399978211}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3836295075448598718}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8556563379755634770}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2510314875310191503}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2805135724808394924}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6923850680136756466}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 166560258894841745}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 349703429251525914}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4971796435570249834}
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8459338863727878135}
     m_AddedComponents:
@@ -1894,11 +1958,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4175470644605772334}
   m_SourcePrefab: {fileID: 100100000, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
---- !u!224 &2903627583150193224 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
-  m_PrefabInstance: {fileID: 2281188581732982250}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4493113032811330487 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2446253473251632733, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
@@ -1935,7 +1994,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8475546628949426369}
+    m_TransformParent: {fileID: 3246389596879582251}
     m_Modifications:
     - target: {fileID: 902851129851997667, guid: cef3da2c6643e45a78858173ee48d6d5, type: 3}
       propertyPath: m_Pivot.x
@@ -2017,10 +2076,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1674084441289443025, guid: cef3da2c6643e45a78858173ee48d6d5, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3347157664686925997, guid: cef3da2c6643e45a78858173ee48d6d5, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 18ff0c944e6844f6b8d08d8560abe295, type: 3}
+    - target: {fileID: 6444159976990597003, guid: cef3da2c6643e45a78858173ee48d6d5, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 6735351185231626013, guid: cef3da2c6643e45a78858173ee48d6d5, type: 3}
       propertyPath: m_TargetGraphic
       value: 
@@ -2056,8 +2123,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2181,8 +2264,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2312,9 +2411,21 @@ PrefabInstance:
       propertyPath: m_text
       value: Originals
       objectReference: {fileID: 0}
+    - target: {fileID: 1916328201059881435, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 2446253473251632733, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       propertyPath: m_Name
       value: OriginalsCarousel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4610810269610069218, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975220649557018805, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       propertyPath: m_Pivot.x
@@ -2396,10 +2507,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8344050249605343271, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8030454599853003592, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3190737707739247916}
     m_AddedComponents:
@@ -2437,19 +2552,30 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!224 &8475546628949426369 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4027248355878791074, guid: 8aa81a5315c2d4759bc4b371c98c1074, type: 3}
-  m_PrefabInstance: {fileID: 4790873197377759075}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5311990358995455670
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2573,8 +2699,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2698,8 +2840,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2823,8 +2981,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10
@@ -2944,8 +3118,24 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2903627583150193224}
+    m_TransformParent: {fileID: 8131687852069932706}
     m_Modifications:
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4279555327
+      objectReference: {fileID: 0}
+    - target: {fileID: 1391585010399457522, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530531726154729188, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650135557849051470, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 3928796586580497877, guid: 40be70accef054cdd9d34f72be69333f, type: 3}
       propertyPath: m_Name
       value: GameCardTop10

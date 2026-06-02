@@ -112,6 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Lobby.PromoBannerView
   image: {fileID: 4113259028269692998}
   titleText: {fileID: 0}
+  ctaButton: {fileID: 0}
 --- !u!1 &7953753399172276478
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,8 +180,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: LUCKY TWINS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 437a96ea7e2f74212a215d3b99000b02, type: 2}
+  m_sharedMaterial: {fileID: 4393960670316037944, guid: 7140e470dd9ee40cbba7494e375b36a3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
