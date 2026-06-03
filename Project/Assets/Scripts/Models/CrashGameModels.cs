@@ -37,9 +37,9 @@ namespace Crashmania.Models
     [Serializable]
     public sealed class AutoplaySettings
     {
-        public bool Enabled;
+        public bool Enabled; // Enables auto cashout for manually placed bets.
         public int SelectedRoundCountIndex; // 0=∞, 1=10, 2=25, 3=50, 4=100
-        public int RemainingRounds = -1;    // -1 = infinite
+        public int RemainingRounds = -1;    // Remaining auto-cashout-armed bets; -1 = infinite.
         public double CashOutMultiplier = 1.5;
 
         public static readonly int[] RoundCounts = { -1, 10, 25, 50, 100 };

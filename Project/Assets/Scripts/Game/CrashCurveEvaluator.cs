@@ -5,7 +5,7 @@ namespace Crashmania.Game
     public static class CrashCurveEvaluator
     {
         private const double BaseMultiplier = 1.006;
-        private const double TicksPerSecond = 100.0;
+        private const double TicksPerSecond = 10.0;
 
         public static double GetMultiplierAtTime(float seconds)
         {

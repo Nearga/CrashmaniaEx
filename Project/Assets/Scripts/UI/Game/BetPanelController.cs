@@ -23,7 +23,7 @@ namespace Crashmania.UI.Game
         [SerializeField] private double betAmount = 6000.0;
         [SerializeField] private double stepAmount = 1000.0;
 
-                [Header("Autoplay Submenu")]
+        [Header("Autoplay Submenu")]
         [SerializeField] private GameObject autoplaySubmenu;
         [SerializeField] private Button roundInfinityButton;
         [SerializeField] private Button round10Button;
@@ -34,12 +34,14 @@ namespace Crashmania.UI.Game
         [SerializeField] private Button cashOutDecrementButton;
         [SerializeField] private Button cashOutIncrementButton;
         [SerializeField] private Image[] roundPresetBackgrounds;
+        [SerializeField] private Button autoplayCloseButton;
 
         private ICrashGameService service;
         private CurrencyMode currency = CurrencyMode.CC;
         private BetPanelState state = BetPanelState.Idle;
         private double currentMultiplier = 1.0;
         private AutoplaySettings autoplay = new();
+        private bool activeBetUsesAutoCashOut;
 
         private const float SubmenuAnimDuration = 0.15f;
 
@@ -96,17 +98,6 @@ namespace Crashmania.UI.Game
             {
                 SetState(BetPanelState.Idle);
             }
-
-            // Auto-place bet during PREPARATION if autoplay is enabled and panel is idle
-            if (autoplay.Enabled && state == BetPanelState.Idle && service != null)
-            {
-                var cashOut = autoplay.CashOutMultiplier;
-                if (service.PlaceBet(panelId, betAmount, currency, cashOut))
-                {
-                    BetAccepted?.Invoke(betAmount, currency);
-                    SetState(BetPanelState.Pending);
-                }
-            }
         }
 
         public void OnRoundStarted()
@@ -120,15 +111,6 @@ namespace Crashmania.UI.Game
         public void OnMultiplierUpdated(double multiplier)
         {
             currentMultiplier = multiplier;
-
-            // Auto-cashout during FLIGHT when multiplier reaches configured threshold
-            if (autoplay.Enabled && state == BetPanelState.InFlight && service != null)
-            {
-                if (multiplier >= autoplay.CashOutMultiplier)
-                {
-                    service.CashOut(panelId);
-                }
-            }
 
             if (state == BetPanelState.InFlight)
             {
@@ -145,27 +127,17 @@ namespace Crashmania.UI.Game
 
             SetState(resolution.Won ? BetPanelState.Won : BetPanelState.Lost);
 
-            // After round resolution, handle autoplay round counting
-            if (autoplay.Enabled)
+            if (activeBetUsesAutoCashOut)
             {
-                if (autoplay.RemainingRounds > 0)
-                {
-                    autoplay.RemainingRounds--;
-                    if (autoplay.RemainingRounds == 0)
-                    {
-                        // Finite rounds exhausted — disable autoplay
-                        autoplay.Enabled = false;
-                        UpdateAutoplayToggleVisual(false);
-                        SetSubmenuVisible(false);
-                    }
-                }
-                // Infinite rounds (RemainingRounds == -1) continue until manually disabled
+                activeBetUsesAutoCashOut = false;
+                ConsumeAutoCashOutRound();
             }
         }
 
         public void ResetAutoplay()
         {
             autoplay.Reset();
+            activeBetUsesAutoCashOut = false;
             UpdateAutoplayToggleVisual(false);
             SetSubmenuVisible(false);
             Render();
@@ -181,8 +153,10 @@ namespace Crashmania.UI.Game
             switch (state)
             {
                 case BetPanelState.Idle:
-                    if (service.PlaceBet(panelId, betAmount, currency, autoplay.Enabled ? autoplay.CashOutMultiplier : (double?)null))
+                    var autoCashOutMultiplier = GetAutoCashOutMultiplierForNextBet();
+                    if (service.PlaceBet(panelId, betAmount, currency, autoCashOutMultiplier))
                     {
+                        activeBetUsesAutoCashOut = autoCashOutMultiplier.HasValue;
                         BetAccepted?.Invoke(betAmount, currency);
                         SetState(BetPanelState.Pending);
                     }
@@ -190,6 +164,7 @@ namespace Crashmania.UI.Game
                 case BetPanelState.Pending:
                     if (service.CancelBet(panelId))
                     {
+                        activeBetUsesAutoCashOut = false;
                         BetCancelled?.Invoke(betAmount, currency);
                         SetState(BetPanelState.Idle);
                     }
@@ -204,7 +179,7 @@ namespace Crashmania.UI.Game
         {
             if (isOn)
             {
-                // Enable autoplay with default settings
+                // Autoplay configures auto cashout for manually placed bets.
                 autoplay.Enabled = true;
                 autoplay.SelectedRoundCountIndex = 0; // ∞
                 autoplay.RemainingRounds = -1;
@@ -221,20 +196,6 @@ namespace Crashmania.UI.Game
 
         private void DisableAutoplay()
         {
-            // If currently in an active bet, cancel or cash out first
-            if (state == BetPanelState.Pending && service != null)
-            {
-                if (service.CancelBet(panelId))
-                {
-                    BetCancelled?.Invoke(betAmount, currency);
-                    SetState(BetPanelState.Idle);
-                }
-            }
-            else if (state == BetPanelState.InFlight && service != null)
-            {
-                service.CashOut(panelId);
-            }
-
             autoplay.Enabled = false;
             SetSubmenuVisible(false);
             UpdateAutoplayToggleVisual(false);
@@ -256,6 +217,30 @@ namespace Crashmania.UI.Game
                 Math.Clamp(autoplay.CashOutMultiplier + delta, AutoplaySettings.MinCashOutMultiplier, AutoplaySettings.MaxCashOutMultiplier),
                 1);
             RenderCashOutMultiplier();
+        }
+
+        private double? GetAutoCashOutMultiplierForNextBet()
+        {
+            if (!autoplay.Enabled || autoplay.RemainingRounds == 0)
+            {
+                return null;
+            }
+
+            return autoplay.CashOutMultiplier;
+        }
+
+        private void ConsumeAutoCashOutRound()
+        {
+            if (!autoplay.Enabled || autoplay.RemainingRounds <= 0)
+            {
+                return;
+            }
+
+            autoplay.RemainingRounds--;
+            if (autoplay.RemainingRounds == 0)
+            {
+                DisableAutoplay();
+            }
         }
 
         private void AdjustAmount(double delta)
@@ -407,12 +392,6 @@ namespace Crashmania.UI.Game
             }
         }
 
-        /// <summary>
-        /// Creates the autoplay submenu hierarchy programmatically.
-        /// TODO: Phase 11.2 — migrate this to BetPanel.prefab via Unity MCP for artist editability.
-        /// </summary>
-
-
         private T FindDeep<T>(string objectName) where T : Component
         {
             var transforms = GetComponentsInChildren<Transform>(true);
@@ -427,7 +406,6 @@ namespace Crashmania.UI.Game
             return null;
         }
 
-        
         private void InitializeAutoplaySubmenu()
         {
             autoplaySubmenu ??= FindDeep<Transform>("AutoplaySubmenu")?.gameObject;
@@ -436,7 +414,7 @@ namespace Crashmania.UI.Game
             round25Button ??= FindDeep<Button>("RoundPreset_2");
             round50Button ??= FindDeep<Button>("RoundPreset_3");
             round100Button ??= FindDeep<Button>("RoundPreset_4");
-            
+
             var cashOutRow = FindDeep<Transform>("CashOutRow");
             if (cashOutRow != null)
             {
@@ -464,6 +442,9 @@ namespace Crashmania.UI.Game
             if (cashOutDecrementButton != null) cashOutDecrementButton.onClick.AddListener(() => OnCashOutMultiplierChanged(-AutoplaySettings.CashOutStep));
             if (cashOutIncrementButton != null) cashOutIncrementButton.onClick.AddListener(() => OnCashOutMultiplierChanged(AutoplaySettings.CashOutStep));
 
+            autoplayCloseButton ??= FindDeep<Button>("CloseButton");
+            if (autoplayCloseButton != null) autoplayCloseButton.onClick.AddListener(DisableAutoplay);
+
             if (autoplayToggle != null)
             {
                 autoplayToggle.onValueChanged.RemoveAllListeners();
@@ -475,7 +456,8 @@ namespace Crashmania.UI.Game
                 autoplaySubmenu.SetActive(false);
             }
         }
-private static string FormatAmount(double amount)
+
+        private static string FormatAmount(double amount)
         {
             if (amount >= 1000000.0) return $"{amount / 1000000.0:0.#}M";
             if (amount >= 1000.0) return $"{amount / 1000.0:0.#}K";
