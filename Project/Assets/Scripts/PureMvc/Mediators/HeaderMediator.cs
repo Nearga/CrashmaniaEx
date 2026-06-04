@@ -20,6 +20,7 @@ namespace Crashmania.PureMvc.Mediators
         public override void OnRegister()
         {
             View.OnToggleCurrency += OnToggleCurrency;
+            View.OnBackClicked += OnBackClicked;
             
             UpdateBalances(false);
             UpdateCurrencyMode();
@@ -28,6 +29,12 @@ namespace Crashmania.PureMvc.Mediators
         public override void OnRemove()
         {
             View.OnToggleCurrency -= OnToggleCurrency;
+            View.OnBackClicked -= OnBackClicked;
+        }
+
+        private void OnBackClicked()
+        {
+            Facade.SendNotification(LobbyNotifications.ExitGame);
         }
 
         public override string[] ListNotificationInterests()

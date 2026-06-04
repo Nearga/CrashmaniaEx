@@ -62,6 +62,15 @@ namespace Crashmania.Game
         private Vector2 statusTextBasePosition;
         private int lastCountdownRoundNonce = int.MinValue;
 
+        private readonly Dictionary<string, (double amount, CurrencyMode currency)> pendingBets = new();
+        private double roundWinningsCc;
+        private double roundWinningsSc;
+
+        private Action<double, CurrencyMode> betAcceptedHandlerA;
+        private Action<double, CurrencyMode> betCancelledHandlerA;
+        private Action<double, CurrencyMode> betAcceptedHandlerB;
+        private Action<double, CurrencyMode> betCancelledHandlerB;
+
         public event Action<double, double> OnBalanceChanged;
         public event Action OnRequestExit;
 
@@ -135,8 +144,33 @@ namespace Crashmania.Game
                 var panel = betPanels[i];
                 if (panel == null) continue;
                 panel.Initialize(i == 0 ? "BetPanelA" : "BetPanelB", service, activeCurrency);
-                panel.BetAccepted += OnBetAccepted;
-                panel.BetCancelled += OnBetCancelled;
+                string pid = panel.PanelId;
+                if (i == 0)
+                {
+                    betAcceptedHandlerA = (amount, curr) => OnBetAccepted(pid, amount, curr);
+                    betCancelledHandlerA = (amount, curr) => OnBetCancelled(pid, amount, curr);
+                    panel.BetAccepted += betAcceptedHandlerA;
+                    panel.BetCancelled += betCancelledHandlerA;
+                }
+                else
+                {
+                    betAcceptedHandlerB = (amount, curr) => OnBetAccepted(pid, amount, curr);
+                    betCancelledHandlerB = (amount, curr) => OnBetCancelled(pid, amount, curr);
+                    panel.BetAccepted += betAcceptedHandlerB;
+                    panel.BetCancelled += betCancelledHandlerB;
+                }
+            }
+
+            // Find global HeaderView and bind its exit button
+            var header = FindAnyObjectByType<Crashmania.UI.Shell.HeaderView>(FindObjectsInactive.Include);
+            if (header != null)
+            {
+                var menuButton = header.transform.Find("Safe Area/Header Bar/Right Menu/Menu")?.GetComponent<Button>();
+                if (menuButton != null)
+                {
+                    menuButton.onClick.RemoveAllListeners();
+                    menuButton.onClick.AddListener(() => OnRequestExit?.Invoke());
+                }
             }
 
             ResetFlightVisuals();
@@ -164,12 +198,32 @@ namespace Crashmania.Game
                 service = null;
             }
 
-            foreach (var panel in betPanels)
+            for (var i = 0; i < betPanels.Length; i++)
             {
+                var panel = betPanels[i];
                 if (panel == null) continue;
-                panel.BetAccepted -= OnBetAccepted;
-                panel.BetCancelled -= OnBetCancelled;
+                if (i == 0)
+                {
+                    if (betAcceptedHandlerA != null) panel.BetAccepted -= betAcceptedHandlerA;
+                    if (betCancelledHandlerA != null) panel.BetCancelled -= betCancelledHandlerA;
+                }
+                else
+                {
+                    if (betAcceptedHandlerB != null) panel.BetAccepted -= betAcceptedHandlerB;
+                    if (betCancelledHandlerB != null) panel.BetCancelled -= betCancelledHandlerB;
+                }
                 panel.ResetAutoplay();
+            }
+
+            // Unbind global header exit button
+            var header = FindAnyObjectByType<Crashmania.UI.Shell.HeaderView>(FindObjectsInactive.Include);
+            if (header != null)
+            {
+                var menuButton = header.transform.Find("Safe Area/Header Bar/Right Menu/Menu")?.GetComponent<Button>();
+                if (menuButton != null)
+                {
+                    menuButton.onClick.RemoveAllListeners();
+                }
             }
         }
 
@@ -245,6 +299,32 @@ namespace Crashmania.Game
             {
                 panel?.OnRoundStarted();
             }
+
+            // Debit active bets from balance exactly at round start
+            double totalCc = 0;
+            double totalSc = 0;
+            foreach (var bet in pendingBets.Values)
+            {
+                if (bet.currency == CurrencyMode.CC)
+                {
+                    totalCc += bet.amount;
+                }
+                else
+                {
+                    totalSc += bet.amount;
+                }
+            }
+
+            if (totalCc > 0 || totalSc > 0)
+            {
+                OnBalanceChanged?.Invoke(-totalCc, -totalSc);
+            }
+
+            pendingBets.Clear();
+
+            // Reset winnings accumulator
+            roundWinningsCc = 0;
+            roundWinningsSc = 0;
         }
 
         private void OnMultiplierUpdated(CrashMultiplierEvent update)
@@ -349,6 +429,12 @@ namespace Crashmania.Game
             }
 
             AddHistoryPill(ended.CrashPoint);
+
+            // Credit winnings exactly at round end
+            if (roundWinningsCc > 0 || roundWinningsSc > 0)
+            {
+                OnBalanceChanged?.Invoke(roundWinningsCc, roundWinningsSc);
+            }
         }
 
         private void OnIntermissionStarted(int roundNonce)
@@ -369,37 +455,23 @@ namespace Crashmania.Game
             {
                 if (resolution.Currency == CurrencyMode.CC)
                 {
-                    OnBalanceChanged?.Invoke(resolution.Payout, 0.0);
+                    roundWinningsCc += resolution.Payout;
                 }
                 else
                 {
-                    OnBalanceChanged?.Invoke(0.0, resolution.Payout);
+                    roundWinningsSc += resolution.Payout;
                 }
             }
         }
 
-        private void OnBetAccepted(double amount, CurrencyMode activeCurrency)
+        private void OnBetAccepted(string panelId, double amount, CurrencyMode activeCurrency)
         {
-            if (activeCurrency == CurrencyMode.CC)
-            {
-                OnBalanceChanged?.Invoke(-amount, 0.0);
-            }
-            else
-            {
-                OnBalanceChanged?.Invoke(0.0, -amount);
-            }
+            pendingBets[panelId] = (amount, activeCurrency);
         }
 
-        private void OnBetCancelled(double amount, CurrencyMode activeCurrency)
+        private void OnBetCancelled(string panelId, double amount, CurrencyMode activeCurrency)
         {
-            if (activeCurrency == CurrencyMode.CC)
-            {
-                OnBalanceChanged?.Invoke(amount, 0.0);
-            }
-            else
-            {
-                OnBalanceChanged?.Invoke(0.0, amount);
-            }
+            pendingBets.Remove(panelId);
         }
 
         private void ToggleCurrency()

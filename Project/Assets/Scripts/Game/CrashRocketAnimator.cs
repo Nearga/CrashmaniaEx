@@ -9,14 +9,12 @@ namespace Crashmania.Game
     {
         [SerializeField] private RectTransform rocketTransform;
         [SerializeField] private Image rocketImage;
-        [SerializeField] private RectTransform rocketGlow;
-        [SerializeField] private Image rocketGlowImage;
         [SerializeField] private ParticleSystem flameParticles;
         [SerializeField] private GameObject explosionObject;
         [SerializeField] private GameObject optionalSpineRoot;
-        [SerializeField] private Vector2 countdownAnchoredPosition = new(490f, -590f);
-        [SerializeField] private Vector2 launchAnchoredPosition = new(520f, -515f);
-        [SerializeField] private Vector2 flightTargetAnchoredPosition = new(835f, -210f);
+        [SerializeField] private Vector2 countdownAnchoredPosition = new(566f, -673f);
+        [SerializeField] private Vector2 launchAnchoredPosition = new(596f, -598f);
+        [SerializeField] private Vector2 flightTargetAnchoredPosition = new(911f, -293f);
         [SerializeField] private float countdownRotationDegrees = 0f;
 
         private Sequence idleSequence;
@@ -39,6 +37,13 @@ namespace Crashmania.Game
             if (flameParticles == null && rocketTransform != null)
             {
                 flameParticles = rocketTransform.GetComponentInChildren<ParticleSystem>(true);
+            }
+
+            if (flameParticles != null)
+            {
+                var emission = flameParticles.emission;
+                emission.rateOverTime = 0f;
+                flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
         }
 
@@ -72,7 +77,6 @@ namespace Crashmania.Game
             }
 
             KillTweens();
-            SetGlowVisible(false, 0f);
             rocketTransform.DOKill();
             rocketTransform.anchoredPosition = countdownAnchoredPosition;
             rocketTransform.localRotation = Quaternion.Euler(0f, 0f, countdownRotationDegrees);
@@ -99,7 +103,6 @@ namespace Crashmania.Game
                 explosionObject.SetActive(false);
             }
 
-            SetGlowVisible(true, 0.38f);
             if (flameParticles != null)
             {
                 var emission = flameParticles.emission;
@@ -136,7 +139,6 @@ namespace Crashmania.Game
             rocketTransform.DOAnchorPos(targetPos, 0.06f).SetEase(Ease.Linear);
             rocketTransform.DORotate(new Vector3(0f, 0f, Mathf.Lerp(5f, 27f, progress)), 0.06f).SetEase(Ease.Linear);
             rocketTransform.DOScale(Vector3.one * Mathf.Lerp(1f, 1.08f, progress), 0.06f).SetEase(Ease.Linear);
-            SetGlowVisible(true, Mathf.Lerp(0.2f, 0.55f, progress));
 
             if (flameParticles != null)
             {
@@ -169,7 +171,6 @@ namespace Crashmania.Game
                 flameParticles.Stop();
             }
 
-            SetGlowVisible(false, 0f);
             if (explosionObject != null)
             {
                 explosionObject.SetActive(true);
@@ -182,10 +183,10 @@ namespace Crashmania.Game
         {
             if (flameParticles != null)
             {
-                flameParticles.Stop();
+                var emission = flameParticles.emission;
+                emission.rateOverTime = 0f;
+                flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
-
-            SetGlowVisible(false, 0f);
         }
 
         private void EnsureIdleTween(float secondsRemaining)
@@ -204,29 +205,6 @@ namespace Crashmania.Game
                 .SetLoops(-1);
         }
 
-        private void SetGlowVisible(bool visible, float alpha)
-        {
-            if (rocketGlow == null)
-            {
-                return;
-            }
-
-            rocketGlow.gameObject.SetActive(visible || alpha > 0f);
-            rocketGlow.DOKill();
-            rocketGlow.localScale = Vector3.one;
-            if (visible)
-            {
-                rocketGlow.DOScale(1.18f, 0.35f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
-            }
-
-            if (rocketGlowImage != null)
-            {
-                var color = rocketGlowImage.color;
-                color.a = Mathf.Clamp01(alpha);
-                rocketGlowImage.color = color;
-            }
-        }
-
         private void KillTweens()
         {
             idleSequence?.Kill();
@@ -234,11 +212,6 @@ namespace Crashmania.Game
             if (rocketTransform != null)
             {
                 rocketTransform.DOKill();
-            }
-
-            if (rocketGlow != null)
-            {
-                rocketGlow.DOKill();
             }
 
             if (rocketImage != null)
