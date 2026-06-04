@@ -10,11 +10,6 @@ namespace Crashmania.PureMvc.Scenes
     {
         [SerializeField] private LobbyView lobbyView;
 
-        private void Awake()
-        {
-            if (lobbyView == null) lobbyView = GetComponent<LobbyView>();
-        }
-
         public void Show(IFacade facade)
         {
             if (facade == null)

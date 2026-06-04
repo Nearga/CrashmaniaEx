@@ -523,10 +523,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Lobby.GameCardView
   button: {fileID: 6735351185231626013}
-  thumbnail: {fileID: 0}
-  nameText: {fileID: 0}
-  onlineText: {fileID: 0}
-  rankText: {fileID: 0}
+  thumbnail: {fileID: 3752850752685996176}
+  nameText: {fileID: 6444159976990597003}
+  onlineText: {fileID: 1674084441289443025}
+  rankText: {fileID: 4119125071265996262}
 --- !u!1 &7775122663745202993
 GameObject:
   m_ObjectHideFlags: 0

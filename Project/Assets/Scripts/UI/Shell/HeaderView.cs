@@ -19,11 +19,6 @@ namespace Crashmania.UI.Shell
 
         private void Awake()
         {
-            if (ccBalance == null) ccBalance = transform.Find("Safe Area/Header Bar/CC Balance/CC Value")?.GetComponent<AccumulateToBalance>();
-            if (scBalance == null) scBalance = transform.Find("Safe Area/Header Bar/SC Balance/SC Value")?.GetComponent<AccumulateToBalance>();
-            if (backButton == null) backButton = transform.Find("Safe Area/Header Bar/BackButton")?.GetComponent<UnityEngine.UI.Button>();
-            if (goldPanelRect == null) goldPanelRect = transform.Find("Safe Area/Header Bar/Gold Panel")?.GetComponent<RectTransform>();
-            
             if (toggleButton != null)
             {
                 toggleButton.onClick.AddListener(() => OnToggleCurrency?.Invoke());

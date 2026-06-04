@@ -343,11 +343,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 471e40bc974854a9a8b8dbf048117203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.HeaderView
-  ccBalance: {fileID: 0}
-  scBalance: {fileID: 0}
+  ccBalance: {fileID: 2412770626384848538}
+  scBalance: {fileID: 7279198307314376112}
   ccHighlight: {fileID: 662618670149162143}
   scHighlight: {fileID: 7218797378945876512}
   toggleButton: {fileID: 3026234147420328232}
+  backButton: {fileID: 3578046466719812711}
+  goldPanelRect: {fileID: 6407200974254944020}
 --- !u!1 &1912058367623485174
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,10 +19,6 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (button == null) button = GetComponent<Button>();
-            if (background == null) background = GetComponent<Image>();
-            if (label == null) label = transform.Find("Label")?.GetComponent<TMP_Text>();
-
             if (button != null)
             {
                 button.onClick.AddListener(OnClicked);
@@ -40,14 +36,12 @@ namespace Crashmania.UI.Lobby
         public void Bind(string id, string text, bool active)
         {
             categoryId = id;
-            if (label == null) label = transform.Find("Label")?.GetComponent<TMP_Text>();
             if (label != null) label.text = text;
             SetActive(active);
         }
 
         public void SetActive(bool active)
         {
-            if (background == null) background = GetComponent<Image>();
             if (background != null)
             {
                 // Active has solid gold/yellow background; Inactive has fully transparent background
@@ -56,7 +50,6 @@ namespace Crashmania.UI.Lobby
                     : new Color(0f, 0f, 0f, 0f);
             }
 
-            if (label == null) label = transform.Find("Label")?.GetComponent<TMP_Text>();
             if (label != null)
             {
                 label.color = active ? Color.black : Color.white;

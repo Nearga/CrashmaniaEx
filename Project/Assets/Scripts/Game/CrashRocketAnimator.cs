@@ -24,21 +24,6 @@ namespace Crashmania.Game
 
         private void Awake()
         {
-            if (rocketTransform == null)
-            {
-                rocketTransform = GetComponent<RectTransform>();
-            }
-
-            if (rocketImage == null && rocketTransform != null)
-            {
-                rocketImage = rocketTransform.GetComponent<Image>();
-            }
-
-            if (flameParticles == null && rocketTransform != null)
-            {
-                flameParticles = rocketTransform.GetComponentInChildren<ParticleSystem>(true);
-            }
-
             if (flameParticles != null)
             {
                 var emission = flameParticles.emission;

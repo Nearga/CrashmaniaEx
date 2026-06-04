@@ -19,10 +19,6 @@ namespace Crashmania.PureMvc.Scenes
         private void Awake()
         {
             gameController = gameControllerBehaviour as IGameController;
-            if (gameController == null)
-            {
-                gameController = GetComponentInChildren<IGameController>(true);
-            }
         }
 
         public void Show(IFacade activeFacade)
@@ -48,7 +44,6 @@ namespace Crashmania.PureMvc.Scenes
                 activeGameProxy.SetActiveGame(CreateDevGame(), CreateDevSession());
             }
 
-            gameController.OnRequestExit += OnRequestExit;
             gameController.OnBalanceChanged += OnBalanceChanged;
 
             var settings = facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
@@ -68,15 +63,9 @@ namespace Crashmania.PureMvc.Scenes
         {
             if (gameController != null)
             {
-                gameController.OnRequestExit -= OnRequestExit;
                 gameController.OnBalanceChanged -= OnBalanceChanged;
                 gameController.Shutdown();
             }
-        }
-
-        private void OnRequestExit()
-        {
-            facade?.SendNotification(LobbyNotifications.ExitGame);
         }
 
         private void OnBalanceChanged(double ccDelta, double scDelta)

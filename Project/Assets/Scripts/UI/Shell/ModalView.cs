@@ -20,10 +20,6 @@ namespace Crashmania.UI.Shell
 
         private void Awake()
         {
-            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
-            if (panel == null) panel = transform.Find("Modal Overlay/Modal Panel")?.GetComponent<RectTransform>();
-            if (overlayButton == null) overlayButton = transform.Find("Modal Overlay")?.GetComponent<Button>();
-
             if (overlayButton != null)
             {
                 overlayButton.onClick.RemoveAllListeners();
