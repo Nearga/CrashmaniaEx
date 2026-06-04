@@ -142,12 +142,12 @@ Review all animations against spec targets:
 - [ ] Promo banner auto-advance: 0.4s slide
 
 ### 4.4 iOS Resolution & Editor Fidelity
-- [ ] Standardize all runtime UI canvases and overlays on `1170×2532`, `Scale With Screen Size`, width match `0.0`.
-- [ ] Use Unity MCP before layout changes; verify live editor state, console, hierarchy, and screenshots.
-- [ ] Treat iPhone portrait as source of truth; use Game View presets for iPhone 14 Pro, iPhone SE 3, and optional Pro Max.
-- [ ] Apply safe area only to interactive chrome/content, not decorative full-screen backgrounds.
+- [x] Standardize scene-owned runtime UI canvases on `1170×2532`, `Scale With Screen Size`, width match `0.0`; embedded shell prefabs inherit the scene canvas.
+- [x] Use Unity MCP before layout changes; verify live editor state, console, hierarchy, and screenshots.
+- [x] Treat iPhone portrait as source of truth; validate primary Lobby/Game layouts at `1170×2532` and `750×1334`.
+- [x] Apply safe area only to interactive chrome/content in Lobby and Game, not decorative full-screen backgrounds.
 - [ ] Fix login/section image sizing from source asset aspect instead of hardcoded heights.
-- [ ] Add verifier coverage for CanvasScaler policy, iOS portrait lock, safe-area overlays, and URP/iPhone quality settings.
+- [x] Add verifier coverage for single scene canvases, CanvasScaler policy, iOS portrait lock, scene-level safe areas, and URP/iPhone quality settings.
 
 Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with width match `0.0` for portrait-first UI.
 
@@ -233,21 +233,21 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 *Goal: Header shows animated balances. Store page lists packages. Mock purchase updates balance.*
 
 ### 6.1 Balance Proxy
-- [ ] `Assets/Scripts/PureMvc/Proxies/BalanceProxy.cs` — holds `double BalanceCC`, `double BalanceSC`; exposes `Credit(cc, sc)` and `Debit(cc, sc)` — fires `BalanceUpdated` after each change
+- [x] `Assets/Scripts/PureMvc/Proxies/BalanceProxy.cs` — holds `double BalanceCC`, `double BalanceSC`; exposes `Credit(cc, sc)` and `Debit(cc, sc)` — fires `BalanceUpdated` after each change
 
 ### 6.2 Currency Toggle
-- [ ] Segmented control in header: `CC` / `SC` mode toggle
-- [ ] `SettingsProxy.cs` — holds `ActiveCurrency` enum, `MusicOn`, `SFXOn`
-- [ ] Switching mode fires `CurrencyModeChanged` → carousel/store items react to show relevant content
+- [x] Header `CC` / `SC` mode toggle updates the active balance and highlight
+- [x] `SettingsProxy.cs` — holds `ActiveCurrency` enum, `MusicOn`, `SFXOn`
+- [ ] Switching mode fires `CurrencyModeChanged`; currency-aware carousel/store presentation is deferred
 
 ### 6.3 Store Scene UI
-- [ ] `Assets/UI/Prefabs/StoreItemCard.prefab` — `SkewRect` (-5°), purple background, coin icon `Image`, CC amount `TMP_Text` (fontEmphasis), SC bonus line, black price bar with price `TMP_Text`; hover scale 1.05, tap scale 0.98
-- [ ] `StoreView.cs` / `StoreMediator.cs` — populates grid from `MockBackendService.GetStorePackages()`
-- [ ] `StoreItemFactory.cs` — instantiates cards from `StorePackage` model
+- [x] `Assets/Resources/UI/Prefabs/StoreItemCard.prefab` displays CC amount, SC bonus, and price with explicit serialized wiring
+- [x] Lobby-owned `StorePanelView` / `LobbyMediator` populate store cards from `MockBackendService.GetStorePackages()`
+- [x] `StorePanelView` instantiates reusable cards from the `StorePackage` model; a separate factory is unnecessary
 
 ### 6.4 Purchase Flow (Mock)
-- [ ] `Assets/Scripts/PureMvc/Commands/Store/PurchaseStoreItemCommand.cs` — calls `MockBackendService.PurchasePackage(id)`, receives `PurchaseResult`, calls `BalanceProxy.Credit(cc, sc)`, fires `PurchaseComplete`
-- [ ] Purchase confirmation modal: `"Are you sure?"` with Cancel / Confirm buttons; `ModalMediator` handles show/hide
+- [x] `Assets/Scripts/PureMvc/Commands/Lobby/PurchaseStoreItemCommand.cs` directly calls `MockBackendService.PurchasePackage(id)`, credits `BalanceProxy`, and fires `PurchaseComplete`
+- [ ] Purchase confirmation modal is deferred; the current mock purchase remains immediate
 
 ---
 
@@ -286,7 +286,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] `Assets/Scripts/UI/Game/BetPanelController.cs` — tracks `Idle`, `Pending`, `InFlight`, `Won`, and `Lost` states
 - [x] Action button text/colour transitions with DOTween-backed `Image` colour changes
 - [x] Runtime smoke test placed a mock bet during `Preparation`
-- [x] Polish pass: replaced current template styling with extracted bet panel art; real autoplay behavior remains deferred unless required later
+- [x] Polish pass: replaced current template styling with extracted bet panel art; full autoplay behavior is implemented in Phase 11.2
 
 ### 7.6 Crash Game Mock WebSocket Loop (`MockBackendService` extension)
 - [x] `ICrashGameService` contract added for crash loop events and local place/cancel/cashout requests
@@ -317,7 +317,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Updated `BetPanel.prefab` so future panel instances carry extracted container/button/amount art
 - [x] Extended `Crashmania/Verify Phase 7 Game` to assert imported art, assigned scene sprites, prefab art, CanvasScaler policy, and duplicate EventSystem/AudioListener safety
 - [ ] Remaining visual gap: replace the temporary extracted `rocket-start 1` crash burst with a closer explosion/VFX asset if one is identified
-- [ ] Remaining behavior gap: implement full autoplay only if later screenshots/product scope require it
+- [x] Full autoplay behavior implemented and verified in Phase 11.2
 
 
 ### 7.10 Crash Room Graphics Recovery
@@ -338,7 +338,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Added `CrashRocketAnimator` passive component for pseudo-Spine fallback: countdown idle bob, launch squash/tilt, multiplier-driven flight drift, flame intensity, glow pulse, crash hide/burst, and intermission reset
 - [x] Added `CrashBackgroundAnimator` passive component for scene-owned layered background state: countdown, flight, crash tint, intermission, and multiplier-driven parallax
 - [x] Refactored `CrashGameController` to delegate visual state to the passive animators while keeping mock crash loop, betting, balance, history, and PureMVC behavior unchanged
-- [x] Built and wired editable scene layers under `ViewportContainer`: `CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, `CrashTint`, and `Rocket/RocketGlow`
+- [x] Built and wired editable scene layers under `ViewportContainer`: `CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, and `CrashTint`
 - [x] Extended Play Mode verification with timed probes for countdown, later flight (`5.50x` / `20.65x` observed), crash, and intermission/reset frames; captured `screenshot-20260601-124420.png`, `screenshot-20260601-124441.png`, and `screenshot-20260601-124456.png`
 - [ ] Replace `rocket-start 1` crash burst with a closer original VFX asset if one is identified
 

@@ -24,28 +24,17 @@ namespace Crashmania.Editor
             "Assets/Scenes/Game.unity"
         };
 
-        private static readonly string[] CanvasPrefabPaths =
+        private static readonly string[] SafeAreaScenePaths =
         {
-            "Assets/Resources/UI/Prefabs/HeaderOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/TabBarOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/ModalManagerOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/ToastOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/LoginScreen.prefab"
-        };
-
-        private static readonly string[] SafeAreaPrefabPaths =
-        {
-            "Assets/Resources/UI/Prefabs/HeaderOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/TabBarOverlay.prefab",
-            "Assets/Resources/UI/Prefabs/ToastOverlay.prefab"
+            "Assets/Scenes/Lobby.unity",
+            "Assets/Scenes/Game.unity"
         };
 
         [MenuItem("Crashmania/Verify Phase 4.4 Resolution")]
         public static void Run()
         {
             VerifySceneCanvasScalers();
-            VerifyPrefabCanvasScalers();
-            VerifySafeAreaChrome();
+            VerifySceneSafeAreas();
             VerifyPortraitOnly();
             VerifyIPhoneQuality();
             Debug.Log("[Phase44ResolutionVerifier] Phase 4.4 resolution verification completed.");
@@ -61,52 +50,44 @@ namespace Crashmania.Editor
                     throw new InvalidOperationException($"Could not open scene: {scenePath}");
                 }
 
-                var scalers = UnityEngine.Object.FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include);
-                if (scalers.Length == 0)
+                var canvases = GetSceneComponents<Canvas>(scene);
+                if (canvases.Count != 1)
                 {
-                    throw new InvalidOperationException($"{scenePath} has no CanvasScaler.");
+                    throw new InvalidOperationException($"{scenePath} must contain exactly one scene Canvas. Found: {canvases.Count}");
                 }
 
-                foreach (var scaler in scalers)
+                var scaler = canvases[0].GetComponent<CanvasScaler>();
+                if (scaler == null)
                 {
-                    AssertCanvasScalerPolicy(scaler, scenePath);
+                    throw new InvalidOperationException($"{scenePath} root Canvas has no CanvasScaler.");
+                }
+
+                AssertCanvasScalerPolicy(scaler, scenePath);
+            }
+        }
+
+        private static void VerifySceneSafeAreas()
+        {
+            foreach (var scenePath in SafeAreaScenePaths)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath);
+                if (GetSceneComponents<SafeAreaPanel>(scene).Count == 0)
+                {
+                    throw new InvalidOperationException($"{scenePath} is missing a scene-level SafeAreaPanel for interactive chrome.");
                 }
             }
         }
 
-        private static void VerifyPrefabCanvasScalers()
+        private static System.Collections.Generic.List<T> GetSceneComponents<T>(UnityEngine.SceneManagement.Scene scene)
+            where T : Component
         {
-            foreach (var prefabPath in CanvasPrefabPaths)
+            var components = new System.Collections.Generic.List<T>();
+            foreach (var root in scene.GetRootGameObjects())
             {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                if (prefab == null)
-                {
-                    throw new InvalidOperationException($"Missing UI prefab: {prefabPath}");
-                }
-
-                var scalers = prefab.GetComponentsInChildren<CanvasScaler>(true);
-                if (scalers.Length == 0)
-                {
-                    throw new InvalidOperationException($"{prefabPath} has no CanvasScaler.");
-                }
-
-                foreach (var scaler in scalers)
-                {
-                    AssertCanvasScalerPolicy(scaler, prefabPath);
-                }
+                components.AddRange(root.GetComponentsInChildren<T>(true));
             }
-        }
 
-        private static void VerifySafeAreaChrome()
-        {
-            foreach (var prefabPath in SafeAreaPrefabPaths)
-            {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                if (prefab == null || prefab.GetComponentInChildren<SafeAreaPanel>(true) == null)
-                {
-                    throw new InvalidOperationException($"{prefabPath} is missing SafeAreaPanel on interactive chrome.");
-                }
-            }
+            return components;
         }
 
         private static void VerifyPortraitOnly()
