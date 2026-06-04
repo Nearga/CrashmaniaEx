@@ -1,0 +1,31 @@
+{
+    "name": "Crashmania.Runtime",
+    "rootNamespace": "Crashmania",
+    "references": [
+        "UniTask",
+        "UniTask.DOTween",
+        "UniTask.TextMeshPro",
+        "UniTask.Addressables",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.InferenceEngine",
+        "Unity.TextMeshPro",
+        "DOTweenModules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "DOTween.dll",
+        "DOTweenPro.dll",
+        "DemiLib.dll",
+        "PureMVC.DotNET.35.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

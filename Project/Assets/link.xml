@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  link.xml — UnityLinker preservation rules for CrashmaniaEx iOS build.
+
+  These assemblies are preserved because they use heavy reflection, contain
+  dev-tool networking code (MCPForUnity, Unity.AI.*), or have iOS-specific
+  native bindings (InferenceEngine) that confuse the linker when stripping.
+
+  Marking them "preserve=all" tells UnityLinker to skip type analysis entirely
+  for these assemblies, which prevents BuildFailedException during ManagedStripped.
+-->
+<linker>
+  <!-- Unity MCP / AI tooling — editor-facing, not stripped-safe on iOS -->
+  <assembly fullname="MCPForUnity.Runtime" preserve="all"/>
+  <assembly fullname="Unity.AI.Assistant.Runtime" preserve="all"/>
+  <assembly fullname="Unity.AI.MCP.Runtime" preserve="all"/>
+  <assembly fullname="Unity.AI.Tracing" preserve="all"/>
+
+  <!-- Inference Engine (Sentis) — uses iOS-specific BLAS native layer -->
+  <assembly fullname="Unity.InferenceEngine" preserve="all"/>
+  <assembly fullname="Unity.InferenceEngine.iOSBLAS" preserve="all"/>
+  <assembly fullname="Unity.InferenceEngine.Tokenization" preserve="all"/>
+
+  <!-- glTFast — uses reflection for material/mesh serialization -->
+  <assembly fullname="glTFast" preserve="all"/>
+  <assembly fullname="glTFast.Export" preserve="all"/>
+  <assembly fullname="glTFast.dots" preserve="all"/>
+  <assembly fullname="glTFast.Newtonsoft" preserve="all"/>
+  <assembly fullname="glTFast.Documentation.Examples" preserve="all"/>
+
+  <!-- UniTask — async state machines must survive stripping -->
+  <assembly fullname="UniTask" preserve="all"/>
+  <assembly fullname="UniTask.Addressables" preserve="all"/>
+  <assembly fullname="UniTask.DOTween" preserve="all"/>
+  <assembly fullname="UniTask.Linq" preserve="all"/>
+  <assembly fullname="UniTask.TextMeshPro" preserve="all"/>
+
+  <!-- Addressables — uses reflection for asset loading -->
+  <assembly fullname="Unity.Addressables" preserve="all"/>
+  <assembly fullname="Unity.ResourceManager" preserve="all"/>
+
+  <!-- Burst / Collections / Mathematics — AOT-compiled, preserve metadata -->
+  <assembly fullname="Unity.Burst" preserve="all"/>
+  <assembly fullname="Unity.Collections" preserve="all"/>
+  <assembly fullname="Unity.Mathematics" preserve="all"/>
+
+  <!-- URP / Core pipeline -->
+  <assembly fullname="Unity.RenderPipelines.Universal.Runtime" preserve="all"/>
+  <assembly fullname="Unity.RenderPipelines.Core.Runtime" preserve="all"/>
+  <assembly fullname="Unity.RenderPipelines.Core.Runtime.Shared" preserve="all"/>
+
+  <!-- Project assemblies — always preserve -->
+  <assembly fullname="Assembly-CSharp" preserve="all"/>
+  <assembly fullname="Assembly-CSharp-firstpass" preserve="all"/>
+</linker>
