@@ -138,8 +138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d27205145d5749aaadb74c8d07284a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.ToastView
-  panel: {fileID: 0}
-  messageText: {fileID: 0}
+  panel: {fileID: 1226426091789630688}
+  messageText: {fileID: 2871667401614362299}
 --- !u!1 &7802800909410273151
 GameObject:
   m_ObjectHideFlags: 0

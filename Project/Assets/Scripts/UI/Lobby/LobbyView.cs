@@ -40,29 +40,14 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (promoBanner == null) promoBanner = transform.Find("ScrollRect/Viewport/Content/PromoSection/MainPromo")?.GetComponent<PromoBannerView>();
-            if (categoryContent == null) categoryContent = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
-            
             if (promoBanner != null)
             {
                 promoBanner.CtaClicked += id => GameSelected?.Invoke(id);
             }
 
-            if (categoryScrollRect == null) categoryScrollRect = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect")?.GetComponent<ScrollRect>();
-            if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
-            if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
-            if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
-            if (storePanelView == null) storePanelView = transform.Find("StorePanel")?.GetComponent<StorePanelView>();
-
             if (storePanelView != null)
             {
                 storePanelView.PurchaseRequested += id => PurchaseRequested?.Invoke(id);
-            }
-
-            if (lobbyPanel == null)
-            {
-                var scrollRect = transform.Find("ScrollRect");
-                if (scrollRect != null) lobbyPanel = scrollRect.gameObject;
             }
 
             if (searchInput != null)

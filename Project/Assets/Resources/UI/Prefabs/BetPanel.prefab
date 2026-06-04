@@ -3058,7 +3058,12 @@ MonoBehaviour:
   incrementButton: {fileID: 220199378139372783}
   actionButton: {fileID: 7173950246116835179}
   autoplayToggle: {fileID: 7005528191971488307}
-  actionBackground: {fileID: 0}
+  actionBackground: {fileID: 3198967530048785213}
+  quick10KButton: {fileID: 3840393475346133091}
+  quick20KButton: {fileID: 2897943872169652192}
+  quick40KButton: {fileID: 2307418879865426883}
+  quick60KButton: {fileID: 602106431507389602}
+  quick80KButton: {fileID: 4007347012352271274}
   betAmount: 6000
   stepAmount: 1000
   autoplaySubmenu: {fileID: 4434918653852036921}
@@ -3071,11 +3076,11 @@ MonoBehaviour:
   cashOutDecrementButton: {fileID: 8527937018325621641}
   cashOutIncrementButton: {fileID: 1131587924966107545}
   roundPresetBackgrounds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8404081670853954710}
+  - {fileID: 1697679290946569862}
+  - {fileID: 6414239941927654008}
+  - {fileID: 2514310567076788327}
+  - {fileID: 1624496797246538632}
   autoplayCloseButton: {fileID: 7674396828684558262}
 --- !u!1 &5386568408842096696
 GameObject:

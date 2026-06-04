@@ -50,9 +50,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9146175eb31be4ecd842d2d3708ab62e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.ModalView
-  canvasGroup: {fileID: 0}
-  panel: {fileID: 0}
-  overlayButton: {fileID: 0}
+  canvasGroup: {fileID: 4955232096394221164}
+  panel: {fileID: 6016083153425822671}
+  overlayButton: {fileID: 8652777559099527063}
 --- !u!225 &4955232096394221164
 CanvasGroup:
   m_ObjectHideFlags: 0

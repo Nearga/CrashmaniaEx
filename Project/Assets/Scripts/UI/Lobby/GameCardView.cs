@@ -21,12 +21,6 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (button == null) button = GetComponent<Button>();
-            if (thumbnail == null) thumbnail = transform.Find("Thumbnail")?.GetComponent<Image>();
-            if (nameText == null) nameText = transform.Find("Name")?.GetComponent<TMP_Text>();
-            if (onlineText == null) onlineText = transform.Find("Online/Text")?.GetComponent<TMP_Text>();
-            if (rankText == null) rankText = transform.Find("RankText")?.GetComponent<TMP_Text>();
-
             if (button != null)
             {
                 button.onClick.AddListener(OnClicked);

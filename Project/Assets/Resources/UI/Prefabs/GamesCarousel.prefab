@@ -614,14 +614,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b46076d9d7a634f068a7aae2d32dcef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Lobby.GamesCarouselView
-  titleText: {fileID: 0}
-  viewAllButton: {fileID: 0}
-  previousButton: {fileID: 0}
-  nextButton: {fileID: 0}
-  scrollRect: {fileID: 0}
-  content: {fileID: 0}
-  leftFade: {fileID: 0}
-  rightFade: {fileID: 0}
+  titleText: {fileID: 4610810269610069218}
+  viewAllButton: {fileID: 1203581920971152648}
+  previousButton: {fileID: 3917714174349377646}
+  nextButton: {fileID: 1552359681437724203}
+  scrollRect: {fileID: 7809837799036428306}
+  content: {fileID: 6024393720436327758}
+  leftFade: {fileID: 2916726600007060043}
+  rightFade: {fileID: 8271191890397593932}
 --- !u!1 &3230106526854780305
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,7 +1144,7 @@ MonoBehaviour:
   m_text: LUCKY WEEK
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 437a96ea7e2f74212a215d3b99000b02, type: 2}
-  m_sharedMaterial: {fileID: 4393960670316037944, guid: 7140e470dd9ee40cbba7494e375b36a3, type: 2}
+  m_sharedMaterial: {fileID: -8153360226488781495, guid: 437a96ea7e2f74212a215d3b99000b02, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

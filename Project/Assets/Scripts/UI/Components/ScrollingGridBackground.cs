@@ -15,11 +15,6 @@ namespace Crashmania.UI.Components
 
         private void Awake()
         {
-            if (targetImage == null)
-            {
-                targetImage = GetComponent<RawImage>();
-            }
-
             if (targetImage != null && targetImage.material != null)
             {
                 targetMaterial = Instantiate(targetImage.material);

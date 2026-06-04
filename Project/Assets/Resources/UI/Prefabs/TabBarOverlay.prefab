@@ -323,6 +323,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16fd889d773db41229510f6844f3cfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.TabBarView
+  lobbyButton: {fileID: 179049268986450029}
+  lobbyIcon: {fileID: 4324577132237630287}
+  lobbyLabel: {fileID: 1867809120385133844}
+  storeButton: {fileID: 1659687532506256664}
+  storeIcon: {fileID: 6872752604287188409}
+  storeLabel: {fileID: 2562425516645218773}
+  giftsButton: {fileID: 3585922500490141571}
+  giftsIcon: {fileID: 1258269622683244375}
+  giftsLabel: {fileID: 1914450448095826540}
+  accountButton: {fileID: 5614154962676958387}
+  accountIcon: {fileID: 7477384415755073262}
+  accountLabel: {fileID: 7682641917462992558}
 --- !u!1 &1667008498341857770
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,15 +31,6 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (titleText == null) titleText = transform.Find("Header/Title")?.GetComponent<TMP_Text>();
-            if (viewAllButton == null) viewAllButton = transform.Find("Header/ViewAllButton")?.GetComponent<Button>();
-            if (previousButton == null) previousButton = transform.Find("Header/PreviousButton")?.GetComponent<Button>();
-            if (nextButton == null) nextButton = transform.Find("Header/NextButton")?.GetComponent<Button>();
-            if (scrollRect == null) scrollRect = transform.Find("ScrollRect")?.GetComponent<ScrollRect>();
-            if (content == null) content = transform.Find("ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
-            if (leftFade == null) leftFade = transform.Find("ScrollRect/LeftFade")?.GetComponent<Image>();
-            if (rightFade == null) rightFade = transform.Find("ScrollRect/RightFade")?.GetComponent<Image>();
-
             if (viewAllButton != null) viewAllButton.onClick.AddListener(() => ViewAllRequested?.Invoke(categoryId));
             if (previousButton != null) previousButton.onClick.AddListener(() => Nudge(-1));
             if (nextButton != null) nextButton.onClick.AddListener(() => Nudge(1));
