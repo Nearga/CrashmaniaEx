@@ -11,22 +11,34 @@ namespace Crashmania.UI.Shell
         [SerializeField] private GameObject ccHighlight;
         [SerializeField] private GameObject scHighlight;
         [SerializeField] private UnityEngine.UI.Button toggleButton;
+        [SerializeField] private UnityEngine.UI.Button backButton;
+        [SerializeField] private RectTransform goldPanelRect;
 
         public event System.Action OnToggleCurrency;
+        public event System.Action OnBackClicked;
 
         private void Awake()
         {
             if (ccBalance == null) ccBalance = transform.Find("Safe Area/Header Bar/CC Balance/CC Value")?.GetComponent<AccumulateToBalance>();
             if (scBalance == null) scBalance = transform.Find("Safe Area/Header Bar/SC Balance/SC Value")?.GetComponent<AccumulateToBalance>();
+            if (backButton == null) backButton = transform.Find("Safe Area/Header Bar/BackButton")?.GetComponent<UnityEngine.UI.Button>();
+            if (goldPanelRect == null) goldPanelRect = transform.Find("Safe Area/Header Bar/Gold Panel")?.GetComponent<RectTransform>();
             
             if (toggleButton != null)
             {
                 toggleButton.onClick.AddListener(() => OnToggleCurrency?.Invoke());
             }
+
+            if (backButton != null)
+            {
+                backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+            }
         }
 
         public void SetActiveCurrency(CurrencyMode mode)
         {
+            if (ccBalance != null) ccBalance.transform.parent.gameObject.SetActive(mode == CurrencyMode.CC);
+            if (scBalance != null) scBalance.transform.parent.gameObject.SetActive(mode == CurrencyMode.SC);
             if (ccHighlight != null) ccHighlight.SetActive(mode == CurrencyMode.CC);
             if (scHighlight != null) scHighlight.SetActive(mode == CurrencyMode.SC);
         }
@@ -50,11 +62,20 @@ namespace Crashmania.UI.Shell
         public void SetVisibleForScene(string sceneName)
         {
             gameObject.SetActive(IsShellScene(sceneName));
+            var isGame = sceneName == "Game";
+            if (backButton != null)
+            {
+                backButton.gameObject.SetActive(isGame);
+            }
+            if (goldPanelRect != null)
+            {
+                goldPanelRect.anchoredPosition = new Vector2(isGame ? 144f : 24f, goldPanelRect.anchoredPosition.y);
+            }
         }
 
         private static bool IsShellScene(string sceneName)
         {
-            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account";
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account" || sceneName == "Game";
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Crashmania.Services
 {
     public sealed class MockBackendService : IBackendService, ICrashGameService
     {
-        private const float PreparationSeconds = 8f;
+        private const float PreparationSeconds = 4f;
         private const float CrashedSeconds = 2.5f;
         private const float IntermissionSeconds = 1.5f;
         private const int MultiplierTickMs = 50;

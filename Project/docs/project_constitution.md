@@ -36,6 +36,8 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 
 ## Unity Layout Rules
 
+- **Single Canvas Architecture**: Each scene (e.g., `Login.unity`, `Lobby.unity`, `Game.unity`) must feature a single root Canvas component (e.g., `LoginCanvas`, `LobbyCanvas`, `GameCanvas`) containing all screen-level UI elements (including Header, TabBar, Toasts, and Modals). There must be no separate runtime-instantiated global Canvas overlays (except the system-level `TransitionOverlay`). All shell prefabs (Header, TabBar, etc.) are embedded directly inside the scene Canvas in the hierarchy so the Editor reflects the Game screen exactly.
+- **Dynamic Mediator Binding**: Because shell overlay views are local to each scene Canvas and are destroyed/loaded with the scene, PureMVC mediators (like `HeaderMediator`, `TabBarMediator`) must be re-registered to bind to the new scene's local view instances on every scene load.
 - Use Unity MCP before Unity changes. Inspect live editor state, hierarchy, components, console, and screenshots before and after scene/prefab work.
 - Do not guess blindly from YAML or code when Unity MCP can verify the actual editor state.
 - One-off visual screens are laid out directly in the scene hierarchy.
