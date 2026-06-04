@@ -22,6 +22,9 @@ namespace Crashmania.PureMvc.Mediators
             View.OnToggleCurrency += OnToggleCurrency;
             View.OnBackClicked += OnBackClicked;
             
+            var activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            View.SetVisibleForScene(activeSceneName);
+
             UpdateBalances(false);
             UpdateCurrencyMode();
         }

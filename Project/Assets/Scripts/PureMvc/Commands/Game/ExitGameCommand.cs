@@ -32,6 +32,7 @@ namespace Crashmania.PureMvc.Commands.Game
                 var activeGame = Facade.RetrieveProxy(ActiveGameProxy.Name) as ActiveGameProxy;
                 activeGame?.Clear();
 
+                PureMvcSceneRegistry.ShowActiveScene(Facade);
                 SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
             }
             catch (System.Exception exception)

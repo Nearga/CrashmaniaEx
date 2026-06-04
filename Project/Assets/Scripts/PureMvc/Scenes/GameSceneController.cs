@@ -44,6 +44,7 @@ namespace Crashmania.PureMvc.Scenes
                 activeGameProxy.SetActiveGame(CreateDevGame(), CreateDevSession());
             }
 
+            gameObject.SetActive(true);
             gameController.OnBalanceChanged += OnBalanceChanged;
 
             var settings = facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
@@ -66,6 +67,7 @@ namespace Crashmania.PureMvc.Scenes
                 gameController.OnBalanceChanged -= OnBalanceChanged;
                 gameController.Shutdown();
             }
+            gameObject.SetActive(false);
         }
 
         private void OnBalanceChanged(double ccDelta, double scDelta)
