@@ -412,7 +412,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ---
 
-## Phase 11 — Quality Polishing
+## Phase 11 — Qualityautodecreas Polishing
 *Goal: Final UI/UX refinements and animation tuning.*
 
 ### 11.1 Game Scene UI Layout Refinement

@@ -1,0 +1,62 @@
+name: Build iOS & Android 🚀
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for ${{ matrix.targetPlatform }} 🎮
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - Android
+          - iOS
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Free Disk Space (Ubuntu)
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Project/Library
+          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Project/Packages/manifest.json') }}
+          restore-keys: |
+            Library-${{ matrix.targetPlatform }}-
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: Project
+          unityVersion: 6000.4.8f1
+          targetPlatform: ${{ matrix.targetPlatform }}
+
+      - name: Upload Build Artifact (Android)
+        if: matrix.targetPlatform == 'Android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Crashmania-Android
+          path: build/Android
+
+      - name: Upload Build Artifact (iOS)
+        if: matrix.targetPlatform == 'iOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Crashmania-iOS-XcodeProject
+          path: build/iOS
