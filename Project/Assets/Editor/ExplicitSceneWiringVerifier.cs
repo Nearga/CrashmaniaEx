@@ -114,13 +114,22 @@ namespace Crashmania.Editor
 
             foreach (var path in ScenePaths)
             {
-                var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+                var scene = SceneManager.GetSceneByPath(path);
+                var wasLoaded = scene.IsValid() && scene.isLoaded;
+                if (!wasLoaded)
+                {
+                    scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+                }
+
                 foreach (var root in scene.GetRootGameObjects())
                 {
                     VerifyHierarchy(root, path, 5);
                 }
 
-                EditorSceneManager.CloseScene(scene, true);
+                if (!wasLoaded)
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
             }
 
             Debug.Log("[ExplicitSceneWiringVerifier] Lobby, Game, and direct prefab wiring passed.");

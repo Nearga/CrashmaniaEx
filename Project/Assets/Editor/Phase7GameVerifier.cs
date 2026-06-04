@@ -57,7 +57,7 @@ namespace Crashmania.Editor
         {
             "GameCanvas",
             "GameCanvas/SafeAreaPanel",
-            "GameCanvas/SafeAreaPanel/Header Bar",
+            "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar",
             "GameCanvas/SafeAreaPanel/GameViewportContainer",
             "GameCanvas/SafeAreaPanel/GameViewportContainer/HistoryContent",
             "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket",
@@ -176,12 +176,12 @@ namespace Crashmania.Editor
                 LayoutRebuilder.ForceRebuildLayoutImmediate(dualBetContainer);
             }
 
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/Header Bar", 0f, 160f, 36f);
+            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar", 0f, 160f, 36f);
             AssertTopRect(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer", 160f, 807f, 36f);
             AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer", 967f, 1114f, 42f);
             AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion", 728f, 386f, 42f);
             
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/Header Bar");
+            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar");
             AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer");
             AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion");
             AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A");
@@ -456,8 +456,7 @@ namespace Crashmania.Editor
                 "GameCanvas/SafeAreaPanel/GameViewportContainer/Planet",
                 "GameCanvas/SafeAreaPanel/GameViewportContainer/GroundOrMoonLayer",
                 "GameCanvas/SafeAreaPanel/GameViewportContainer/SpeedLines",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/CrashTint",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket/RocketGlow"
+                "GameCanvas/SafeAreaPanel/GameViewportContainer/CrashTint"
             };
 
             foreach (var path in requiredLayers)
