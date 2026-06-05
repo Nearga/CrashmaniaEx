@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 2582153}
   - component: {fileID: 2582152}
   - component: {fileID: 2582151}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeroDivider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 1170
+  m_PreferredWidth: 1080
   m_PreferredHeight: 68
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 52871185}
   - component: {fileID: 52871187}
   - component: {fileID: 52871186}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 58624833}
   - component: {fileID: 58624832}
   - component: {fileID: 58624831}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,7 +454,7 @@ GameObject:
   - component: {fileID: 100480709}
   - component: {fileID: 100480711}
   - component: {fileID: 100480710}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LegalFinePrint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -478,7 +478,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -505}
-  m_SizeDelta: {x: 980, y: 130}
+  m_SizeDelta: {x: 820, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &100480710
 MonoBehaviour:
@@ -529,11 +529,11 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 15
+  m_fontSizeMax: 22
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -596,7 +596,7 @@ GameObject:
   - component: {fileID: 114241256}
   - component: {fileID: 114241255}
   - component: {fileID: 114241253}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PlayForFreeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -856,6 +856,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: ModalManagerOverlay
       objectReference: {fileID: 0}
+    - target: {fileID: 510382087447082345, guid: 46d5675e6ad66436cb58dfd14952b3dd, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 928515729975530302, guid: 46d5675e6ad66436cb58dfd14952b3dd, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783784234633920512, guid: 46d5675e6ad66436cb58dfd14952b3dd, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7733496814272798599, guid: 46d5675e6ad66436cb58dfd14952b3dd, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -936,6 +948,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8190818205536069325, guid: 46d5675e6ad66436cb58dfd14952b3dd, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -957,7 +973,7 @@ GameObject:
   - component: {fileID: 205996208}
   - component: {fileID: 205996210}
   - component: {fileID: 205996209}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CoinAmount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1095,7 +1111,7 @@ GameObject:
   - component: {fileID: 268865766}
   - component: {fileID: 268865765}
   - component: {fileID: 268865764}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1185,7 +1201,7 @@ GameObject:
   - component: {fileID: 297849597}
   - component: {fileID: 297849599}
   - component: {fileID: 297849598}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1260,7 +1276,7 @@ GameObject:
   - component: {fileID: 337833740}
   - component: {fileID: 337833742}
   - component: {fileID: 337833741}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ResponsibleTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1284,7 +1300,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 595}
-  m_SizeDelta: {x: 920, y: 72}
+  m_SizeDelta: {x: 820, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &337833741
 MonoBehaviour:
@@ -1334,11 +1350,11 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 34
-  m_fontSizeBase: 34
+  m_fontSizeBase: 32
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 24
+  m_fontSizeMax: 34
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1350,7 +1366,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1397,7 +1413,7 @@ GameObject:
   - component: {fileID: 365963190}
   - component: {fileID: 365963192}
   - component: {fileID: 365963191}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SweepAmount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1534,7 +1550,7 @@ GameObject:
   - component: {fileID: 371645913}
   - component: {fileID: 371645915}
   - component: {fileID: 371645914}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1672,7 +1688,7 @@ GameObject:
   - component: {fileID: 378619764}
   - component: {fileID: 378619763}
   - component: {fileID: 378619762}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_swoosh_up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1761,7 +1777,7 @@ GameObject:
   - component: {fileID: 415114014}
   - component: {fileID: 415114016}
   - component: {fileID: 415114015}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CoinIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1837,7 +1853,7 @@ GameObject:
   - component: {fileID: 450427899}
   - component: {fileID: 450427898}
   - component: {fileID: 450427897}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_bountiful-birds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1927,7 +1943,7 @@ GameObject:
   - component: {fileID: 454187525}
   - component: {fileID: 454187524}
   - component: {fileID: 454187523}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: VisibleFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2016,7 +2032,7 @@ GameObject:
   - component: {fileID: 458737231}
   - component: {fileID: 458737230}
   - component: {fileID: 458737229}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LegalFooterSection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2103,7 +2119,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 1170
+  m_PreferredWidth: 1080
   m_PreferredHeight: 1390
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -2120,7 +2136,7 @@ GameObject:
   - component: {fileID: 591059672}
   - component: {fileID: 591059671}
   - component: {fileID: 591059670}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: VisibleFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2209,7 +2225,7 @@ GameObject:
   - component: {fileID: 620513670}
   - component: {fileID: 620513669}
   - component: {fileID: 620513668}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_crush_depth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2302,7 +2318,7 @@ GameObject:
   - component: {fileID: 650014858}
   - component: {fileID: 650014857}
   - component: {fileID: 650014862}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: JoinNowButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2462,7 +2478,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 695079878}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Bonus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2489,10 +2505,10 @@ RectTransform:
   - {fileID: 1631625484}
   m_Father: {fileID: 803243789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 72}
-  m_SizeDelta: {x: 1110, y: 620}
+  m_SizeDelta: {x: 0, y: 620}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &788031684
 GameObject:
@@ -2505,7 +2521,7 @@ GameObject:
   - component: {fileID: 788031685}
   - component: {fileID: 788031687}
   - component: {fileID: 788031686}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SweepCoinIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2580,7 +2596,7 @@ GameObject:
   - component: {fileID: 796844989}
   - component: {fileID: 796844991}
   - component: {fileID: 796844990}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2656,7 +2672,7 @@ GameObject:
   - component: {fileID: 803243792}
   - component: {fileID: 803243791}
   - component: {fileID: 803243790}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeroSection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2739,8 +2755,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 1170
-  m_PreferredHeight: 1845
+  m_PreferredWidth: 1080
+  m_PreferredHeight: 1768
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -2755,7 +2771,7 @@ GameObject:
   - component: {fileID: 850148081}
   - component: {fileID: 850148083}
   - component: {fileID: 850148082}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: FreeBonusText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2779,7 +2795,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 242}
-  m_SizeDelta: {x: 940, y: 95}
+  m_SizeDelta: {x: 860, y: 95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &850148082
 MonoBehaviour:
@@ -2829,10 +2845,10 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 72
-  m_fontSizeBase: 72
+  m_fontSizeBase: 68
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 48
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
@@ -2845,7 +2861,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -2893,7 +2909,7 @@ GameObject:
   - component: {fileID: 860392424}
   - component: {fileID: 860392423}
   - component: {fileID: 860392422}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_skyride
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2982,7 +2998,7 @@ GameObject:
   - component: {fileID: 885668952}
   - component: {fileID: 885668954}
   - component: {fileID: 885668953}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ResponsibleCopy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3006,7 +3022,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 495}
-  m_SizeDelta: {x: 980, y: 140}
+  m_SizeDelta: {x: 820, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &885668953
 MonoBehaviour:
@@ -3056,12 +3072,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 26
+  m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 26
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3120,7 +3136,7 @@ GameObject:
   - component: {fileID: 896511066}
   - component: {fileID: 896511068}
   - component: {fileID: 896511067}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3199,7 +3215,7 @@ GameObject:
   - component: {fileID: 917998592}
   - component: {fileID: 917998591}
   - component: {fileID: 917998596}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SignUpButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3363,7 +3379,7 @@ GameObject:
   - component: {fileID: 951515545}
   - component: {fileID: 951515544}
   - component: {fileID: 951515543}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: AgeBadge21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3455,7 +3471,7 @@ GameObject:
   - component: {fileID: 1010211648}
   - component: {fileID: 1010211647}
   - component: {fileID: 1010211646}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Headline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3478,8 +3494,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 58, y: -278}
-  m_SizeDelta: {x: 610, y: 640}
+  m_AnchoredPosition: {x: 58, y: -302}
+  m_SizeDelta: {x: 500, y: 610}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1010211646
 MonoBehaviour:
@@ -3551,12 +3567,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 78
-  m_fontSizeBase: 78
+  m_fontSize: 53
+  m_fontSizeBase: 67
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMin: 40
+  m_fontSizeMax: 56
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -3564,7 +3580,7 @@ MonoBehaviour:
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: -18
+  m_lineSpacing: -8
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -3616,7 +3632,7 @@ GameObject:
   - component: {fileID: 1022597249}
   - component: {fileID: 1022597248}
   - component: {fileID: 1022597247}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_slackliner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3722,7 +3738,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.157, g: 0.169, b: 0.22, a: 1}
+  m_BackGroundColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3798,7 +3814,7 @@ GameObject:
   - component: {fileID: 1043810941}
   - component: {fileID: 1043810940}
   - component: {fileID: 1043810939}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_astro_go
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3886,7 +3902,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1058620648}
   - component: {fileID: 1058620649}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ThumbnailViewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3917,10 +3933,10 @@ RectTransform:
   - {fileID: 450427896}
   m_Father: {fileID: 1848623149}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 130}
-  m_SizeDelta: {x: 1170, y: 650}
+  m_SizeDelta: {x: 0, y: 650}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1058620649
 MonoBehaviour:
@@ -3947,7 +3963,7 @@ GameObject:
   - component: {fileID: 1120374939}
   - component: {fileID: 1120374941}
   - component: {fileID: 1120374940}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PolicyLinks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3971,7 +3987,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 365}
-  m_SizeDelta: {x: 1030, y: 110}
+  m_SizeDelta: {x: 820, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1120374940
 MonoBehaviour:
@@ -4021,12 +4037,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 23
+  m_fontSizeBase: 21
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 15
+  m_fontSizeMax: 23
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4085,7 +4101,7 @@ GameObject:
   - component: {fileID: 1139237714}
   - component: {fileID: 1139237716}
   - component: {fileID: 1139237715}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4124,7 +4140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15686275, g: 0.16862746, b: 0.21960784, a: 1}
+  m_Color: {r: 0.008, g: 0.025, b: 0.055, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4160,7 +4176,7 @@ GameObject:
   - component: {fileID: 1271597758}
   - component: {fileID: 1271597760}
   - component: {fileID: 1271597759}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4235,7 +4251,7 @@ GameObject:
   - component: {fileID: 1324031316}
   - component: {fileID: 1324031318}
   - component: {fileID: 1324031317}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PlayNowText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4259,7 +4275,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -420}
-  m_SizeDelta: {x: 900, y: 80}
+  m_SizeDelta: {x: 830, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1324031317
 MonoBehaviour:
@@ -4308,12 +4324,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 56
-  m_fontSizeBase: 56
+  m_fontSize: 54
+  m_fontSizeBase: 48
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 34
+  m_fontSizeMax: 54
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4325,7 +4341,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -4372,7 +4388,7 @@ GameObject:
   - component: {fileID: 1344664403}
   - component: {fileID: 1344664405}
   - component: {fileID: 1344664404}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4436,7 +4452,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 1
   m_Spacing: 0
-  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
@@ -4455,7 +4471,7 @@ GameObject:
   - component: {fileID: 1452223219}
   - component: {fileID: 1452223218}
   - component: {fileID: 1452223217}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_fightX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4544,7 +4560,7 @@ GameObject:
   - component: {fileID: 1474731208}
   - component: {fileID: 1474731210}
   - component: {fileID: 1474731209}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NoPurchaseBottomText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4568,7 +4584,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -488}
-  m_SizeDelta: {x: 900, y: 70}
+  m_SizeDelta: {x: 830, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1474731209
 MonoBehaviour:
@@ -4617,12 +4633,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
-  m_fontSizeBase: 42
+  m_fontSize: 44
+  m_fontSizeBase: 39
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 30
+  m_fontSizeMax: 44
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4634,7 +4650,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -4681,7 +4697,7 @@ GameObject:
   - component: {fileID: 1495808326}
   - component: {fileID: 1495808328}
   - component: {fileID: 1495808327}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Plus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4819,7 +4835,7 @@ GameObject:
   - component: {fileID: 1537059808}
   - component: {fileID: 1537059807}
   - component: {fileID: 1537059806}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_rise_up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4908,7 +4924,7 @@ GameObject:
   - component: {fileID: 1541626971}
   - component: {fileID: 1541626973}
   - component: {fileID: 1541626972}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NoPurchaseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4932,7 +4948,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 174}
-  m_SizeDelta: {x: 940, y: 60}
+  m_SizeDelta: {x: 860, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1541626972
 MonoBehaviour:
@@ -4982,11 +4998,11 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 43
-  m_fontSizeBase: 43
+  m_fontSizeBase: 39
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 28
+  m_fontSizeMax: 43
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4998,7 +5014,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -5045,7 +5061,7 @@ GameObject:
   - component: {fileID: 1579455981}
   - component: {fileID: 1579455983}
   - component: {fileID: 1579455982}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: OperatedBy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5069,7 +5085,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -185}
-  m_SizeDelta: {x: 1000, y: 180}
+  m_SizeDelta: {x: 820, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1579455982
 MonoBehaviour:
@@ -5123,12 +5139,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 24
+  m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 24
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5187,7 +5203,7 @@ GameObject:
   - component: {fileID: 1627045480}
   - component: {fileID: 1627045482}
   - component: {fileID: 1627045481}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5262,7 +5278,7 @@ GameObject:
   - component: {fileID: 1631625484}
   - component: {fileID: 1631625486}
   - component: {fileID: 1631625485}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NoPurchaseUnderJoinText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5286,7 +5302,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -188}
-  m_SizeDelta: {x: 940, y: 58}
+  m_SizeDelta: {x: 860, y: 58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1631625485
 MonoBehaviour:
@@ -5335,12 +5351,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 30
   m_fontSizeBase: 28
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 22
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5399,7 +5415,7 @@ GameObject:
   - component: {fileID: 1662797423}
   - component: {fileID: 1662797425}
   - component: {fileID: 1662797424}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5473,7 +5489,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1689233272}
   - component: {fileID: 1689233274}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5498,9 +5514,9 @@ RectTransform:
   m_Father: {fileID: 803243789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1170, y: 170}
+  m_SizeDelta: {x: 0, y: 170}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1689233274
 CanvasRenderer:
@@ -5521,7 +5537,7 @@ GameObject:
   - component: {fileID: 1696086886}
   - component: {fileID: 1696086888}
   - component: {fileID: 1696086887}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5597,7 +5613,7 @@ GameObject:
   - component: {fileID: 1701496575}
   - component: {fileID: 1701496574}
   - component: {fileID: 1701496573}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DarkDivider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5676,8 +5692,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 1170
-  m_PreferredHeight: 82
+  m_PreferredWidth: 1080
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -5761,7 +5777,7 @@ GameObject:
   - component: {fileID: 1783573270}
   - component: {fileID: 1783573269}
   - component: {fileID: 1783573268}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5782,10 +5798,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 114241259}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -24, y: -8}
+  m_SizeDelta: {x: 1011, y: 116}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1783573268
 MonoBehaviour:
@@ -5849,12 +5865,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
+  m_fontSize: 52
   m_fontSizeBase: 50
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 36
+  m_fontSizeMax: 52
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5913,7 +5929,7 @@ GameObject:
   - component: {fileID: 1838623616}
   - component: {fileID: 1838623618}
   - component: {fileID: 1838623617}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: RegisterText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5937,7 +5953,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 115}
-  m_SizeDelta: {x: 960, y: 50}
+  m_SizeDelta: {x: 860, y: 58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1838623617
 MonoBehaviour:
@@ -5986,12 +6002,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31
-  m_fontSizeBase: 31
+  m_fontSize: 30
+  m_fontSizeBase: 29
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 20
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -6003,7 +6019,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -6051,7 +6067,7 @@ GameObject:
   - component: {fileID: 1848623152}
   - component: {fileID: 1848623151}
   - component: {fileID: 1848623150}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameGallerySection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6135,7 +6151,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 1170
+  m_PreferredWidth: 1080
   m_PreferredHeight: 1215
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -6151,7 +6167,7 @@ GameObject:
   - component: {fileID: 1858937137}
   - component: {fileID: 1858937139}
   - component: {fileID: 1858937138}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Logo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6227,7 +6243,7 @@ GameObject:
   - component: {fileID: 1865209650}
   - component: {fileID: 1865209649}
   - component: {fileID: 1865209648}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_tiltx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6317,7 +6333,7 @@ GameObject:
   - component: {fileID: 1872649716}
   - component: {fileID: 1872649715}
   - component: {fileID: 1872649714}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6470,7 +6486,7 @@ GameObject:
   - component: {fileID: 1933238302}
   - component: {fileID: 1933238301}
   - component: {fileID: 1933238300}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScrollRect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6580,7 +6596,7 @@ GameObject:
   - component: {fileID: 1939964780}
   - component: {fileID: 1939964779}
   - component: {fileID: 1939964784}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LogInButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6605,7 +6621,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -290, y: -56}
+  m_AnchoredPosition: {x: -306, y: -56}
   m_SizeDelta: {x: 224, y: 76}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1939964779
@@ -6744,7 +6760,7 @@ GameObject:
   - component: {fileID: 1959160895}
   - component: {fileID: 1959160894}
   - component: {fileID: 1959160893}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameThumb_moon_juggling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6830,6 +6846,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2017311363}
     m_Modifications:
+    - target: {fileID: 910320360189102351, guid: 62eafccae5420467480929ace4486f85, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1149131320328570373, guid: 62eafccae5420467480929ace4486f85, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -6918,6 +6938,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: ToastOverlay
       objectReference: {fileID: 0}
+    - target: {fileID: 4394474937349749630, guid: 62eafccae5420467480929ace4486f85, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802800909410273151, guid: 62eafccae5420467480929ace4486f85, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8861782257973223565, guid: 62eafccae5420467480929ace4486f85, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6937,7 +6969,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1970132615}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: RewardRow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6983,7 +7015,8 @@ GameObject:
   - component: {fileID: 2017311359}
   - component: {fileID: 2017311357}
   - component: {fileID: 2017311364}
-  m_Layer: 0
+  - component: {fileID: 2017311365}
+  m_Layer: 5
   m_Name: LoginCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7046,8 +7079,8 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1170, y: 2532}
-  m_ScreenMatchMode: 0
+  m_ReferenceResolution: {x: 1080, y: 1920}
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -7064,8 +7097,8 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_Camera: {fileID: 1026488201}
+  m_PlaneDistance: 5
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -7076,7 +7109,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &2017311363
 RectTransform:
@@ -7114,6 +7147,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.PureMvc.Scenes.LoginSceneController
   loginView: {fileID: 2017311357}
+--- !u!225 &2017311365
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017311356}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2042318031
 GameObject:
   m_ObjectHideFlags: 0
@@ -7125,7 +7170,7 @@ GameObject:
   - component: {fileID: 2042318032}
   - component: {fileID: 2042318034}
   - component: {fileID: 2042318033}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7200,7 +7245,7 @@ GameObject:
   - component: {fileID: 2045754080}
   - component: {fileID: 2045754082}
   - component: {fileID: 2045754081}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GalleryTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7224,7 +7269,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 505}
-  m_SizeDelta: {x: 1050, y: 130}
+  m_SizeDelta: {x: 850, y: 138}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2045754081
 MonoBehaviour:
@@ -7273,12 +7318,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46
-  m_fontSizeBase: 46
+  m_fontSize: 42
+  m_fontSizeBase: 38
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 28
+  m_fontSizeMax: 42
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7337,7 +7382,7 @@ GameObject:
   - component: {fileID: 2046922571}
   - component: {fileID: 2046922573}
   - component: {fileID: 2046922572}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GameplayCopy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7361,7 +7406,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 60}
-  m_SizeDelta: {x: 1000, y: 190}
+  m_SizeDelta: {x: 820, y: 210}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2046922572
 MonoBehaviour:
@@ -7412,12 +7457,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 25
+  m_fontSizeBase: 23
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 17
+  m_fontSizeMax: 25
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7476,7 +7521,7 @@ GameObject:
   - component: {fileID: 2059047058}
   - component: {fileID: 2059047060}
   - component: {fileID: 2059047059}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: FooterLinks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7500,7 +7545,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -365}
-  m_SizeDelta: {x: 1000, y: 90}
+  m_SizeDelta: {x: 820, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2059047059
 MonoBehaviour:
@@ -7550,12 +7595,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 23
+  m_fontSizeBase: 21
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 15
+  m_fontSizeMax: 23
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7614,7 +7659,7 @@ GameObject:
   - component: {fileID: 2064512177}
   - component: {fileID: 2064512179}
   - component: {fileID: 2064512178}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7690,7 +7735,7 @@ GameObject:
   - component: {fileID: 2076575834}
   - component: {fileID: 2076575833}
   - component: {fileID: 2076575832}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7842,7 +7887,7 @@ GameObject:
   - component: {fileID: 2104891717}
   - component: {fileID: 2104891719}
   - component: {fileID: 2104891718}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TopCoin
   m_TagString: Untagged
   m_Icon: {fileID: 0}

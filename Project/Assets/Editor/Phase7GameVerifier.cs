@@ -56,16 +56,16 @@ namespace Crashmania.Editor
         private static readonly string[] RequiredScenePaths =
         {
             "GameCanvas",
-            "GameCanvas/SafeAreaPanel",
-            "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar",
-            "GameCanvas/SafeAreaPanel/GameViewportContainer",
-            "GameCanvas/SafeAreaPanel/GameViewportContainer/HistoryContent",
-            "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket",
-            "GameCanvas/SafeAreaPanel/DualBetContainer",
-            "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A",
-            "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B",
-            "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion",
-            "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion/ScrollArea/PlayerRowsContent"
+            "GameCanvas/ContentSafeArea",
+            "GameCanvas/HeaderOverlay/Safe Area/Header Bar",
+            "GameCanvas/ContentSafeArea/GameViewportContainer",
+            "GameCanvas/ContentSafeArea/GameViewportContainer/HistoryContent",
+            "GameCanvas/ContentSafeArea/GameViewportContainer/Rocket",
+            "GameCanvas/ContentSafeArea/DualBetContainer",
+            "GameCanvas/ContentSafeArea/DualBetContainer/BetPanel_A",
+            "GameCanvas/ContentSafeArea/DualBetContainer/BetPanel_B",
+            "GameCanvas/ContentSafeArea/DualBetContainer/ActiveBetsAccordion",
+            "GameCanvas/ContentSafeArea/DualBetContainer/ActiveBetsAccordion/ScrollArea/PlayerRowsContent"
         };
 
         [MenuItem("Crashmania/Verify Phase 7 Game")]
@@ -170,24 +170,24 @@ namespace Crashmania.Editor
             }
 
             Canvas.ForceUpdateCanvases();
-            var dualBetContainer = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/DualBetContainer")?.GetComponent<RectTransform>();
+            var dualBetContainer = FindSceneObject(scene, "GameCanvas/ContentSafeArea/DualBetContainer")?.GetComponent<RectTransform>();
             if (dualBetContainer != null)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(dualBetContainer);
             }
 
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar", 0f, 160f, 36f);
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer", 160f, 807f, 36f);
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer", 967f, 1114f, 42f);
-            AssertTopRect(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion", 728f, 386f, 42f);
+            AssertTopRect(scene, "GameCanvas/HeaderOverlay/Safe Area/Header Bar", 0f, ShellLayoutMetrics.HeaderHeight, 36f);
+            AssertTopRect(scene, "GameCanvas/ContentSafeArea/GameViewportContainer", ShellLayoutMetrics.HeaderHeight, 807f, 36f);
+            AssertTopRect(scene, "GameCanvas/ContentSafeArea/DualBetContainer", 967f, 1114f, 42f);
+            AssertTopRect(scene, "GameCanvas/ContentSafeArea/DualBetContainer/ActiveBetsAccordion", 728f, 386f, 42f);
             
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/HeaderOverlay/Safe Area/Header Bar");
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer");
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/ActiveBetsAccordion");
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_A");
-            AssertNonEmptyImage(scene, "GameCanvas/SafeAreaPanel/DualBetContainer/BetPanel_B");
+            AssertNonEmptyImage(scene, "GameCanvas/HeaderOverlay/Safe Area/Header Bar");
+            AssertNonEmptyImage(scene, "GameCanvas/ContentSafeArea/GameViewportContainer");
+            AssertNonEmptyImage(scene, "GameCanvas/ContentSafeArea/DualBetContainer/ActiveBetsAccordion");
+            AssertNonEmptyImage(scene, "GameCanvas/ContentSafeArea/DualBetContainer/BetPanel_A");
+            AssertNonEmptyImage(scene, "GameCanvas/ContentSafeArea/DualBetContainer/BetPanel_B");
 
-            var rocketImage = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket")?.GetComponent<Image>();
+            var rocketImage = FindSceneObject(scene, "GameCanvas/ContentSafeArea/GameViewportContainer/Rocket")?.GetComponent<Image>();
             if (rocketImage == null || rocketImage.sprite == null || !rocketImage.preserveAspect)
             {
                 throw new InvalidOperationException("Rocket must use an aspect-preserved sprite image.");
@@ -436,7 +436,7 @@ namespace Crashmania.Editor
 
         private static void AssertAnimationFidelityObjects(Scene scene, GameObject canvas)
         {
-            var rocket = FindSceneObject(scene, "GameCanvas/SafeAreaPanel/GameViewportContainer/Rocket");
+            var rocket = FindSceneObject(scene, "GameCanvas/ContentSafeArea/GameViewportContainer/Rocket");
             if (rocket == null || rocket.GetComponent<CrashRocketAnimator>() == null)
             {
                 throw new InvalidOperationException("Rocket must carry CrashRocketAnimator for Phase 7.11 animation fidelity recovery.");
@@ -449,14 +449,14 @@ namespace Crashmania.Editor
 
             var requiredLayers = new[]
             {
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/CountdownBackground",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/FlightSpaceBackground",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/Asteroids",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/Stars",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/Planet",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/GroundOrMoonLayer",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/SpeedLines",
-                "GameCanvas/SafeAreaPanel/GameViewportContainer/CrashTint"
+                "GameCanvas/ContentSafeArea/GameViewportContainer/CountdownBackground",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/FlightSpaceBackground",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/Asteroids",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/Stars",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/Planet",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/GroundOrMoonLayer",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/SpeedLines",
+                "GameCanvas/ContentSafeArea/GameViewportContainer/CrashTint"
             };
 
             foreach (var path in requiredLayers)

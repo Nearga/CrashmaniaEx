@@ -25,6 +25,7 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private GameObject lobbyPanel;
         [SerializeField] private GameObject storePanel;
         [SerializeField] private GameObject giftsPanel;
+        [SerializeField] private GameObject redeemPanel;
         [SerializeField] private GameObject accountPanel;
 
         private readonly List<CategoryChipView> chips = new();
@@ -281,6 +282,7 @@ namespace Crashmania.UI.Lobby
             if (lobbyPanel != null) lobbyPanel.SetActive(tabName == "Lobby");
             if (storePanel != null) storePanel.SetActive(tabName == "Store");
             if (giftsPanel != null) giftsPanel.SetActive(tabName == "Gifts");
+            if (redeemPanel != null) redeemPanel.SetActive(tabName == "Redeem");
             if (accountPanel != null) accountPanel.SetActive(tabName == "Account");
         }
 

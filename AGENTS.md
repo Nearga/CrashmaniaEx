@@ -18,6 +18,15 @@ This repository is a Crashmania research and reconstruction workspace. `Project/
 
 There is no top-level app build command in this checkout. For active Unity reconstruction, open `Project/` in the Unity Editor and validate from there. Treat `Research/deobfuscated/game/unity/ExportedProject/` as source evidence, not the active reconstruction project.
 
+## Android Deployment
+
+Use the checked build output at `Project/Builds/Android/Crashmania.apk` when installing the current Android APK to a plugged device. If `adb` is not on `PATH`, use Unity's bundled Android SDK tool from the editor version recorded by the project build, for example:
+
+- `& "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" devices`: confirm the plugged device is listed as `device`.
+- `& "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" -s <device-id> install -r "D:\Local\Projects\Unity\CrashmaniaEx\Project\Builds\Android\Crashmania.apk"`: install or replace the app on that device.
+
+If there is exactly one connected device, the `-s <device-id>` argument may be omitted. Keep the installed APK path explicit so agents do not accidentally deploy the generated Gradle intermediate APK from `Project/Library/`.
+
 ## Coding Style & Naming Conventions
 
 Use 2-space indentation for JavaScript and JSON research scripts. Use standard C# conventions in Unity code: 4-space indentation, `PascalCase` for types and public members, `camelCase` for locals and private fields unless the surrounding file uses a different recovered pattern. Keep generated or deobfuscated filenames unchanged when they map back to original bundles, such as `index-CBIll7jp.js`. Name new research notes with a numeric prefix and clear topic, for example `Research/04_GameFlow.md`.

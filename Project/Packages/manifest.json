@@ -15,6 +15,7 @@
     "com.unity.addressables": "2.7.4",
     "com.unity.ai.assistant": "2.9.0-pre.2",
     "com.unity.ai.inference": "2.6.1",
+    "com.unity.mobile.android-logcat": "1.4.7",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.render-pipelines.universal": "17.4.0",

@@ -12,6 +12,8 @@ namespace Crashmania.PureMvc.Mediators
 
         private ModalView View => ViewComponent as ModalView;
 
+        public bool IsModalOpen => View != null && View.IsModalOpen;
+
         public ModalMediator(ModalView view) : base(Name, view)
         {
         }

@@ -71,11 +71,121 @@ namespace Crashmania.Editor
             foreach (var scenePath in SafeAreaScenePaths)
             {
                 var scene = EditorSceneManager.OpenScene(scenePath);
-                if (GetSceneComponents<SafeAreaPanel>(scene).Count == 0)
+                var safeAreaPanels = GetSceneComponents<SafeAreaPanel>(scene);
+                if (safeAreaPanels.Count == 0)
                 {
                     throw new InvalidOperationException($"{scenePath} is missing a scene-level SafeAreaPanel for interactive chrome.");
                 }
+
+                foreach (var safeAreaPanel in safeAreaPanels)
+                {
+                    var parent = safeAreaPanel.transform.parent;
+                    while (parent != null)
+                    {
+                        if (parent.GetComponent<SafeAreaPanel>() != null)
+                        {
+                            throw new InvalidOperationException($"{scenePath} has a nested SafeAreaPanel at {GetTransformPath(safeAreaPanel.transform)}.");
+                        }
+
+                        parent = parent.parent;
+                    }
+                }
+
+                var sceneName = Path.GetFileNameWithoutExtension(scenePath);
+                var canvas = GameObject.Find($"{sceneName}Canvas");
+                if (canvas == null)
+                {
+                    throw new InvalidOperationException($"{scenePath} is missing root canvas {sceneName}Canvas.");
+                }
+
+                var contentSafeArea = GameObject.Find($"{sceneName}Canvas/ContentSafeArea");
+                if (contentSafeArea == null || contentSafeArea.GetComponent<SafeAreaPanel>() == null)
+                {
+                    throw new InvalidOperationException($"{scenePath} must contain {sceneName}Canvas/ContentSafeArea with SafeAreaPanel.");
+                }
+
+                AssertTopRect($"{sceneName}Canvas/HeaderOverlay/Safe Area/Header Bar", 0f, ShellLayoutMetrics.HeaderHeight, scenePath);
+
+                if (sceneName == "Lobby")
+                {
+                    AssertStretchRect($"{sceneName}Canvas/ContentSafeArea", scenePath);
+                    AssertOffsetRect(
+                        $"{sceneName}Canvas/ContentSafeArea/ScrollRect",
+                        ShellLayoutMetrics.HeaderHeight + ShellLayoutMetrics.LobbyContentTopGap,
+                        ShellLayoutMetrics.LobbyBottomReserve,
+                        scenePath);
+                }
+                else if (sceneName == "Game")
+                {
+                    AssertStretchRect($"{sceneName}Canvas/ContentSafeArea", scenePath);
+                    AssertTopRect(
+                        $"{sceneName}Canvas/ContentSafeArea/GameViewportContainer",
+                        ShellLayoutMetrics.HeaderHeight,
+                        807f,
+                        scenePath);
+                }
             }
+        }
+
+        private static void AssertStretchRect(string path, string scenePath)
+        {
+            var rectTransform = GameObject.Find(path)?.GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                throw new InvalidOperationException($"{scenePath} is missing RectTransform at {path}.");
+            }
+
+            if (rectTransform.anchorMin != Vector2.zero ||
+                rectTransform.anchorMax != Vector2.one ||
+                rectTransform.offsetMin != Vector2.zero ||
+                rectTransform.offsetMax != Vector2.zero)
+            {
+                throw new InvalidOperationException($"{path} must stretch to its parent frame.");
+            }
+        }
+
+        private static void AssertOffsetRect(string path, float expectedTop, float expectedBottom, string scenePath)
+        {
+            var rectTransform = GameObject.Find(path)?.GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                throw new InvalidOperationException($"{scenePath} is missing RectTransform at {path}.");
+            }
+
+            if (Math.Abs(rectTransform.offsetMax.y + expectedTop) > 0.001f ||
+                Math.Abs(rectTransform.offsetMin.y - expectedBottom) > 0.001f)
+            {
+                throw new InvalidOperationException($"{path} must use top={expectedTop:0.#} and bottom={expectedBottom:0.#} offsets.");
+            }
+        }
+
+        private static void AssertTopRect(string path, float expectedTop, float expectedHeight, string scenePath)
+        {
+            var rectTransform = GameObject.Find(path)?.GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                throw new InvalidOperationException($"{scenePath} is missing RectTransform at {path}.");
+            }
+
+            var top = -rectTransform.anchoredPosition.y;
+            if (Math.Abs(top - expectedTop) > 0.001f ||
+                Math.Abs(rectTransform.sizeDelta.y - expectedHeight) > 0.001f)
+            {
+                throw new InvalidOperationException($"{path} is outside the expected header/content band. top={top:0.#}, height={rectTransform.sizeDelta.y:0.#}");
+            }
+        }
+
+        private static string GetTransformPath(Transform target)
+        {
+            var path = target.name;
+            var current = target.parent;
+            while (current != null)
+            {
+                path = current.name + "/" + path;
+                current = current.parent;
+            }
+
+            return path;
         }
 
         private static System.Collections.Generic.List<T> GetSceneComponents<T>(UnityEngine.SceneManagement.Scene scene)

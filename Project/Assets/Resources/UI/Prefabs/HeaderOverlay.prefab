@@ -243,18 +243,16 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6407200974254944020}
-  - {fileID: 1181221358782941862}
-  - {fileID: 4766254868907004220}
   - {fileID: 1597099774808848349}
   - {fileID: 6983792945550665103}
   - {fileID: 2475949346968576755}
   - {fileID: 1264570144385789420}
   m_Father: {fileID: 4697183446480837886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 160}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5577057328754506407
 CanvasRenderer:
@@ -380,13 +378,13 @@ RectTransform:
   m_Children:
   - {fileID: 2489940108996037194}
   - {fileID: 8107254718859172672}
-  m_Father: {fileID: 4386781181904450416}
+  m_Father: {fileID: 6407200974254944020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1, y: 1}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -15, y: 0}
+  m_SizeDelta: {x: 520, y: 84}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &3166335697989509065
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -689,13 +687,15 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1181221358782941862}
+  - {fileID: 4766254868907004220}
   m_Father: {fileID: 4386781181904450416}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 24, y: 0}
-  m_SizeDelta: {x: 470, y: 96}
+  m_SizeDelta: {x: 740, y: 96}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1664673421505151038
 CanvasRenderer:
@@ -757,7 +757,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4697183446480837886}
-  - component: {fileID: -8399046270406663701}
   m_Layer: 5
   m_Name: Safe Area
   m_TagString: Untagged
@@ -785,18 +784,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &-8399046270406663701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3968354713874396582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22af461f9ffb7404c87ebba006cbcd1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Components.SafeAreaPanel
 --- !u!1 &5103736440383195602
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,7 +812,7 @@ RectTransform:
   m_GameObject: {fileID: 5103736440383195602}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4386781181904450416}
@@ -1088,13 +1075,13 @@ RectTransform:
   - {fileID: 591271618137702077}
   - {fileID: 4240100025221538804}
   - {fileID: 7521706158472165570}
-  m_Father: {fileID: 4386781181904450416}
+  m_Father: {fileID: 6407200974254944020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 15, y: 0}
-  m_SizeDelta: {x: 510, y: 92}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -15, y: 0}
+  m_SizeDelta: {x: 520, y: 84}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &64854408954834414
 CanvasRenderer:
   m_ObjectHideFlags: 0

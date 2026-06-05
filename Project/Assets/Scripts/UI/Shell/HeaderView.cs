@@ -70,7 +70,8 @@ namespace Crashmania.UI.Shell
 
         private static bool IsShellScene(string sceneName)
         {
-            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account" || sceneName == "Game";
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts"
+                || sceneName == "Redeem" || sceneName == "Account" || sceneName == "Game";
         }
     }
 }

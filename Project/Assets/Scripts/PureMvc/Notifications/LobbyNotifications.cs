@@ -28,5 +28,6 @@ namespace Crashmania.PureMvc.Notifications
         public const string ShowModal = "ShowModal";
         public const string HideModal = "HideModal";
         public const string ShowToast = "ShowToast";
+        public const string SystemBackButtonPressed = "SystemBackButtonPressed";
     }
 }

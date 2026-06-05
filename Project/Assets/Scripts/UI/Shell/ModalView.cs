@@ -18,6 +18,8 @@ namespace Crashmania.UI.Shell
         public event Action<GameObject> ModalShown;
         public event Action<GameObject> ModalHidden;
 
+        public bool IsModalOpen => modalStack.Count > 0 || (canvasGroup != null && canvasGroup.alpha > 0f);
+
         private void Awake()
         {
             if (overlayButton != null)

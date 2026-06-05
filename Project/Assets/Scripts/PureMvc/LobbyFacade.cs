@@ -52,6 +52,7 @@ namespace Crashmania.PureMvc
             RegisterCommand(LobbyNotifications.LaunchGame, () => new LaunchGameCommand());
             RegisterCommand(LobbyNotifications.ExitGame, () => new ExitGameCommand());
             RegisterCommand(LobbyNotifications.PurchaseItem, () => new PurchaseStoreItemCommand());
+            RegisterCommand(LobbyNotifications.SystemBackButtonPressed, () => new SystemBackButtonCommand());
             started = true;
         }
     }

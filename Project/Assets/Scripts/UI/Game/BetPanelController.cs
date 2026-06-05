@@ -375,7 +375,7 @@ namespace Crashmania.UI.Game
             var editable = state == BetPanelState.Idle;
             if (decrementButton != null) decrementButton.interactable = editable;
             if (incrementButton != null) incrementButton.interactable = editable;
-            if (autoplayToggle != null) autoplayToggle.interactable = editable;
+            if (autoplayToggle != null) autoplayToggle.interactable = true;
         }
 
         private void BindQuickButton(Button button, double value)

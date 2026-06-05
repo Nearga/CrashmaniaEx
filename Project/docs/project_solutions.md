@@ -318,3 +318,36 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Moved `Planet` above the blue/grid overlay stack so it can render during flight without preparation clouds.
 
 **Verified**: 2026-06-02, Game scene. Forced `CrashBackgroundAnimator.ShowLaunch()` and `UpdateFlight(8.0)` in Play Mode and reopened `Assets/Screenshots/game_background_forced_flight_planet_final_attempt.png`; the preparation cloud/mountain layer was no longer visible over the flight planet. The exact tube/rock/meteor pieces remain a source-asset blocker: no standalone matching sprites were found, so no screenshot-cropped or invented debris assets were added.
+
+---
+
+## Android APK Deploy Drops USB ADB During Install
+
+**Symptom**:
+- Deploying `Project/Builds/Android/Crashmania_Debug.apk` over USB repeatedly fails after the APK transfer begins.
+- `adb install --no-streaming -r -t ...` reports the APK was fully pushed, then fails with `adb: error: failed to read copy response: EOF`.
+- After the failure, `adb devices` shows the phone as `offline`, even if it was listed as `device` immediately before the install.
+- Smaller APKs can fail the same way, so the issue is not only the 425 MB debug APK size.
+
+**Root cause**:
+- The USB ADB transport is unstable during Android package install. Lightweight commands such as `adb shell getprop ro.product.model` can work, but the package install transaction makes the phone/ADB transport drop offline.
+- In this environment, Wi-Fi ADB pairing also needs an unsandboxed/local-network tool execution. Sandboxed attempts can fail with Windows socket errors such as `10013` or ADB pairing protocol faults even when the phone is reachable by ping.
+
+**Fix**:
+1. On the phone, open `Developer options > Wireless debugging`.
+2. Tap `Pair device with pairing code` and keep that dialog open.
+3. Pair over Wi-Fi using Unity's bundled ADB, allowing local network access if the tool runner asks for escalation:
+   ```powershell
+   & "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" pair <pair-ip:pair-port> <pair-code>
+   ```
+4. Discover the paired connect transport:
+   ```powershell
+   & "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" mdns services
+   & "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" devices -l
+   ```
+5. Install using the Wi-Fi transport instead of the USB serial:
+   ```powershell
+   & "C:\Program Files\Unity\Hub\Editor\6000.4.8f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe" -s <adb-tls-connect-transport> install --no-streaming -r -t "D:\Local\Projects\Unity\CrashmaniaEx\Project\Builds\Android\Crashmania_Debug.apk"
+   ```
+
+**Verified**: 2026-06-05, Android device `UBS1241008005115`. USB install repeatedly failed with `failed to read copy response: EOF` and left the device `offline`. Wi-Fi ADB pairing succeeded after allowing unsandboxed local network access; `adb mdns services` discovered `192.168.0.120:43349`, and installing `Project/Builds/Android/Crashmania_Debug.apk` over the `_adb-tls-connect._tcp` transport completed with `Success`.
