@@ -240,7 +240,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Moved `Game.unity` counter objects to the upper game viewport and rocket to the lower game viewport, then aligned rocket animation baselines with those scene positions.
 - Updated `Phase7GameVerifier` to current hierarchy names and forced a layout rebuild before measuring layout-driven panels.
 
-**Verified**: 2026-06-01, Game scene. Captured Play Mode screenshot `Assets/Screenshots/game_after_layout_play_retry.png`, ran `Crashmania/Verify Phase 7 Game`, and confirmed console clean after clearing MCP/tooling log noise.
+**Verified**: 2026-06-01, Game scene. Captured Play Mode screenshot `Assets/Screenshots~/game_after_layout_play_retry.png`, ran `Crashmania/Verify Phase 7 Game`, and confirmed console clean after clearing MCP/tooling log noise.
 
 ---
 
@@ -248,7 +248,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 
 **Symptom**:
 - The Game scene background appeared to have no visible stars.
-- The saved verification artifact `Assets/Screenshots/game_intro_stars_mountains_play_retry.png` also did not plainly show stars.
+- The saved verification artifact `Assets/Screenshots~/game_intro_stars_mountains_play_retry.png` also did not plainly show stars.
 
 **Root cause**:
 - `GameViewportContainer/Stars` used the exported `BG` sprite from `IntroScreen.png`, but it rendered at sibling index 2.
@@ -260,7 +260,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Assigned the transparent overlay to `GameViewportContainer/Stars`.
 - Moved `Stars` to render after `GridBackground` but before `HistoryContent`, `MultiplierText`, `StatusText`, and `Rocket`.
 
-**Verified**: 2026-06-02, Game scene. `Stars` now renders above the tint/grid layers using the transparent source-derived overlay. Reopened Play Mode screenshot artifact `Assets/Screenshots/game_intro_stars_mountains_play_retry.png` and confirmed the stars are plainly visible. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing screenshot/capture render backend noise.
+**Verified**: 2026-06-02, Game scene. `Stars` now renders above the tint/grid layers using the transparent source-derived overlay. Reopened Play Mode screenshot artifact `Assets/Screenshots~/game_intro_stars_mountains_play_retry.png` and confirmed the stars are plainly visible. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing screenshot/capture render backend noise.
 
 ---
 
@@ -280,7 +280,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Added explicit moon flight offsets to `CrashBackgroundAnimator`: countdown keeps the moon/horizon at the preparation base, launch starts a downward escape, and multiplier updates push it farther down.
 - Killed `planet` and `groundOrMoonLayer` tweens at the start of `UpdateFlight()` before applying multiplier-driven positions.
 
-**Verified**: 2026-06-02, Game scene. Reopened Play Mode screenshot artifact `Assets/Screenshots/game_moon_preparation_play_retry.png` and confirmed the moon/horizon is visible during preparation. Forced `ShowLaunch()` + `UpdateFlight(8.0)`, waited long enough for the old tween race to recur, and confirmed live positions remained at `GroundOrMoonLayer=(-150, -640)` and `Planet=(-96, -420)`. Reopened `Assets/Screenshots/game_moon_flight_play_verified.png` and confirmed the moon/horizon layer had moved down/out of the prep position. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing stale Play Mode/tooling log entries.
+**Verified**: 2026-06-02, Game scene. Reopened Play Mode screenshot artifact `Assets/Screenshots~/game_moon_preparation_play_retry.png` and confirmed the moon/horizon is visible during preparation. Forced `ShowLaunch()` + `UpdateFlight(8.0)`, waited long enough for the old tween race to recur, and confirmed live positions remained at `GroundOrMoonLayer=(-150, -640)` and `Planet=(-96, -420)`. Reopened `Assets/Screenshots~/game_moon_flight_play_verified.png` and confirmed the moon/horizon layer had moved down/out of the prep position. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully. Console clean after clearing stale Play Mode/tooling log entries.
 
 ---
 
@@ -297,7 +297,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Changed `ShowCountdown()` to kill active rocket tweens, park the rocket at `countdownAnchoredPosition`, reset rotation/scale, hide the glow, and stop/clear flame particles.
 - Left `ShowLaunch()` and `UpdateFlight()` responsible for starting flame, glow, movement, rotation, and scale changes after the round starts.
 
-**Verified**: 2026-06-02, Game scene. In Play Mode, forced `ShowCountdown(6f)` and confirmed immediately and after a wait that the rocket stayed at `(490, -590)`, rotation `(0, 0, 0)`, scale `(1, 1, 1)`, `flamePlaying=false`, `glowActive=false`, and no DOTween activity on the rocket/glow. Forced `ShowLaunch()` afterward and confirmed launch still moved the rocket to `(520, -515)` with flame active. Reopened screenshot artifact `Assets/Screenshots/game_rocket_static_countdown_play.png`. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully.
+**Verified**: 2026-06-02, Game scene. In Play Mode, forced `ShowCountdown(6f)` and confirmed immediately and after a wait that the rocket stayed at `(490, -590)`, rotation `(0, 0, 0)`, scale `(1, 1, 1)`, `flamePlaying=false`, `glowActive=false`, and no DOTween activity on the rocket/glow. Forced `ShowLaunch()` afterward and confirmed launch still moved the rocket to `(520, -515)` with flame active. Reopened screenshot artifact `Assets/Screenshots~/game_rocket_static_countdown_play.png`. Ran `Crashmania/Verify Phase 7 Game`; verifier completed successfully.
 
 ---
 
@@ -317,7 +317,7 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
 - Added `Assets/Resources/UI/Game/Extracted/Texture2D/IntroScreen_FlightPlanet.png`, a source-derived fallback crop from the exported `IntroScreen.png` atlas.
 - Moved `Planet` above the blue/grid overlay stack so it can render during flight without preparation clouds.
 
-**Verified**: 2026-06-02, Game scene. Forced `CrashBackgroundAnimator.ShowLaunch()` and `UpdateFlight(8.0)` in Play Mode and reopened `Assets/Screenshots/game_background_forced_flight_planet_final_attempt.png`; the preparation cloud/mountain layer was no longer visible over the flight planet. The exact tube/rock/meteor pieces remain a source-asset blocker: no standalone matching sprites were found, so no screenshot-cropped or invented debris assets were added.
+**Verified**: 2026-06-02, Game scene. Forced `CrashBackgroundAnimator.ShowLaunch()` and `UpdateFlight(8.0)` in Play Mode and reopened `Assets/Screenshots~/game_background_forced_flight_planet_final_attempt.png`; the preparation cloud/mountain layer was no longer visible over the flight planet. The exact tube/rock/meteor pieces remain a source-asset blocker: no standalone matching sprites were found, so no screenshot-cropped or invented debris assets were added.
 
 ---
 
@@ -351,3 +351,34 @@ This file records diagnosed bugs and their fixes. Consult it before investigatin
    ```
 
 **Verified**: 2026-06-05, Android device `UBS1241008005115`. USB install repeatedly failed with `failed to read copy response: EOF` and left the device `offline`. Wi-Fi ADB pairing succeeded after allowing unsandboxed local network access; `adb mdns services` discovered `192.168.0.120:43349`, and installing `Project/Builds/Android/Crashmania_Debug.apk` over the `_adb-tls-connect._tcp` transport completed with `Success`.
+
+---
+
+## Android Deployment "Offlining" / High-Bandwidth Link Failure
+
+**Symptom**:
+- During APK deployment via USB, the device repeatedly disconnects and shows as `offline` in ADB.
+- `adb install` fails with an empty error message or "device offline" after starting "Performing Streamed Install".
+- This happens across multiple physical devices and cables.
+
+**Root cause**:
+1. **ADB Version Conflict**: Multiple running ADB processes from different installations (e.g., Unity Hub vs. WinGet/PlatformTools) can fight for the USB interface, causing handshake failures.
+2. **Streaming Protocol Sensitivity**: The default `adb install` uses a streaming protocol that is sensitive to USB timing and power delivery. High-bandwidth transfers (like a 150MB+ APK) can trigger link resets on certain cables, ports, or hubs.
+
+**Fix**:
+1. **Unify ADB Version**: Kill all `adb.exe` processes and ensure only the **Unity-bundled ADB** is used for deployment to match the Editor's expectations.
+   - Path: `C:\Program Files\Unity\Hub\Editor\<version>\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe`
+2. **Two-Step Deployment Strategy**: Bypass the streaming installer by manually pushing the file to the device's temporary storage and then installing from there.
+   ```powershell
+   # 1. Push APK to internal storage (more resilient than streaming)
+   adb push "Path/To/Your.apk" /data/local/tmp/app.apk
+
+   # 2. Install from internal storage
+   adb shell pm install -r /data/local/tmp/app.apk
+
+   # 3. Clean up
+   adb shell rm /data/local/tmp/app.apk
+   ```
+3. **Physical Validation**: Plug the device directly into the PC's motherboard (back panel) and use a high-quality data cable to ensure maximum power and signal integrity.
+
+**Verified**: 2026-06-06. Successfully deployed `Crashmania2.apk` (148MB) to device `UBS1241008005115` after the streaming install method failed repeatedly. Using the `push` + `shell pm install` method provided a stable 27MB/s transfer and a successful installation.

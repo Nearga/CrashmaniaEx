@@ -307,7 +307,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Added `Assets/Editor/Phase7GameVerifier.cs` with `Crashmania/Verify Phase 7 Game`
 - [x] Verifier checks contracts, commands, proxy, loader, `Game.unity` hierarchy, two `BetPanelController` instances, CanvasScaler policy, build settings, and UI/PureMVC boundaries
 - [x] `Crashmania/Verify Phase 7 Game` completed successfully
-- [x] Play Mode screenshot captured: `Assets/Screenshots/phase7_game_playmode_1170x2532.png`; single-frame acceptance does not validate animated state transitions
+- [x] Play Mode screenshot captured under `Assets/Screenshots~/`; single-frame acceptance does not validate animated state transitions
 - [x] Fixed runtime duplicate `EventSystem` / `AudioListener` warnings in additive/editor multi-scene flows
 - [x] Fixed TMP missing-glyph warning by replacing the lobby online counter emoji with supported text
 
@@ -322,14 +322,14 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 
 ### 7.10 Crash Room Graphics Recovery
-- [x] Captured broken baseline screenshot: `Assets/Screenshots/phase7_game_broken_baseline_720x1600.png`
+- [x] Captured broken baseline screenshot under `Assets/Screenshots~/`
 - [x] Added `docs/phase7_game_reference_map.md` with `720 x 1600` screenshot bands mapped to the `1170 x 2532` Unity canvas
 - [x] Recovered `Game.unity` layout from screenshot proportions instead of stretching extracted atlas sprites across large surfaces
 - [x] Rebuilt large game/header/viewport/active-bets/bet-panel surfaces as reference-colored scene-owned UI panels
 - [x] Kept extracted sprites only for small icons and the aspect-preserved rocket where they fit the reference
 - [x] Updated `BetPanel.prefab` to use non-stretched screenshot-style solid/tinted controls
 - [x] Relaxed Phase 7 verifier away from forced large-surface sprite checks; it now checks layout bands, visible surfaces, controller refs, CanvasScaler, duplicate listener safety, and PureMVC boundaries
-- [x] Captured recovery screenshots: `phase7_game_recovery_playmode_720x1600.png`, `phase7_game_recovery_playmode_750x1334.png`, `phase7_game_recovery_playmode_1170x2532.png`
+- [x] Captured recovery screenshots under `Assets/Screenshots~`: `phase7_game_recovery_playmode_720x1600.png`, `phase7_game_recovery_playmode_750x1334.png`, `phase7_game_recovery_playmode_1170x2532.png`
 - [x] Band sanity check: broken baseline had 4 dark middle bands; recovery screenshots have 0 dark middle bands
 - [x] Play Mode acceptance passed: Boot-to-Game, countdown/flight/crash, cancel, cashout win, lost state, Back-to-Lobby
 

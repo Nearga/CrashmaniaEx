@@ -137,3 +137,4 @@ if (accountPanel != null) accountPanel.SetActive(tabName == "Account");
 - [ ] **Carousel section empty on some runs** — `CarouselSections` can appear empty if mock data loads late. Verify `LobbyMediator` receives `CatalogUpdated` reliably on every fresh lobby load.
 - [ ] **Device Simulator testing** — verify at: Samsung Galaxy S23 (19.5:9), Pixel 4 (18:9), generic 16:9, Galaxy Z Fold wide/square.
 - [ ] **Screenshot continuity audit** — verify Lobby and Game through Boot at `1170 x 2532` and `750 x 1334`, including holes, clipping, overlaps, disruptions, and unintended asymmetry.
+- [ ] Save all generated verification captures under `Assets/Screenshots~` so Unity does not import screenshot artifacts.

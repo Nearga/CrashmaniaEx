@@ -18,6 +18,7 @@ The current deliverable is not a generic prototype. It is a screenshot-faithful 
 - `Project/Assets/Scenes/` contains canonical Unity scenes: `Boot`, `Login`, `Lobby`, `Game`, and future shell scenes.
 - `Project/Assets/Scripts/` contains app code.
 - `Project/Assets/Resources/` contains runtime-loaded prefabs, sprites, config, and mock assets.
+- `Project/Assets/Screenshots~/` contains generated Unity verification screenshots. The trailing `~` keeps screenshot artifacts out of Unity's imported asset database.
 - `Project/docs/` contains working specifications, roadmap, asset inventories, and this constitution.
 - `Research/raw/` is source evidence downloaded from the web app. Do not edit it.
 - `Research/deobfuscated/` is source evidence from deobfuscated web/game extraction and AssetRipper. Do not edit it.
@@ -90,6 +91,7 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 ## Verification Rules
 
 - **After any Unity scene, prefab, or component change: take a screenshot via Unity MCP and visually confirm the result looks correct before finishing.** Do not end a turn without this step when visual output is involved.
+- **Screenshot Artifact Location**: Save all generated Unity screenshots under `Project/Assets/Screenshots~/`. For Unity MCP screenshot tools, use `Assets/Screenshots~` as the project-relative output folder. Do not save generated verification screenshots under `Assets/Screenshots`, `Builds/Automation`, `Project/Builds`, or another location.
 - **Rule of Specific Visual Evidence**: For visual fixes, reopen the saved screenshot artifact with an image viewer/tool and check the exact requested feature, not just that the scene rendered. If the requested change is subtle (stars, contrast, spacing, small icons, background layers), use a crop/zoom, layer/component inspection, or measurable pixel/feature check. If the artifact does not plainly show the intended result, keep iterating or report a concrete blocker.
 - **Rule of Visual Continuity**: Full-screen and cropped screenshot review must explicitly check for holes, exposed camera color, empty bands, abrupt layer disruptions, clipping, overlap, and unintended asymmetry at screen edges and section boundaries.
 - **Rule of Play Mode Screenshotting**: For dynamic, runtime-instantiated, or populated UI (like the Lobby carousels, game cards, and category chips), screenshots MUST be captured in active Play Mode (`manage_editor` play, wait, take screenshot, then stop). Never claim visual fidelity or completeness based on an empty Edit Mode template.
