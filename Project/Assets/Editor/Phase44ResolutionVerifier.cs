@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using Crashmania.UI.Components;
+using Crashmania.UI.Shell;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -33,6 +34,7 @@ namespace Crashmania.Editor
         [MenuItem("Crashmania/Verify Phase 4.4 Resolution")]
         public static void Run()
         {
+            VerifySharedHeaders();
             VerifySceneCanvasScalers();
             VerifySceneSafeAreas();
             VerifyPortraitOnly();
@@ -141,6 +143,100 @@ namespace Crashmania.Editor
                 rectTransform.offsetMax != Vector2.zero)
             {
                 throw new InvalidOperationException($"{path} must stretch to its parent frame.");
+            }
+        }
+
+        private static void VerifySharedHeaders()
+        {
+            foreach (var scenePath in SafeAreaScenePaths)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath);
+                var sceneName = Path.GetFileNameWithoutExtension(scenePath);
+                var headers = GetSceneComponents<HeaderView>(scene);
+                if (headers.Count != 1)
+                {
+                    throw new InvalidOperationException($"{scenePath} must contain exactly one HeaderView. Found: {headers.Count}");
+                }
+
+                var header = headers[0];
+                if (PrefabUtility.GetPrefabInstanceStatus(header.gameObject) != PrefabInstanceStatus.Connected)
+                {
+                    throw new InvalidOperationException($"{scenePath} HeaderOverlay must remain connected to the shared prefab.");
+                }
+
+                var headerBar = header.transform.Find("Safe Area/Header Bar") as RectTransform;
+                var back = header.transform.Find("Safe Area/Header Bar/BackButton") as RectTransform;
+                var gold = header.transform.Find("Safe Area/Header Bar/Gold Panel") as RectTransform;
+                var menu = header.transform.Find("Safe Area/Header Bar/Right Menu") as RectTransform;
+                if (headerBar == null || back == null || gold == null || menu == null)
+                {
+                    throw new InvalidOperationException($"{scenePath} is missing the shared header layout regions.");
+                }
+
+                var layout = headerBar.GetComponent<HorizontalLayoutGroup>();
+                if (layout == null || !layout.childControlWidth || layout.childForceExpandWidth)
+                {
+                    throw new InvalidOperationException($"{scenePath} Header Bar must use the shared fixed/flexible horizontal layout.");
+                }
+
+                AssertLayoutWidth(back, 96f, 0f, scenePath);
+                AssertLayoutWidth(menu, 210f, 0f, scenePath);
+                var goldLayout = gold.GetComponent<LayoutElement>();
+                if (goldLayout == null || goldLayout.flexibleWidth <= 0f)
+                {
+                    throw new InvalidOperationException($"{scenePath} Gold Panel must flex between Back and Right Menu.");
+                }
+
+                var shouldShowBack = sceneName == "Game";
+                if (back.gameObject.activeSelf != shouldShowBack)
+                {
+                    throw new InvalidOperationException($"{scenePath} BackButton active state must be {shouldShowBack} in Edit Mode.");
+                }
+
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(headerBar);
+                AssertContainedAndOrdered(headerBar, back, gold, menu, shouldShowBack, scenePath);
+            }
+        }
+
+        private static void AssertLayoutWidth(RectTransform target, float expectedWidth, float expectedFlexibleWidth, string scenePath)
+        {
+            var layout = target.GetComponent<LayoutElement>();
+            if (layout == null ||
+                Math.Abs(layout.preferredWidth - expectedWidth) > 0.001f ||
+                Math.Abs(layout.flexibleWidth - expectedFlexibleWidth) > 0.001f)
+            {
+                throw new InvalidOperationException($"{scenePath} {target.name} does not match the shared header width contract.");
+            }
+        }
+
+        private static void AssertContainedAndOrdered(
+            RectTransform headerBar,
+            RectTransform back,
+            RectTransform gold,
+            RectTransform menu,
+            bool includeBack,
+            string scenePath)
+        {
+            var headerBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(headerBar, headerBar);
+            var goldBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(headerBar, gold);
+            var menuBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(headerBar, menu);
+            if (goldBounds.min.x < headerBounds.min.x ||
+                menuBounds.max.x > headerBounds.max.x ||
+                goldBounds.max.x > menuBounds.min.x)
+            {
+                throw new InvalidOperationException($"{scenePath} shared header has clipping or overlap between Gold Panel and Right Menu.");
+            }
+
+            if (!includeBack)
+            {
+                return;
+            }
+
+            var backBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(headerBar, back);
+            if (backBounds.min.x < headerBounds.min.x || backBounds.max.x > goldBounds.min.x)
+            {
+                throw new InvalidOperationException($"{scenePath} shared header BackButton is clipped or overlaps Gold Panel.");
             }
         }
 

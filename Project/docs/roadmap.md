@@ -61,10 +61,10 @@ Port the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut:
 - [x] `Assets/Scripts/Services/NavigationService.cs` — `LoadScene()` with fade-in/out using DOTween on a `TransitionOverlay` canvas
 - [x] `Assets/Scripts/PureMvc/Commands/Navigation/SceneLoadedCommand.cs` — registers mediators for the freshly loaded scene
 
-### 2.3 Persistent Overlays (DontDestroyOnLoad)
-These GameObjects are created once in Boot and survive all scene loads:
+### 2.3 Scene-Local Shell Overlays
+Each scene owns its shell overlays under its single root Canvas. Mediators are rebound after scene loads:
 - [x] `[TransitionOverlay]` — full-screen black `CanvasGroup`, DOTween fade, sort order 300
-- [x] `[HeaderOverlay]` — `HeaderView.cs` + `Canvas` sort order 100 (Lobby/Store/Gifts/Account modes); **hidden during Game scene**
+- [x] `[HeaderOverlay]` — shared scene-local prefab used by Lobby and Game; Game adds only the fixed left Back slot
 - [x] `[TabBar]` — `TabBarView.cs` + `Canvas` sort order 100; **hidden during Game scene**
 - [x] `[ModalManager]` — `ModalView.cs` + `Canvas` sort order 200, queues and stacks modal prefabs
 - [x] `[AudioManager]` — `AudioManager.cs`, background music loop + SFX pool (5 AudioSources)
@@ -300,6 +300,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ### 7.7 Exit Game Flow
 - [x] Back button → `ExitGameCommand` → `EmbeddedGameLoader.UnloadGame()` → navigate back to Lobby → restore TabBar and HeaderOverlay
+- [x] Game uses the same shared Lobby header composition, with only the fixed left Back slot enabled
 - [x] Runtime smoke test verified `Boot → Game → Back → Lobby` without new console errors/warnings
 
 ### 7.8 Verification

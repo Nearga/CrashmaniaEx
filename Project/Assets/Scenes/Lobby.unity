@@ -1326,14 +1326,6 @@ PrefabInstance:
       propertyPath: goldPanelRect
       value: 
       objectReference: {fileID: 519873023}
-    - target: {fileID: 4386781181904450416, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4386781181904450416, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6137205445772513118, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1412,6 +1404,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6137205445772513118, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7621976330279800793, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:

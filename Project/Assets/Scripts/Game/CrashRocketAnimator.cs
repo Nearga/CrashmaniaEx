@@ -12,10 +12,34 @@ namespace Crashmania.Game
         [SerializeField] private ParticleSystem flameParticles;
         [SerializeField] private GameObject explosionObject;
         [SerializeField] private GameObject optionalSpineRoot;
-        [SerializeField] private Vector2 countdownAnchoredPosition = new(566f, -673f);
-        [SerializeField] private Vector2 launchAnchoredPosition = new(596f, -598f);
-        [SerializeField] private Vector2 flightTargetAnchoredPosition = new(911f, -293f);
+        [SerializeField] private Vector2 countdownNormalizedPosition = new(0.5f, 0.167f);
+        [SerializeField] private Vector2 launchNormalizedPosition = new(0.527f, 0.259f);
+        [SerializeField] private Vector2 flightTargetNormalizedPosition = new(0.805f, 0.637f);
         [SerializeField] private float countdownRotationDegrees = 0f;
+
+        private Vector2 ResolvedCountdownPos => GetAnchoredPosition(countdownNormalizedPosition);
+        private Vector2 ResolvedLaunchPos => GetAnchoredPosition(launchNormalizedPosition);
+        private Vector2 ResolvedFlightTargetPos => GetAnchoredPosition(flightTargetNormalizedPosition);
+
+        private Vector2 GetAnchoredPosition(Vector2 normalizedPos)
+        {
+            if (rocketTransform == null || rocketTransform.parent == null)
+            {
+                return Vector2.zero;
+            }
+
+            var parentRT = rocketTransform.parent as RectTransform;
+            if (parentRT == null)
+            {
+                return Vector2.zero;
+            }
+
+            var size = parentRT.rect.size;
+            // Assuming anchors are Top-Left (0, 1):
+            // x = normX * width
+            // y = -(1f - normY) * height
+            return new Vector2(normalizedPos.x * size.x, -(1f - normalizedPos.y) * size.y);
+        }
 
         private Sequence idleSequence;
         private Sequence launchSequence;
@@ -63,7 +87,7 @@ namespace Crashmania.Game
 
             KillTweens();
             rocketTransform.DOKill();
-            rocketTransform.anchoredPosition = countdownAnchoredPosition;
+            rocketTransform.anchoredPosition = ResolvedCountdownPos;
             rocketTransform.localRotation = Quaternion.Euler(0f, 0f, countdownRotationDegrees);
             rocketTransform.localScale = Vector3.one;
 
@@ -96,7 +120,7 @@ namespace Crashmania.Game
             }
 
             launchSequence = DOTween.Sequence()
-                .Join(rocketTransform.DOAnchorPos(launchAnchoredPosition, 0.28f).SetEase(Ease.OutBack))
+                .Join(rocketTransform.DOAnchorPos(ResolvedLaunchPos, 0.28f).SetEase(Ease.OutBack))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 6f), 0.28f).SetEase(Ease.OutSine))
                 .Join(rocketTransform.DOScale(new Vector3(1.04f, 0.96f, 1f), 0.12f).SetLoops(2, LoopType.Yoyo));
         }
@@ -117,8 +141,8 @@ namespace Crashmania.Game
             var noiseX = Mathf.Sin(Time.time * 3.2f) * Mathf.Lerp(6f, 18f, progress);
             var noiseY = Mathf.Cos(Time.time * 2.7f) * Mathf.Lerp(8f, 22f, progress);
             var targetPos = new Vector2(
-                Mathf.Lerp(launchAnchoredPosition.x, flightTargetAnchoredPosition.x, progress) + noiseX,
-                Mathf.Lerp(launchAnchoredPosition.y, flightTargetAnchoredPosition.y, lift) + noiseY
+                Mathf.Lerp(ResolvedLaunchPos.x, ResolvedFlightTargetPos.x, progress) + noiseX,
+                Mathf.Lerp(ResolvedLaunchPos.y, ResolvedFlightTargetPos.y, lift) + noiseY
             );
 
             rocketTransform.DOAnchorPos(targetPos, 0.06f).SetEase(Ease.Linear);
@@ -183,9 +207,9 @@ namespace Crashmania.Game
 
             var bobHeight = secondsRemaining <= 3f ? 18f : 10f;
             idleSequence = DOTween.Sequence()
-                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(ResolvedCountdownPos.y + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 4f), 0.65f).SetEase(Ease.InOutSine))
-                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(ResolvedCountdownPos.y - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, countdownRotationDegrees), 0.65f).SetEase(Ease.InOutSine))
                 .SetLoops(-1);
         }

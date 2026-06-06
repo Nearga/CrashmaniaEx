@@ -30,10 +30,31 @@ namespace Crashmania.Game
         [SerializeField] private CrashBackgroundAnimator backgroundAnimator;
 
         [Header("Layout Baselines")]
-        [SerializeField] private Vector2 fallbackRocketCountdownPosition = new(490f, -590f);
-        [SerializeField] private Vector2 fallbackRocketLaunchPosition = new(520f, -515f);
-        [SerializeField] private Vector2 fallbackRocketFlightTargetPosition = new(835f, -210f);
+        [SerializeField] private Vector2 fallbackRocketCountdownNormalized = new(0.5f, 0.167f);
+        [SerializeField] private Vector2 fallbackRocketLaunchNormalized = new(0.527f, 0.259f);
+        [SerializeField] private Vector2 fallbackRocketFlightTargetNormalized = new(0.805f, 0.637f);
         [SerializeField] private float fallbackRocketCountdownRotation = 0f;
+
+        private Vector2 ResolvedCountdownPos => GetAnchoredPosition(fallbackRocketCountdownNormalized);
+        private Vector2 ResolvedLaunchPos => GetAnchoredPosition(fallbackRocketLaunchNormalized);
+        private Vector2 ResolvedFlightTargetPos => GetAnchoredPosition(fallbackRocketFlightTargetNormalized);
+
+        private Vector2 GetAnchoredPosition(Vector2 normalizedPos)
+        {
+            if (rocketTransform == null || rocketTransform.parent == null)
+            {
+                return Vector2.zero;
+            }
+
+            var parentRT = rocketTransform.parent as RectTransform;
+            if (parentRT == null)
+            {
+                return Vector2.zero;
+            }
+
+            var size = parentRT.rect.size;
+            return new Vector2(normalizedPos.x * size.x, -(1f - normalizedPos.y) * size.y);
+        }
 
         [Header("Lists")]
         [SerializeField] private RectTransform historyContent;
@@ -300,7 +321,7 @@ namespace Crashmania.Game
             if (update.Multiplier < 1.1)
             {
                 // Launch phase
-                rocketTransform.DOAnchorPos(fallbackRocketLaunchPosition, duration).SetEase(Ease.OutSine);
+                rocketTransform.DOAnchorPos(ResolvedLaunchPos, duration).SetEase(Ease.OutSine);
                 rocketTransform.DORotate(new Vector3(0f, 0f, 5f), duration).SetEase(Ease.OutSine);
             }
             else
@@ -313,8 +334,8 @@ namespace Crashmania.Game
                 float noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
 
                 Vector2 targetPos = new Vector2(
-                    Mathf.Lerp(fallbackRocketLaunchPosition.x, fallbackRocketFlightTargetPosition.x, progress) + noiseX,
-                    Mathf.Lerp(fallbackRocketLaunchPosition.y, fallbackRocketFlightTargetPosition.y, Mathf.Sqrt(progress)) + noiseY
+                    Mathf.Lerp(ResolvedLaunchPos.x, ResolvedFlightTargetPos.x, progress) + noiseX,
+                    Mathf.Lerp(ResolvedLaunchPos.y, ResolvedFlightTargetPos.y, Mathf.Sqrt(progress)) + noiseY
                 );
 
                 float targetRot = Mathf.Lerp(5f, 25f, progress);
@@ -443,7 +464,7 @@ namespace Crashmania.Game
             if (rocketTransform != null)
             {
                 rocketTransform.DOKill();
-                rocketTransform.anchoredPosition = fallbackRocketCountdownPosition;
+                rocketTransform.anchoredPosition = ResolvedCountdownPos;
                 rocketTransform.localRotation = Quaternion.Euler(0f, 0f, fallbackRocketCountdownRotation);
                 rocketTransform.localScale = Vector3.one;
             }

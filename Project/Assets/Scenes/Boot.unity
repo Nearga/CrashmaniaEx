@@ -625,7 +625,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11ba2536d7b354db4a54c6a1c5444bad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.Boot.DevSceneLoader
-  targetScene: Lobby
+  targetScene: Game
   useMock: 1
 --- !u!1 &1821337652
 GameObject:

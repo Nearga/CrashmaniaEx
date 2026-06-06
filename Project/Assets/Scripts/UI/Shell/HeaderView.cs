@@ -12,7 +12,6 @@ namespace Crashmania.UI.Shell
         [SerializeField] private GameObject scHighlight;
         [SerializeField] private UnityEngine.UI.Button toggleButton;
         [SerializeField] private UnityEngine.UI.Button backButton;
-        [SerializeField] private RectTransform goldPanelRect;
 
         public event System.Action OnToggleCurrency;
         public event System.Action OnBackClicked;
@@ -61,10 +60,6 @@ namespace Crashmania.UI.Shell
             if (backButton != null)
             {
                 backButton.gameObject.SetActive(isGame);
-            }
-            if (goldPanelRect != null)
-            {
-                goldPanelRect.anchoredPosition = new Vector2(isGame ? 144f : 24f, goldPanelRect.anchoredPosition.y);
             }
         }
 
