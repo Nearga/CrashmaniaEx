@@ -2,8 +2,10 @@ using Crashmania.Config;
 using Crashmania.Core;
 using Crashmania.Game;
 using Crashmania.Models;
+using Crashmania.PureMvc.Mediators;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Proxies;
+using Crashmania.UI.Game;
 using PureMVC.Interfaces;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ namespace Crashmania.PureMvc.Scenes
     public sealed class GameSceneController : MonoBehaviour, IPureMvcScene
     {
         [SerializeField] private MonoBehaviour gameControllerBehaviour;
+        [SerializeField] private GameView gameView;
 
         private IGameController gameController;
         private IFacade facade;
@@ -49,6 +52,10 @@ namespace Crashmania.PureMvc.Scenes
 
             var settings = facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
             gameController.Initialize(activeGameProxy.Session, settings);
+            if (gameView != null)
+            {
+                facade.RegisterMediator(new GameMediator(gameView));
+            }
 
             var balance = facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
             EnsureDevBalance(balance);
@@ -66,6 +73,10 @@ namespace Crashmania.PureMvc.Scenes
             {
                 gameController.OnBalanceChanged -= OnBalanceChanged;
                 gameController.Shutdown();
+            }
+            if (activeFacade != null && activeFacade.HasMediator(GameMediator.Name))
+            {
+                activeFacade.RemoveMediator(GameMediator.Name);
             }
             gameObject.SetActive(false);
         }

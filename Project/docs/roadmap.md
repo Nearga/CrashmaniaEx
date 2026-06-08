@@ -453,6 +453,59 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ---
 
+## Phase 12 — Win Animation & Immediate Reward Settlement
+*Goal: cash-out wins settle immediately during flight while a reusable coin flyout carries the reward from the winning control to the matching header balance.*
+
+### 12.1 Reusable Currency Reward Flyout
+- [ ] Add a reusable `CurrencyRewardFlyout` UI component that accepts currency, payout amount, source `RectTransform`, target `RectTransform`, animation settings, and an optional completion callback.
+- [ ] Use a scene-owned `CurrencyRewardLayer` under the existing root Canvas; do not create another Canvas or block raycasts.
+- [ ] Make the number of animated coins configurable on the component with four serialized properties:
+  - `minAmountOfCoins` (default `4`)
+  - `maxAmountOfCoins` (default `8`)
+  - `multiplierForMinAmountOfCoins` (default `1.3`)
+  - `multiplierForMaxAmountOfCoins` (default `5.0`)
+- [ ] Calculate the coin count from the winning multiplier using clamped linear interpolation between the configured multiplier thresholds and round the result to an integer: multipliers at or below the minimum use `minAmountOfCoins`, multipliers at or above the maximum use `maxAmountOfCoins`, and values between them spread evenly across the integer coin-count range.
+- [ ] Prewarm enough pooled UGUI coin `Image` instances for two simultaneous `maxAmountOfCoins` bursts so overlapping dual-panel wins do not allocate or interrupt each other.
+- [ ] Scale coins in at the source, stagger their launch, and fly them along slightly varied DOTween spline paths before scaling/fading into the target.
+- [ ] Prefer existing extracted currency art:
+  - CC: `Assets/Resources/UI/Game/Extracted/Sprite/Top Bar-coin_crash.asset`
+  - SC: `Assets/Resources/UI/Game/Extracted/Sprite/Top Bar-coin_sweep.asset`
+  - Fallbacks: `Assets/Resources/UI/Icons/Game/coin.png` and `Assets/Resources/UI/Icons/Game/sweep-coin.png`
+
+### 12.2 Immediate Win Settlement
+- [ ] Update `CrashGameController` so a successful `BetResolved` emits an immediate reward event during `Flight`, for both manual and auto cash-out, carrying `CrashBetResolution.Payout`, winning multiplier, currency, and source `RectTransform`.
+- [ ] Credit the full `CrashBetResolution.Payout` to `BalanceProxy` immediately when the reward event is handled; keep the existing bet debit at round start.
+- [ ] Remove round-end winnings accumulation and ensure `OnRoundEnded` cannot credit an already settled payout a second time.
+- [ ] Preserve existing round-start bet debit, loss resolution, dual-bet behavior, and PureMVC boundaries.
+
+### 12.3 PureMVC Coordination & Currency Lock
+- [ ] Add passive `GameView` and `GameMediator` components as the Game scene PureMVC coordination bridge; register/remove `GameMediator` from `GameSceneController.Show()` / `Close()`.
+- [ ] Keep `GameView` passive: expose game reward and bet-state events, bind currency mode, and trigger `CurrencyRewardFlyout` without directly accessing the facade or sending notifications.
+- [ ] Extend `BetPanelController` with a serialized `rewardSource` `RectTransform`, a `StateChanged` event, and a `BlocksCurrencyToggle` property that is true only while the panel is `Pending` or `InFlight`.
+- [ ] Lock the header currency toggle whenever either local bet panel blocks currency switching; unlock it after both panels leave `Pending` / `InFlight`.
+- [ ] When currency switching is unlocked, propagate `CurrencyModeChanged` to both idle bet panels before the next bet is placed.
+- [ ] Add the minimum notification/API contract needed for `GameMediator` to coordinate the header toggle lock and synchronized currency mode without violating view/PureMVC boundaries.
+
+### 12.4 Game Scene & Header Wiring
+- [ ] Add an artist-editable reward source anchor to each `BetPanel` action button and expose matching CC/SC destination anchors from the shared `HeaderOverlay`.
+- [ ] Add `CurrencyRewardLayer` under `GameCanvas`, above game content and within the existing single Canvas, then bind the scene-owned `CurrencyRewardFlyout`.
+- [ ] Wire `GameMediator` to credit `BalanceProxy` immediately, trigger the matching currency flyout, and synchronize the header counter tween with the flyout duration.
+- [ ] Extend `AccumulateToBalance`, `HeaderView`, and `HeaderMediator` with custom-duration balance animation and safe in-progress retargeting so overlapping rewards finish on the exact aggregate balance.
+- [ ] Keep the first integration limited to `Game.unity`, while leaving the component reusable for purchases, bonuses, and other panels.
+
+### 12.5 Verification
+- [ ] Use Unity MCP before scene/prefab changes to inspect the live Game hierarchy, shared header prefab, component references, prefab connection state, and console.
+- [ ] Add EditMode tests for coin-count interpolation: `1.3x` and below gives `4`, `5.0x` and above gives `8`, and intermediate multipliers round to evenly distributed integer counts.
+- [ ] Add focused tests for immediate payout handling, no round-end double credit, bet-panel currency-lock states, currency synchronization while idle, and custom-duration/retargeted balance accumulation where practical.
+- [ ] Extend `Crashmania/Verify Phase 7 Game` or add a Phase 12 verifier for the single-Canvas policy, reward layer without another Canvas/GraphicRaycaster, assigned coin sprites, header targets, Game mediator/view wiring, and both bet-panel reward sources.
+- [ ] Validate in active Play Mode at `1170 x 2532` and `750 x 1334`: manual cash-out, auto cash-out, overlapping dual-panel wins, toggle locked while pending/in-flight, toggle unlocked afterward, synchronized next-bet currency, exact final balance, and no round-end double credit.
+- [ ] Confirm the header starts calculating toward the credited target while coins are flying and reaches the final value by the end of the animation.
+- [ ] Check the Unity console in Edit and Play Mode and fix all new warnings/errors.
+- [ ] Save and visually inspect verification screenshots under `Assets/Screenshots~`.
+
+
+---
+
 ## Appendix — File Creation Order Summary
 
 The following lists the **exact order** to create files from scratch (each depends on the previous group):

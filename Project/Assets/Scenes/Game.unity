@@ -7900,6 +7900,7 @@ GameObject:
   - component: {fileID: 466857844}
   - component: {fileID: 466857843}
   - component: {fileID: 466857851}
+  - component: {fileID: 466857852}
   m_Layer: 5
   m_Name: GameCanvas
   m_TagString: Untagged
@@ -7989,6 +7990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.PureMvc.Scenes.GameSceneController
   gameControllerBehaviour: {fileID: 466857845}
+  gameView: {fileID: 466857852}
 --- !u!114 &466857847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8072,6 +8074,7 @@ RectTransform:
   - {fileID: 1352082853}
   - {fileID: 1007263603}
   - {fileID: 1799133999}
+  - {fileID: 980057362}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8103,6 +8106,24 @@ MonoBehaviour:
   moonGroundFlightOffset: {x: -150, y: -640}
   launchMoonProgress: 0.18
   moonFlightMultiplierRange: 7
+--- !u!114 &466857852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466857842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18fa63d29877ed04aa1faae8ad72d03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Crashmania.Runtime::Crashmania.UI.Game.GameView
+  gameController: {fileID: 466857845}
+  betPanels:
+  - {fileID: 257785150}
+  - {fileID: 1880812612}
+  header: {fileID: 1130315295}
+  rewardFlyout: {fileID: 980057361}
 --- !u!1 &496941420
 GameObject:
   m_ObjectHideFlags: 0
@@ -10242,6 +10263,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 966193734}
   m_CullTransparentMesh: 1
+--- !u!1 &980057360
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 980057362}
+  - component: {fileID: 980057361}
+  m_Layer: 0
+  m_Name: CurrencyRewardLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &980057361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980057360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f5fb983be294d469fc6bff282a5743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Crashmania.Runtime::Crashmania.UI.Components.CurrencyRewardFlyout
+  rewardLayer: {fileID: 980057362}
+  ccCoinSprite: {fileID: 21300000, guid: 0b70a34c1cae547de9650cd18cb889d0, type: 2}
+  scCoinSprite: {fileID: 21300000, guid: 6b5e488867d2d5644b5309deac25299c, type: 2}
+  minAmountOfCoins: 4
+  maxAmountOfCoins: 8
+  multiplierForMinAmountOfCoins: 1.3
+  multiplierForMaxAmountOfCoins: 5
+  defaultSettings:
+    coinSize: 64
+    scaleInDuration: 0.12
+    launchStagger: 0.06
+    flightDuration: 0.85
+    fadeDuration: 0.18
+    lateralSpread: 90
+    arcHeight: 220
+--- !u!224 &980057362
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980057360}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 466857850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &992786513
 GameObject:
   m_ObjectHideFlags: 0
@@ -10608,6 +10692,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091491394}
   m_CullTransparentMesh: 1
+--- !u!114 &1130315295 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2521202752534552091, guid: 14c9a3f70da8f4eb8ad09e8b0632a1c3, type: 3}
+  m_PrefabInstance: {fileID: 329685094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 471e40bc974854a9a8b8dbf048117203, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Shell.HeaderView
 --- !u!1 &1185359315
 GameObject:
   m_ObjectHideFlags: 0

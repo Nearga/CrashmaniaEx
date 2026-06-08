@@ -118,6 +118,7 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 - Keep PureMVC boundaries clean.
 - Do not mutate source evidence in `Research/`.
 - Do not reintroduce layout builder scripts for Phase 5-style scene work.
+- Do not run Git-related commands automatically. Every Git command requires explicit manual approval from the user before execution.
 - If Unity MCP or the editor is unavailable, stale, compiling, or broken, tell the user exactly what is blocking safe work.
 
 ## Technical Integrity & Efficiency Mandates

@@ -9,6 +9,7 @@ namespace Crashmania.UI.Components
     public sealed class AccumulateToBalance : MonoBehaviour
     {
         [SerializeField] private string format = "N0";
+        [SerializeField] private float defaultAnimationDuration = 0.5f;
 
         private TMP_Text label;
         private double currentValue;
@@ -26,6 +27,11 @@ namespace Crashmania.UI.Components
 
         public void SetValue(double value, bool animate)
         {
+            SetValue(value, animate, defaultAnimationDuration);
+        }
+
+        public void SetValue(double value, bool animate, float duration)
+        {
             if (label == null)
             {
                 label = GetComponent<TMP_Text>();
@@ -41,12 +47,18 @@ namespace Crashmania.UI.Components
             }
 
             var start = currentValue;
-            tween = DOVirtual.Float((float)start, (float)value, 0.5f, nextValue =>
+            tween = DOTween.To(() => start, nextValue =>
                 {
+                    start = nextValue;
                     currentValue = nextValue;
                     label.text = Format(currentValue);
-                })
-                .SetEase(Ease.OutCubic);
+                }, value, Mathf.Max(0.01f, duration))
+                .SetEase(Ease.OutCubic)
+                .OnComplete(() =>
+                {
+                    currentValue = value;
+                    label.text = Format(value);
+                });
         }
 
         public void SetFormat(string valueFormat)

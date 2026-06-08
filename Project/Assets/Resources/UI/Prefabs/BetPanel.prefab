@@ -516,6 +516,41 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &817558458058389841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5276591992125461347}
+  m_Layer: 0
+  m_Name: RewardSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5276591992125461347
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817558458058389841}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838351007726673658}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1114424237458357273
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +721,7 @@ RectTransform:
   m_Children:
   - {fileID: 5540712591076924334}
   - {fileID: 5891319597822260577}
+  - {fileID: 5276591992125461347}
   m_Father: {fileID: 6365545011027456127}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -3057,6 +3093,7 @@ MonoBehaviour:
   decrementButton: {fileID: 3306324884243132093}
   incrementButton: {fileID: 220199378139372783}
   actionButton: {fileID: 7173950246116835179}
+  rewardSource: {fileID: 5276591992125461347}
   autoplayToggle: {fileID: 7005528191971488307}
   actionBackground: {fileID: 3198967530048785213}
   quick10KButton: {fileID: 3840393475346133091}

@@ -74,15 +74,13 @@ namespace Crashmania.Game
         private int lastCountdownRoundNonce = int.MinValue;
 
         private readonly Dictionary<string, (double amount, CurrencyMode currency)> pendingBets = new();
-        private double roundWinningsCc;
-        private double roundWinningsSc;
-
         private Action<double, CurrencyMode> betAcceptedHandlerA;
         private Action<double, CurrencyMode> betCancelledHandlerA;
         private Action<double, CurrencyMode> betAcceptedHandlerB;
         private Action<double, CurrencyMode> betCancelledHandlerB;
 
         public event Action<double, double> OnBalanceChanged;
+        public event Action<CrashRewardEvent> RewardEarned;
 
         private void Awake()
         {
@@ -261,9 +259,6 @@ namespace Crashmania.Game
 
             pendingBets.Clear();
 
-            // Reset winnings accumulator
-            roundWinningsCc = 0;
-            roundWinningsSc = 0;
         }
 
         private void OnMultiplierUpdated(CrashMultiplierEvent update)
@@ -369,11 +364,6 @@ namespace Crashmania.Game
 
             AddHistoryPill(ended.CrashPoint);
 
-            // Credit winnings exactly at round end
-            if (roundWinningsCc > 0 || roundWinningsSc > 0)
-            {
-                OnBalanceChanged?.Invoke(roundWinningsCc, roundWinningsSc);
-            }
         }
 
         private void OnIntermissionStarted(int roundNonce)
@@ -392,13 +382,17 @@ namespace Crashmania.Game
 
             if (resolution.Won)
             {
-                if (resolution.Currency == CurrencyMode.CC)
+                foreach (var panel in betPanels)
                 {
-                    roundWinningsCc += resolution.Payout;
-                }
-                else
-                {
-                    roundWinningsSc += resolution.Payout;
+                    if (panel != null && panel.PanelId == resolution.PanelId)
+                    {
+                        RewardEarned?.Invoke(new CrashRewardEvent(
+                            resolution.Payout,
+                            resolution.Multiplier,
+                            resolution.Currency,
+                            panel.RewardSource));
+                        break;
+                    }
                 }
             }
         }

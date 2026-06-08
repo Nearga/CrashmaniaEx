@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Crashmania.Models
 {
@@ -129,5 +130,21 @@ namespace Crashmania.Models
         public CurrencyMode Currency { get; }
         public double Multiplier { get; }
         public double Payout { get; }
+    }
+
+    public readonly struct CrashRewardEvent
+    {
+        public CrashRewardEvent(double payout, double multiplier, CurrencyMode currency, RectTransform source)
+        {
+            Payout = payout;
+            Multiplier = multiplier;
+            Currency = currency;
+            Source = source;
+        }
+
+        public double Payout { get; }
+        public double Multiplier { get; }
+        public CurrencyMode Currency { get; }
+        public RectTransform Source { get; }
     }
 }

@@ -18,6 +18,7 @@ namespace Crashmania.UI.Game
         [SerializeField] private Button decrementButton;
         [SerializeField] private Button incrementButton;
         [SerializeField] private Button actionButton;
+        [SerializeField] private RectTransform rewardSource;
         [SerializeField] private Toggle autoplayToggle;
         [SerializeField] private Image actionBackground;
         [SerializeField] private Button quick10KButton;
@@ -52,10 +53,14 @@ namespace Crashmania.UI.Game
 
         public event Action<double, CurrencyMode> BetAccepted;
         public event Action<double, CurrencyMode> BetCancelled;
+        public event Action<BetPanelController> StateChanged;
 
         public string PanelId => panelId;
         public BetPanelState State => state;
         public AutoplaySettings Autoplay => autoplay;
+        public RectTransform RewardSource => rewardSource;
+        public CurrencyMode ActiveCurrency => currency;
+        public bool BlocksCurrencyToggle => state == BetPanelState.Pending || state == BetPanelState.InFlight;
 
         private void Awake()
         {
@@ -262,8 +267,15 @@ namespace Crashmania.UI.Game
 
         private void SetState(BetPanelState nextState)
         {
+            if (state == nextState)
+            {
+                Render();
+                return;
+            }
+
             state = nextState;
             Render();
+            StateChanged?.Invoke(this);
         }
 
         private void SetSubmenuVisible(bool visible)

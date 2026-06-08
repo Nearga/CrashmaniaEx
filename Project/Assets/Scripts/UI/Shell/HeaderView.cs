@@ -12,9 +12,16 @@ namespace Crashmania.UI.Shell
         [SerializeField] private GameObject scHighlight;
         [SerializeField] private UnityEngine.UI.Button toggleButton;
         [SerializeField] private UnityEngine.UI.Button backButton;
+        [SerializeField] private RectTransform ccRewardTarget;
+        [SerializeField] private RectTransform scRewardTarget;
 
         public event System.Action OnToggleCurrency;
         public event System.Action OnBackClicked;
+
+        public RectTransform GetRewardTarget(CurrencyMode currency)
+        {
+            return currency == CurrencyMode.CC ? ccRewardTarget : scRewardTarget;
+        }
 
         private void Awake()
         {
@@ -51,6 +58,20 @@ namespace Crashmania.UI.Shell
         {
             if (ccBalance != null) ccBalance.SetValue(cc, animate);
             if (scBalance != null) scBalance.SetValue(sc, animate);
+        }
+
+        public void SetBalances(double cc, double sc, float duration)
+        {
+            if (ccBalance != null) ccBalance.SetValue(cc, animate: true, duration);
+            if (scBalance != null) scBalance.SetValue(sc, animate: true, duration);
+        }
+
+        public void SetCurrencyToggleInteractable(bool interactable)
+        {
+            if (toggleButton != null)
+            {
+                toggleButton.interactable = interactable;
+            }
         }
 
         public void SetVisibleForScene(string sceneName)
