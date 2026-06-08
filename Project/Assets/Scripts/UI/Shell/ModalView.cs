@@ -18,12 +18,10 @@ namespace Crashmania.UI.Shell
         public event Action<GameObject> ModalShown;
         public event Action<GameObject> ModalHidden;
 
+        public bool IsModalOpen => modalStack.Count > 0 || (canvasGroup != null && canvasGroup.alpha > 0f);
+
         private void Awake()
         {
-            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
-            if (panel == null) panel = transform.Find("Modal Overlay/Modal Panel")?.GetComponent<RectTransform>();
-            if (overlayButton == null) overlayButton = transform.Find("Modal Overlay")?.GetComponent<Button>();
-
             if (overlayButton != null)
             {
                 overlayButton.onClick.RemoveAllListeners();

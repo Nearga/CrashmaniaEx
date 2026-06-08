@@ -27,9 +27,6 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (tickerText == null)
-                tickerText = transform.Find("TickerMask/TickerText")?.GetComponent<TMP_Text>();
-
             if (tickerText != null)
                 _tickerRT = tickerText.rectTransform;
 

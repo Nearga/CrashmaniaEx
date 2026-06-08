@@ -14,9 +14,6 @@ namespace Crashmania.UI.Shell
 
         private void Awake()
         {
-            if (panel == null) panel = transform.Find("Safe Area/Toast Panel")?.GetComponent<RectTransform>();
-            if (messageText == null) messageText = transform.Find("Safe Area/Toast Panel/Message")?.GetComponent<TMP_Text>();
-
             // Toast is a passive notification — it must never block input to canvases below it.
             // The Safe Area background image (alpha=0) was intercepting all drags/clicks
             // before they could reach the ScrollRect in the lower-sortOrder LoginScreen canvas.

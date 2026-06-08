@@ -10,6 +10,31 @@ namespace Crashmania.UI.Shell
 {
     public sealed class TabBarView : MonoBehaviour
     {
+        [Header("Lobby Tab")]
+        [SerializeField] private Button lobbyButton;
+        [SerializeField] private Image lobbyIcon;
+        [SerializeField] private TMP_Text lobbyLabel;
+
+        [Header("Store Tab")]
+        [SerializeField] private Button storeButton;
+        [SerializeField] private Image storeIcon;
+        [SerializeField] private TMP_Text storeLabel;
+
+        [Header("Gifts Tab")]
+        [SerializeField] private Button giftsButton;
+        [SerializeField] private Image giftsIcon;
+        [SerializeField] private TMP_Text giftsLabel;
+
+        [Header("Redeem Tab")]
+        [SerializeField] private Button redeemButton;
+        [SerializeField] private Image redeemIcon;
+        [SerializeField] private TMP_Text redeemLabel;
+
+        [Header("Account Tab")]
+        [SerializeField] private Button accountButton;
+        [SerializeField] private Image accountIcon;
+        [SerializeField] private TMP_Text accountLabel;
+
         private readonly Dictionary<string, TabButton> tabs = new();
         private DesignTokens tokens;
 
@@ -22,29 +47,23 @@ namespace Crashmania.UI.Shell
 
         private void Awake()
         {
-            BindTab("Lobby", "HOME Tab");
-            BindTab("Store", "STORE Tab");
-            BindTab("Gifts", "GIFTS Tab");
-            BindTab("Account", "ACCOUNT Tab");
+            BindTab("Lobby", lobbyButton, lobbyIcon, lobbyLabel);
+            BindTab("Store", storeButton, storeIcon, storeLabel);
+            BindTab("Gifts", giftsButton, giftsIcon, giftsLabel);
+            BindTab("Redeem", redeemButton, redeemIcon, redeemLabel);
+            BindTab("Account", accountButton, accountIcon, accountLabel);
         }
 
-        private void BindTab(string sceneName, string pathName)
+        private void BindTab(string sceneName, Button button, Image icon, TMP_Text label)
         {
-            var tabTransform = transform.Find($"Safe Area/Tab Bar/{pathName}");
-            if (tabTransform == null) return;
-
-            var button = tabTransform.GetComponent<Button>();
             if (button != null)
             {
                 button.onClick.AddListener(() => TabSelected?.Invoke(sceneName));
             }
 
-            var iconImage = tabTransform.Find("Icon")?.GetComponent<Image>();
-            var labelText = tabTransform.Find("Label")?.GetComponent<TMP_Text>();
-
-            if (iconImage != null && labelText != null)
+            if (button != null && icon != null && label != null)
             {
-                tabs[sceneName] = new TabButton(tabTransform, iconImage, labelText);
+                tabs[sceneName] = new TabButton(button.transform, icon, label);
             }
         }
 
@@ -63,7 +82,8 @@ namespace Crashmania.UI.Shell
 
         private static bool IsShellScene(string sceneName)
         {
-            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account";
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts"
+                || sceneName == "Redeem" || sceneName == "Account";
         }
 
         private readonly struct TabButton

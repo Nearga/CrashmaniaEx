@@ -18,8 +18,14 @@ namespace Crashmania.UI.Game
         [SerializeField] private Button decrementButton;
         [SerializeField] private Button incrementButton;
         [SerializeField] private Button actionButton;
+        [SerializeField] private RectTransform rewardSource;
         [SerializeField] private Toggle autoplayToggle;
         [SerializeField] private Image actionBackground;
+        [SerializeField] private Button quick10KButton;
+        [SerializeField] private Button quick20KButton;
+        [SerializeField] private Button quick40KButton;
+        [SerializeField] private Button quick60KButton;
+        [SerializeField] private Button quick80KButton;
         [SerializeField] private double betAmount = 6000.0;
         [SerializeField] private double stepAmount = 1000.0;
 
@@ -47,32 +53,26 @@ namespace Crashmania.UI.Game
 
         public event Action<double, CurrencyMode> BetAccepted;
         public event Action<double, CurrencyMode> BetCancelled;
+        public event Action<BetPanelController> StateChanged;
 
         public string PanelId => panelId;
         public BetPanelState State => state;
         public AutoplaySettings Autoplay => autoplay;
+        public RectTransform RewardSource => rewardSource;
+        public CurrencyMode ActiveCurrency => currency;
+        public bool BlocksCurrencyToggle => state == BetPanelState.Pending || state == BetPanelState.InFlight;
 
         private void Awake()
         {
-            amountText ??= FindDeep<TMP_Text>("AmountText");
-            actionLabel ??= FindDeep<TMP_Text>("ActionLabel");
-            actionSubLabel ??= FindDeep<TMP_Text>("ActionSubLabel");
-            stateLabel ??= FindDeep<TMP_Text>("StateLabel");
-            decrementButton ??= FindDeep<Button>("MinusButton");
-            incrementButton ??= FindDeep<Button>("PlusButton");
-            actionButton ??= FindDeep<Button>("ActionButton");
-            autoplayToggle ??= FindDeep<Toggle>("AutoplayToggle");
-            actionBackground ??= actionButton != null ? actionButton.GetComponent<Image>() : null;
-
             if (decrementButton != null) decrementButton.onClick.AddListener(() => AdjustAmount(-stepAmount));
             if (incrementButton != null) incrementButton.onClick.AddListener(() => AdjustAmount(stepAmount));
             if (actionButton != null) actionButton.onClick.AddListener(OnActionPressed);
 
-            BindQuickButton("Quick10K", 10000);
-            BindQuickButton("Quick20K", 20000);
-            BindQuickButton("Quick40K", 40000);
-            BindQuickButton("Quick60K", 60000);
-            BindQuickButton("Quick80K", 80000);
+            BindQuickButton(quick10KButton, 10000);
+            BindQuickButton(quick20KButton, 20000);
+            BindQuickButton(quick40KButton, 40000);
+            BindQuickButton(quick60KButton, 60000);
+            BindQuickButton(quick80KButton, 80000);
 
             InitializeAutoplaySubmenu();
             Render();
@@ -267,8 +267,15 @@ namespace Crashmania.UI.Game
 
         private void SetState(BetPanelState nextState)
         {
+            if (state == nextState)
+            {
+                Render();
+                return;
+            }
+
             state = nextState;
             Render();
+            StateChanged?.Invoke(this);
         }
 
         private void SetSubmenuVisible(bool visible)
@@ -380,59 +387,19 @@ namespace Crashmania.UI.Game
             var editable = state == BetPanelState.Idle;
             if (decrementButton != null) decrementButton.interactable = editable;
             if (incrementButton != null) incrementButton.interactable = editable;
-            if (autoplayToggle != null) autoplayToggle.interactable = editable;
+            if (autoplayToggle != null) autoplayToggle.interactable = true;
         }
 
-        private void BindQuickButton(string buttonName, double value)
+        private void BindQuickButton(Button button, double value)
         {
-            var button = FindDeep<Button>(buttonName);
             if (button != null)
             {
                 button.onClick.AddListener(() => SetAmount(value));
             }
         }
 
-        private T FindDeep<T>(string objectName) where T : Component
-        {
-            var transforms = GetComponentsInChildren<Transform>(true);
-            foreach (var child in transforms)
-            {
-                if (child.name == objectName && child.TryGetComponent(out T component))
-                {
-                    return component;
-                }
-            }
-
-            return null;
-        }
-
         private void InitializeAutoplaySubmenu()
         {
-            autoplaySubmenu ??= FindDeep<Transform>("AutoplaySubmenu")?.gameObject;
-            roundInfinityButton ??= FindDeep<Button>("RoundPreset_0");
-            round10Button ??= FindDeep<Button>("RoundPreset_1");
-            round25Button ??= FindDeep<Button>("RoundPreset_2");
-            round50Button ??= FindDeep<Button>("RoundPreset_3");
-            round100Button ??= FindDeep<Button>("RoundPreset_4");
-
-            var cashOutRow = FindDeep<Transform>("CashOutRow");
-            if (cashOutRow != null)
-            {
-                cashOutDecrementButton ??= cashOutRow.Find("CashOutDecrement")?.GetComponent<Button>();
-                cashOutIncrementButton ??= cashOutRow.Find("CashOutIncrement")?.GetComponent<Button>();
-                cashOutMultiplierText ??= cashOutRow.Find("CashOutValue/ValueText")?.GetComponent<TMP_Text>();
-            }
-
-            if (roundPresetBackgrounds == null || roundPresetBackgrounds.Length == 0)
-            {
-                roundPresetBackgrounds = new Image[5];
-                roundPresetBackgrounds[0] = roundInfinityButton?.GetComponent<Image>();
-                roundPresetBackgrounds[1] = round10Button?.GetComponent<Image>();
-                roundPresetBackgrounds[2] = round25Button?.GetComponent<Image>();
-                roundPresetBackgrounds[3] = round50Button?.GetComponent<Image>();
-                roundPresetBackgrounds[4] = round100Button?.GetComponent<Image>();
-            }
-
             if (roundInfinityButton != null) roundInfinityButton.onClick.AddListener(() => OnRoundPresetClicked(0));
             if (round10Button != null) round10Button.onClick.AddListener(() => OnRoundPresetClicked(1));
             if (round25Button != null) round25Button.onClick.AddListener(() => OnRoundPresetClicked(2));
@@ -442,7 +409,6 @@ namespace Crashmania.UI.Game
             if (cashOutDecrementButton != null) cashOutDecrementButton.onClick.AddListener(() => OnCashOutMultiplierChanged(-AutoplaySettings.CashOutStep));
             if (cashOutIncrementButton != null) cashOutIncrementButton.onClick.AddListener(() => OnCashOutMultiplierChanged(AutoplaySettings.CashOutStep));
 
-            autoplayCloseButton ??= FindDeep<Button>("CloseButton");
             if (autoplayCloseButton != null) autoplayCloseButton.onClick.AddListener(DisableAutoplay);
 
             if (autoplayToggle != null)

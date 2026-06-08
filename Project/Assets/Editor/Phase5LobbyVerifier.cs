@@ -22,13 +22,15 @@ namespace Crashmania.Editor
         private static readonly string[] RequiredScenePaths =
         {
             "LobbyCanvas",
-            "LobbyCanvas/ScrollRect",
-            "LobbyCanvas/ScrollRect/Viewport",
-            "LobbyCanvas/ScrollRect/Viewport/Content",
-            "LobbyCanvas/ScrollRect/Viewport/Content/PromoSection",
-            "LobbyCanvas/ScrollRect/Viewport/Content/RecentMultipliers",
-            "LobbyCanvas/ScrollRect/Viewport/Content/CategoryRail",
-            "LobbyCanvas/ScrollRect/Viewport/Content/CarouselSections"
+            "LobbyCanvas/ContentSafeArea",
+            "LobbyCanvas/HeaderOverlay/Safe Area/Header Bar",
+            "LobbyCanvas/ContentSafeArea/ScrollRect",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content/PromoSection",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content/RecentMultipliers",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content/CategoryRail",
+            "LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content/CarouselSections"
         };
 
         private static readonly string[] RequiredPrefabPaths =
@@ -147,7 +149,8 @@ namespace Crashmania.Editor
                 throw new InvalidOperationException("LobbyCanvas CanvasScaler does not match Phase 4.4 policy.");
             }
 
-            var scrollRect = GameObject.Find("LobbyCanvas/ScrollRect")?.GetComponent<ScrollRect>();
+            var scrollRectObject = GameObject.Find("LobbyCanvas/ContentSafeArea/ScrollRect");
+            var scrollRect = scrollRectObject?.GetComponent<ScrollRect>();
             if (scrollRect == null ||
                 !scrollRect.vertical ||
                 scrollRect.horizontal ||
@@ -156,7 +159,15 @@ namespace Crashmania.Editor
                 throw new InvalidOperationException("Lobby ScrollRect must be vertical-only and clamped.");
             }
 
-            var carouselLayout = GameObject.Find("LobbyCanvas/ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<LayoutElement>();
+            var scrollRectTransform = scrollRectObject.GetComponent<RectTransform>();
+            var expectedTop = ShellLayoutMetrics.HeaderHeight + ShellLayoutMetrics.LobbyContentTopGap;
+            if (Math.Abs(scrollRectTransform.offsetMax.y + expectedTop) > 0.001f ||
+                Math.Abs(scrollRectTransform.offsetMin.y - ShellLayoutMetrics.LobbyBottomReserve) > 0.001f)
+            {
+                throw new InvalidOperationException("Lobby ScrollRect must align under the safe-area header frame.");
+            }
+
+            var carouselLayout = GameObject.Find("LobbyCanvas/ContentSafeArea/ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<LayoutElement>();
             if (carouselLayout == null || carouselLayout.preferredHeight < 1000f)
             {
                 throw new InvalidOperationException("CarouselSections must reserve enough preferred height for scrollable lobby content.");

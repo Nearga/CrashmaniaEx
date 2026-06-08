@@ -5,6 +5,7 @@ using Crashmania.PureMvc.Commands.Navigation;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Proxies;
 using PureMVC.Patterns.Facade;
+using UnityEngine;
 
 namespace Crashmania.PureMvc
 {
@@ -15,6 +16,15 @@ namespace Crashmania.PureMvc
         static LobbyFacade()
         {
             instance = new LobbyFacade();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            if (instance is LobbyFacade facade)
+            {
+                facade.started = false;
+            }
         }
 
         public static LobbyFacade GetInstance()
@@ -42,6 +52,7 @@ namespace Crashmania.PureMvc
             RegisterCommand(LobbyNotifications.LaunchGame, () => new LaunchGameCommand());
             RegisterCommand(LobbyNotifications.ExitGame, () => new ExitGameCommand());
             RegisterCommand(LobbyNotifications.PurchaseItem, () => new PurchaseStoreItemCommand());
+            RegisterCommand(LobbyNotifications.SystemBackButtonPressed, () => new SystemBackButtonCommand());
             started = true;
         }
     }

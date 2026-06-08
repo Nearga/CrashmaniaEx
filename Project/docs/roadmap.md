@@ -61,10 +61,10 @@ Port the exact `DependencyContainer` + `[Inject]` pattern from LastOneOut:
 - [x] `Assets/Scripts/Services/NavigationService.cs` — `LoadScene()` with fade-in/out using DOTween on a `TransitionOverlay` canvas
 - [x] `Assets/Scripts/PureMvc/Commands/Navigation/SceneLoadedCommand.cs` — registers mediators for the freshly loaded scene
 
-### 2.3 Persistent Overlays (DontDestroyOnLoad)
-These GameObjects are created once in Boot and survive all scene loads:
+### 2.3 Scene-Local Shell Overlays
+Each scene owns its shell overlays under its single root Canvas. Mediators are rebound after scene loads:
 - [x] `[TransitionOverlay]` — full-screen black `CanvasGroup`, DOTween fade, sort order 300
-- [x] `[HeaderOverlay]` — `HeaderView.cs` + `Canvas` sort order 100 (Lobby/Store/Gifts/Account modes); **hidden during Game scene**
+- [x] `[HeaderOverlay]` — shared scene-local prefab used by Lobby and Game; Game adds only the fixed left Back slot
 - [x] `[TabBar]` — `TabBarView.cs` + `Canvas` sort order 100; **hidden during Game scene**
 - [x] `[ModalManager]` — `ModalView.cs` + `Canvas` sort order 200, queues and stacks modal prefabs
 - [x] `[AudioManager]` — `AudioManager.cs`, background music loop + SFX pool (5 AudioSources)
@@ -142,12 +142,12 @@ Review all animations against spec targets:
 - [ ] Promo banner auto-advance: 0.4s slide
 
 ### 4.4 iOS Resolution & Editor Fidelity
-- [ ] Standardize all runtime UI canvases and overlays on `1170×2532`, `Scale With Screen Size`, width match `0.0`.
-- [ ] Use Unity MCP before layout changes; verify live editor state, console, hierarchy, and screenshots.
-- [ ] Treat iPhone portrait as source of truth; use Game View presets for iPhone 14 Pro, iPhone SE 3, and optional Pro Max.
-- [ ] Apply safe area only to interactive chrome/content, not decorative full-screen backgrounds.
+- [x] Standardize scene-owned runtime UI canvases on `1170×2532`, `Scale With Screen Size`, width match `0.0`; embedded shell prefabs inherit the scene canvas.
+- [x] Use Unity MCP before layout changes; verify live editor state, console, hierarchy, and screenshots.
+- [x] Treat iPhone portrait as source of truth; validate primary Lobby/Game layouts at `1170×2532` and `750×1334`.
+- [x] Apply safe area only to interactive chrome/content in Lobby and Game, not decorative full-screen backgrounds.
 - [ ] Fix login/section image sizing from source asset aspect instead of hardcoded heights.
-- [ ] Add verifier coverage for CanvasScaler policy, iOS portrait lock, safe-area overlays, and URP/iPhone quality settings.
+- [x] Add verifier coverage for single scene canvases, CanvasScaler policy, iOS portrait lock, scene-level safe areas, and URP/iPhone quality settings.
 
 Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with width match `0.0` for portrait-first UI.
 
@@ -233,21 +233,21 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 *Goal: Header shows animated balances. Store page lists packages. Mock purchase updates balance.*
 
 ### 6.1 Balance Proxy
-- [ ] `Assets/Scripts/PureMvc/Proxies/BalanceProxy.cs` — holds `double BalanceCC`, `double BalanceSC`; exposes `Credit(cc, sc)` and `Debit(cc, sc)` — fires `BalanceUpdated` after each change
+- [x] `Assets/Scripts/PureMvc/Proxies/BalanceProxy.cs` — holds `double BalanceCC`, `double BalanceSC`; exposes `Credit(cc, sc)` and `Debit(cc, sc)` — fires `BalanceUpdated` after each change
 
 ### 6.2 Currency Toggle
-- [ ] Segmented control in header: `CC` / `SC` mode toggle
-- [ ] `SettingsProxy.cs` — holds `ActiveCurrency` enum, `MusicOn`, `SFXOn`
-- [ ] Switching mode fires `CurrencyModeChanged` → carousel/store items react to show relevant content
+- [x] Header `CC` / `SC` mode toggle updates the active balance and highlight
+- [x] `SettingsProxy.cs` — holds `ActiveCurrency` enum, `MusicOn`, `SFXOn`
+- [ ] Switching mode fires `CurrencyModeChanged`; currency-aware carousel/store presentation is deferred
 
 ### 6.3 Store Scene UI
-- [ ] `Assets/UI/Prefabs/StoreItemCard.prefab` — `SkewRect` (-5°), purple background, coin icon `Image`, CC amount `TMP_Text` (fontEmphasis), SC bonus line, black price bar with price `TMP_Text`; hover scale 1.05, tap scale 0.98
-- [ ] `StoreView.cs` / `StoreMediator.cs` — populates grid from `MockBackendService.GetStorePackages()`
-- [ ] `StoreItemFactory.cs` — instantiates cards from `StorePackage` model
+- [x] `Assets/Resources/UI/Prefabs/StoreItemCard.prefab` displays CC amount, SC bonus, and price with explicit serialized wiring
+- [x] Lobby-owned `StorePanelView` / `LobbyMediator` populate store cards from `MockBackendService.GetStorePackages()`
+- [x] `StorePanelView` instantiates reusable cards from the `StorePackage` model; a separate factory is unnecessary
 
 ### 6.4 Purchase Flow (Mock)
-- [ ] `Assets/Scripts/PureMvc/Commands/Store/PurchaseStoreItemCommand.cs` — calls `MockBackendService.PurchasePackage(id)`, receives `PurchaseResult`, calls `BalanceProxy.Credit(cc, sc)`, fires `PurchaseComplete`
-- [ ] Purchase confirmation modal: `"Are you sure?"` with Cancel / Confirm buttons; `ModalMediator` handles show/hide
+- [x] `Assets/Scripts/PureMvc/Commands/Lobby/PurchaseStoreItemCommand.cs` directly calls `MockBackendService.PurchasePackage(id)`, credits `BalanceProxy`, and fires `PurchaseComplete`
+- [ ] Purchase confirmation modal is deferred; the current mock purchase remains immediate
 
 ---
 
@@ -286,7 +286,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] `Assets/Scripts/UI/Game/BetPanelController.cs` — tracks `Idle`, `Pending`, `InFlight`, `Won`, and `Lost` states
 - [x] Action button text/colour transitions with DOTween-backed `Image` colour changes
 - [x] Runtime smoke test placed a mock bet during `Preparation`
-- [x] Polish pass: replaced current template styling with extracted bet panel art; real autoplay behavior remains deferred unless required later
+- [x] Polish pass: replaced current template styling with extracted bet panel art; full autoplay behavior is implemented in Phase 11.2
 
 ### 7.6 Crash Game Mock WebSocket Loop (`MockBackendService` extension)
 - [x] `ICrashGameService` contract added for crash loop events and local place/cancel/cashout requests
@@ -300,13 +300,14 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 
 ### 7.7 Exit Game Flow
 - [x] Back button → `ExitGameCommand` → `EmbeddedGameLoader.UnloadGame()` → navigate back to Lobby → restore TabBar and HeaderOverlay
+- [x] Game uses the same shared Lobby header composition, with only the fixed left Back slot enabled
 - [x] Runtime smoke test verified `Boot → Game → Back → Lobby` without new console errors/warnings
 
 ### 7.8 Verification
 - [x] Added `Assets/Editor/Phase7GameVerifier.cs` with `Crashmania/Verify Phase 7 Game`
 - [x] Verifier checks contracts, commands, proxy, loader, `Game.unity` hierarchy, two `BetPanelController` instances, CanvasScaler policy, build settings, and UI/PureMVC boundaries
 - [x] `Crashmania/Verify Phase 7 Game` completed successfully
-- [x] Play Mode screenshot captured: `Assets/Screenshots/phase7_game_playmode_1170x2532.png`; single-frame acceptance does not validate animated state transitions
+- [x] Play Mode screenshot captured under `Assets/Screenshots~/`; single-frame acceptance does not validate animated state transitions
 - [x] Fixed runtime duplicate `EventSystem` / `AudioListener` warnings in additive/editor multi-scene flows
 - [x] Fixed TMP missing-glyph warning by replacing the lobby online counter emoji with supported text
 
@@ -317,18 +318,18 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Updated `BetPanel.prefab` so future panel instances carry extracted container/button/amount art
 - [x] Extended `Crashmania/Verify Phase 7 Game` to assert imported art, assigned scene sprites, prefab art, CanvasScaler policy, and duplicate EventSystem/AudioListener safety
 - [ ] Remaining visual gap: replace the temporary extracted `rocket-start 1` crash burst with a closer explosion/VFX asset if one is identified
-- [ ] Remaining behavior gap: implement full autoplay only if later screenshots/product scope require it
+- [x] Full autoplay behavior implemented and verified in Phase 11.2
 
 
 ### 7.10 Crash Room Graphics Recovery
-- [x] Captured broken baseline screenshot: `Assets/Screenshots/phase7_game_broken_baseline_720x1600.png`
+- [x] Captured broken baseline screenshot under `Assets/Screenshots~/`
 - [x] Added `docs/phase7_game_reference_map.md` with `720 x 1600` screenshot bands mapped to the `1170 x 2532` Unity canvas
 - [x] Recovered `Game.unity` layout from screenshot proportions instead of stretching extracted atlas sprites across large surfaces
 - [x] Rebuilt large game/header/viewport/active-bets/bet-panel surfaces as reference-colored scene-owned UI panels
 - [x] Kept extracted sprites only for small icons and the aspect-preserved rocket where they fit the reference
 - [x] Updated `BetPanel.prefab` to use non-stretched screenshot-style solid/tinted controls
 - [x] Relaxed Phase 7 verifier away from forced large-surface sprite checks; it now checks layout bands, visible surfaces, controller refs, CanvasScaler, duplicate listener safety, and PureMVC boundaries
-- [x] Captured recovery screenshots: `phase7_game_recovery_playmode_720x1600.png`, `phase7_game_recovery_playmode_750x1334.png`, `phase7_game_recovery_playmode_1170x2532.png`
+- [x] Captured recovery screenshots under `Assets/Screenshots~`: `phase7_game_recovery_playmode_720x1600.png`, `phase7_game_recovery_playmode_750x1334.png`, `phase7_game_recovery_playmode_1170x2532.png`
 - [x] Band sanity check: broken baseline had 4 dark middle bands; recovery screenshots have 0 dark middle bands
 - [x] Play Mode acceptance passed: Boot-to-Game, countdown/flight/crash, cancel, cashout win, lost state, Back-to-Lobby
 
@@ -338,7 +339,7 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
 - [x] Added `CrashRocketAnimator` passive component for pseudo-Spine fallback: countdown idle bob, launch squash/tilt, multiplier-driven flight drift, flame intensity, glow pulse, crash hide/burst, and intermission reset
 - [x] Added `CrashBackgroundAnimator` passive component for scene-owned layered background state: countdown, flight, crash tint, intermission, and multiplier-driven parallax
 - [x] Refactored `CrashGameController` to delegate visual state to the passive animators while keeping mock crash loop, betting, balance, history, and PureMVC behavior unchanged
-- [x] Built and wired editable scene layers under `ViewportContainer`: `CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, `CrashTint`, and `Rocket/RocketGlow`
+- [x] Built and wired editable scene layers under `ViewportContainer`: `CountdownBackground`, `FlightSpaceBackground`, `Asteroids`, `Stars`, `Planet`, `GroundOrMoonLayer`, `SpeedLines`, and `CrashTint`
 - [x] Extended Play Mode verification with timed probes for countdown, later flight (`5.50x` / `20.65x` observed), crash, and intermission/reset frames; captured `screenshot-20260601-124420.png`, `screenshot-20260601-124441.png`, and `screenshot-20260601-124456.png`
 - [ ] Replace `rocket-start 1` crash burst with a closer original VFX asset if one is identified
 
@@ -448,6 +449,59 @@ Assumption: this replaces the old `matchWidthOrHeight = 0.5` expectation with wi
   - verify finite count decrements, infinity does not decrement, manual disable stops new bets, and Back-to-Lobby clears autoplay state;
   - check console in Edit and Play Mode after script/prefab changes and fix all new warnings/errors.
 - [x] Migrate code-created submenu hierarchy to `BetPanel.prefab` via Unity MCP for artist editability.
+
+
+---
+
+## Phase 12 — Win Animation & Immediate Reward Settlement
+*Goal: cash-out wins settle immediately during flight while a reusable coin flyout carries the reward from the winning control to the matching header balance.*
+
+### 12.1 Reusable Currency Reward Flyout
+- [ ] Add a reusable `CurrencyRewardFlyout` UI component that accepts currency, payout amount, source `RectTransform`, target `RectTransform`, animation settings, and an optional completion callback.
+- [ ] Use a scene-owned `CurrencyRewardLayer` under the existing root Canvas; do not create another Canvas or block raycasts.
+- [ ] Make the number of animated coins configurable on the component with four serialized properties:
+  - `minAmountOfCoins` (default `4`)
+  - `maxAmountOfCoins` (default `8`)
+  - `multiplierForMinAmountOfCoins` (default `1.3`)
+  - `multiplierForMaxAmountOfCoins` (default `5.0`)
+- [ ] Calculate the coin count from the winning multiplier using clamped linear interpolation between the configured multiplier thresholds and round the result to an integer: multipliers at or below the minimum use `minAmountOfCoins`, multipliers at or above the maximum use `maxAmountOfCoins`, and values between them spread evenly across the integer coin-count range.
+- [ ] Prewarm enough pooled UGUI coin `Image` instances for two simultaneous `maxAmountOfCoins` bursts so overlapping dual-panel wins do not allocate or interrupt each other.
+- [ ] Scale coins in at the source, stagger their launch, and fly them along slightly varied DOTween spline paths before scaling/fading into the target.
+- [ ] Prefer existing extracted currency art:
+  - CC: `Assets/Resources/UI/Game/Extracted/Sprite/Top Bar-coin_crash.asset`
+  - SC: `Assets/Resources/UI/Game/Extracted/Sprite/Top Bar-coin_sweep.asset`
+  - Fallbacks: `Assets/Resources/UI/Icons/Game/coin.png` and `Assets/Resources/UI/Icons/Game/sweep-coin.png`
+
+### 12.2 Immediate Win Settlement
+- [ ] Update `CrashGameController` so a successful `BetResolved` emits an immediate reward event during `Flight`, for both manual and auto cash-out, carrying `CrashBetResolution.Payout`, winning multiplier, currency, and source `RectTransform`.
+- [ ] Credit the full `CrashBetResolution.Payout` to `BalanceProxy` immediately when the reward event is handled; keep the existing bet debit at round start.
+- [ ] Remove round-end winnings accumulation and ensure `OnRoundEnded` cannot credit an already settled payout a second time.
+- [ ] Preserve existing round-start bet debit, loss resolution, dual-bet behavior, and PureMVC boundaries.
+
+### 12.3 PureMVC Coordination & Currency Lock
+- [ ] Add passive `GameView` and `GameMediator` components as the Game scene PureMVC coordination bridge; register/remove `GameMediator` from `GameSceneController.Show()` / `Close()`.
+- [ ] Keep `GameView` passive: expose game reward and bet-state events, bind currency mode, and trigger `CurrencyRewardFlyout` without directly accessing the facade or sending notifications.
+- [ ] Extend `BetPanelController` with a serialized `rewardSource` `RectTransform`, a `StateChanged` event, and a `BlocksCurrencyToggle` property that is true only while the panel is `Pending` or `InFlight`.
+- [ ] Lock the header currency toggle whenever either local bet panel blocks currency switching; unlock it after both panels leave `Pending` / `InFlight`.
+- [ ] When currency switching is unlocked, propagate `CurrencyModeChanged` to both idle bet panels before the next bet is placed.
+- [ ] Add the minimum notification/API contract needed for `GameMediator` to coordinate the header toggle lock and synchronized currency mode without violating view/PureMVC boundaries.
+
+### 12.4 Game Scene & Header Wiring
+- [ ] Add an artist-editable reward source anchor to each `BetPanel` action button and expose matching CC/SC destination anchors from the shared `HeaderOverlay`.
+- [ ] Add `CurrencyRewardLayer` under `GameCanvas`, above game content and within the existing single Canvas, then bind the scene-owned `CurrencyRewardFlyout`.
+- [ ] Wire `GameMediator` to credit `BalanceProxy` immediately, trigger the matching currency flyout, and synchronize the header counter tween with the flyout duration.
+- [ ] Extend `AccumulateToBalance`, `HeaderView`, and `HeaderMediator` with custom-duration balance animation and safe in-progress retargeting so overlapping rewards finish on the exact aggregate balance.
+- [ ] Keep the first integration limited to `Game.unity`, while leaving the component reusable for purchases, bonuses, and other panels.
+
+### 12.5 Verification
+- [ ] Use Unity MCP before scene/prefab changes to inspect the live Game hierarchy, shared header prefab, component references, prefab connection state, and console.
+- [ ] Add EditMode tests for coin-count interpolation: `1.3x` and below gives `4`, `5.0x` and above gives `8`, and intermediate multipliers round to evenly distributed integer counts.
+- [ ] Add focused tests for immediate payout handling, no round-end double credit, bet-panel currency-lock states, currency synchronization while idle, and custom-duration/retargeted balance accumulation where practical.
+- [ ] Extend `Crashmania/Verify Phase 7 Game` or add a Phase 12 verifier for the single-Canvas policy, reward layer without another Canvas/GraphicRaycaster, assigned coin sprites, header targets, Game mediator/view wiring, and both bet-panel reward sources.
+- [ ] Validate in active Play Mode at `1170 x 2532` and `750 x 1334`: manual cash-out, auto cash-out, overlapping dual-panel wins, toggle locked while pending/in-flight, toggle unlocked afterward, synchronized next-bet currency, exact final balance, and no round-end double credit.
+- [ ] Confirm the header starts calculating toward the credited target while coins are flying and reaches the final value by the end of the animation.
+- [ ] Check the Unity console in Edit and Play Mode and fix all new warnings/errors.
+- [ ] Save and visually inspect verification screenshots under `Assets/Screenshots~`.
 
 
 ---

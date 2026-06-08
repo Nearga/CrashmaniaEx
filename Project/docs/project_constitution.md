@@ -18,6 +18,7 @@ The current deliverable is not a generic prototype. It is a screenshot-faithful 
 - `Project/Assets/Scenes/` contains canonical Unity scenes: `Boot`, `Login`, `Lobby`, `Game`, and future shell scenes.
 - `Project/Assets/Scripts/` contains app code.
 - `Project/Assets/Resources/` contains runtime-loaded prefabs, sprites, config, and mock assets.
+- `Project/Assets/Screenshots~/` contains generated Unity verification screenshots. The trailing `~` keeps screenshot artifacts out of Unity's imported asset database.
 - `Project/docs/` contains working specifications, roadmap, asset inventories, and this constitution.
 - `Research/raw/` is source evidence downloaded from the web app. Do not edit it.
 - `Research/deobfuscated/` is source evidence from deobfuscated web/game extraction and AssetRipper. Do not edit it.
@@ -36,9 +37,12 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 
 ## Unity Layout Rules
 
+- **Single Canvas Architecture**: We always have a single canvas for rendering per scene. Each scene (e.g., `Login.unity`, `Lobby.unity`, `Game.unity`) must feature a single root Canvas component (e.g., `LoginCanvas`, `LobbyCanvas`, `GameCanvas`) containing all screen-level UI elements (including Header, TabBar, Toasts, and Modals). There must be no separate runtime-instantiated global Canvas overlays (except the system-level `TransitionOverlay`). All shell prefabs (Header, TabBar, etc.) are embedded directly inside the scene Canvas in the hierarchy so the Editor reflects the Game screen exactly.
+- **Dynamic Mediator Binding**: Because shell overlay views are local to each scene Canvas and are destroyed/loaded with the scene, PureMVC mediators (like `HeaderMediator`, `TabBarMediator`) must be re-registered to bind to the new scene's local view instances on every scene load.
+- **Shared Header Contract**: Lobby and Game use the same scene-local `HeaderOverlay` prefab and visual composition. Game enables only an additional fixed left Back slot; it must not carry independent header layout overrides or runtime anchor rewrites.
 - Use Unity MCP before Unity changes. Inspect live editor state, hierarchy, components, console, and screenshots before and after scene/prefab work.
 - Do not guess blindly from YAML or code when Unity MCP can verify the actual editor state.
-- One-off visual screens are laid out directly in the scene hierarchy.
+- **Visual-First Layout Rule**: All layout is always as visual as possible, for designers to work on. Avoid code creation of elements as much as possible. One-off visual screens are laid out directly in the scene hierarchy.
 - Repeated visual units may be prefabs, for example game cards, category chips, carousel rows, promo cards, shell header, and tab bar.
 - Runtime code may populate repeated prefabs and bind behavior, but must not be the primary source of one-off visual hierarchy.
 - Do not add editor “builder” scripts for scene layout unless explicitly approved. Verifiers are allowed and encouraged.
@@ -87,7 +91,9 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 ## Verification Rules
 
 - **After any Unity scene, prefab, or component change: take a screenshot via Unity MCP and visually confirm the result looks correct before finishing.** Do not end a turn without this step when visual output is involved.
+- **Screenshot Artifact Location**: Save all generated Unity screenshots under `Project/Assets/Screenshots~/`. For Unity MCP screenshot tools, use `Assets/Screenshots~` as the project-relative output folder. Do not save generated verification screenshots under `Assets/Screenshots`, `Builds/Automation`, `Project/Builds`, or another location.
 - **Rule of Specific Visual Evidence**: For visual fixes, reopen the saved screenshot artifact with an image viewer/tool and check the exact requested feature, not just that the scene rendered. If the requested change is subtle (stars, contrast, spacing, small icons, background layers), use a crop/zoom, layer/component inspection, or measurable pixel/feature check. If the artifact does not plainly show the intended result, keep iterating or report a concrete blocker.
+- **Rule of Visual Continuity**: Full-screen and cropped screenshot review must explicitly check for holes, exposed camera color, empty bands, abrupt layer disruptions, clipping, overlap, and unintended asymmetry at screen edges and section boundaries.
 - **Rule of Play Mode Screenshotting**: For dynamic, runtime-instantiated, or populated UI (like the Lobby carousels, game cards, and category chips), screenshots MUST be captured in active Play Mode (`manage_editor` play, wait, take screenshot, then stop). Never claim visual fidelity or completeness based on an empty Edit Mode template.
 - **Rule of Console Exceptions**: Always check the Unity editor console (`read_console`) in both Edit and Play Mode after *any* C# logic or layout change. Fix all unassigned references, null pointers, compiler warnings, or runtime exceptions (e.g., unassigned TMP font atlas textures) immediately before finishing.
 - Verifiers live under `Project/Assets/Editor/` and should assert phase-critical structure, assets, policy, and boundaries.
@@ -112,6 +118,7 @@ When source evidence is needed, copy selected assets into `Project/Assets/...` a
 - Keep PureMVC boundaries clean.
 - Do not mutate source evidence in `Research/`.
 - Do not reintroduce layout builder scripts for Phase 5-style scene work.
+- Do not run Git-related commands automatically. Every Git command requires explicit manual approval from the user before execution.
 - If Unity MCP or the editor is unavailable, stale, compiling, or broken, tell the user exactly what is blocking safe work.
 
 ## Technical Integrity & Efficiency Mandates

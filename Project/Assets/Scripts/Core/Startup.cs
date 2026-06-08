@@ -78,17 +78,10 @@ namespace Crashmania.Core
 
         private void Update()
         {
-            if (navigationService == null || !Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                return;
+                LobbyFacade.GetInstance().SendNotification(LobbyNotifications.SystemBackButtonPressed);
             }
-
-            if (navigationService.CurrentSceneName == "Login")
-            {
-                return;
-            }
-
-            LobbyFacade.GetInstance().SendNotification(LobbyNotifications.NavigateToTab, "Lobby");
         }
 
         private static void DisableDuplicateSceneServices()

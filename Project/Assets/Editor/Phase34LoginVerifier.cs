@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using Crashmania.PureMvc.Scenes;
-using Crashmania.UI.Components;
 using Crashmania.UI.Login;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -14,6 +13,8 @@ namespace Crashmania.Editor
     public static class Phase34LoginVerifier
     {
         private const string LoginScenePath = "Assets/Scenes/Login.unity";
+        private static readonly Vector2 AndroidReferenceResolution = new(1080f, 1920f);
+        private const string HeroSpritePath = "Assets/Resources/UI/Textures/Login/homepage-banner-mobile.png";
 
         private static readonly string[] RequiredPaths =
         {
@@ -33,9 +34,18 @@ namespace Crashmania.Editor
             "LoginCanvas/ScrollRect/Viewport/Content/GameGallerySection/PlayForFreeButton"
         };
 
+        private static readonly string[] RequiredSectionPaths =
+        {
+            "LoginCanvas/ScrollRect/Viewport/Content/HeroSection",
+            "LoginCanvas/ScrollRect/Viewport/Content/HeroDivider",
+            "LoginCanvas/ScrollRect/Viewport/Content/GameGallerySection",
+            "LoginCanvas/ScrollRect/Viewport/Content/DarkDivider",
+            "LoginCanvas/ScrollRect/Viewport/Content/LegalFooterSection"
+        };
+
         private static readonly string[] RequiredSpritePaths =
         {
-            "Assets/Resources/UI/Textures/Login/homepage-banner-mobile.png",
+            HeroSpritePath,
             "Assets/Resources/UI/Textures/Login/hompage-divider-mobile.png",
             "Assets/Resources/UI/Textures/Login/logo.png",
             "Assets/Resources/UI/Textures/Login/top-coin.png",
@@ -67,6 +77,7 @@ namespace Crashmania.Editor
             VerifySceneController();
             VerifyCanvasScaler();
             VerifyTopDragAndHeader();
+            VerifyAndroidVisualStructure();
             VerifyAssets();
             VerifyNoPrefabFallback();
             Debug.Log("[Phase34LoginVerifier] Phase 3.4 login scene verification completed.");
@@ -130,11 +141,17 @@ namespace Crashmania.Editor
             }
 
             if (scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize ||
-                scaler.referenceResolution != CanvasResolutionPolicy.ReferenceResolution ||
-                scaler.screenMatchMode != CanvasScaler.ScreenMatchMode.MatchWidthOrHeight ||
-                Math.Abs(scaler.matchWidthOrHeight - CanvasResolutionPolicy.MatchWidthOrHeight) > 0.001f)
+                scaler.referenceResolution != AndroidReferenceResolution ||
+                scaler.screenMatchMode != CanvasScaler.ScreenMatchMode.Expand ||
+                Math.Abs(scaler.referencePixelsPerUnit - 100f) > 0.001f)
             {
-                throw new InvalidOperationException("LoginCanvas CanvasScaler does not match Phase 4.4 iPhone portrait policy.");
+                throw new InvalidOperationException("LoginCanvas CanvasScaler does not match the Android layout policy.");
+            }
+
+            var canvasComponent = canvas.GetComponent<Canvas>();
+            if (canvasComponent == null || canvasComponent.renderMode != RenderMode.ScreenSpaceOverlay)
+            {
+                throw new InvalidOperationException("LoginCanvas must render as Screen Space - Overlay for Android login layout.");
             }
         }
 
@@ -155,6 +172,55 @@ namespace Crashmania.Editor
             if (header.GetComponent<Image>() != null || header.transform.Find("Background") != null)
             {
                 throw new InvalidOperationException("Hero header must be transparent: logo/buttons overlay the hero art directly.");
+            }
+        }
+
+        private static void VerifyAndroidVisualStructure()
+        {
+            var content = GameObject.Find("LoginCanvas/ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
+            if (content == null)
+            {
+                throw new InvalidOperationException("Login Content RectTransform is missing.");
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+            Canvas.ForceUpdateCanvases();
+
+            var heroImage = GameObject.Find("LoginCanvas/ScrollRect/Viewport/Content/HeroSection")?.GetComponent<Image>();
+            if (heroImage == null || heroImage.sprite == null ||
+                AssetDatabase.GetAssetPath(heroImage.sprite) != HeroSpritePath)
+            {
+                throw new InvalidOperationException("HeroSection must use the homepage-banner-mobile source art.");
+            }
+
+            foreach (var path in RequiredSectionPaths)
+            {
+                var section = GameObject.Find(path);
+                var layout = section != null ? section.GetComponent<LayoutElement>() : null;
+                var rect = section != null ? section.GetComponent<RectTransform>() : null;
+                if (layout == null || layout.preferredHeight <= 0f)
+                {
+                    throw new InvalidOperationException($"{path} must have a positive LayoutElement preferred height.");
+                }
+
+                if ((path.EndsWith("HeroSection", StringComparison.Ordinal) ||
+                     path.EndsWith("GameGallerySection", StringComparison.Ordinal) ||
+                     path.EndsWith("LegalFooterSection", StringComparison.Ordinal)) &&
+                    (rect == null || rect.rect.width <= 1f || rect.rect.height <= 1f))
+                {
+                    throw new InvalidOperationException($"{path} must have a nonzero resolved layout rect.");
+                }
+            }
+
+            var toastPanel = GameObject.Find("LoginCanvas/ToastOverlay/Safe Area/Toast Panel")?.GetComponent<RectTransform>();
+            if (toastPanel == null)
+            {
+                throw new InvalidOperationException("Login Toast Panel is missing.");
+            }
+
+            if (toastPanel.rect.height > 160f || toastPanel.sizeDelta.y > 160f)
+            {
+                throw new InvalidOperationException("Login Toast Panel must be a compact toast, not a full-screen overlay.");
             }
         }
 

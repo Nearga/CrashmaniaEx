@@ -19,7 +19,7 @@ namespace Crashmania.UI.Components
         {
             if (rectTransform == null)
             {
-                return;
+                rectTransform = GetComponent<RectTransform>();
             }
 
             ApplySafeArea();

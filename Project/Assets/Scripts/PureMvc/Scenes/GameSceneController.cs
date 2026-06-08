@@ -2,8 +2,10 @@ using Crashmania.Config;
 using Crashmania.Core;
 using Crashmania.Game;
 using Crashmania.Models;
+using Crashmania.PureMvc.Mediators;
 using Crashmania.PureMvc.Notifications;
 using Crashmania.PureMvc.Proxies;
+using Crashmania.UI.Game;
 using PureMVC.Interfaces;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ namespace Crashmania.PureMvc.Scenes
     public sealed class GameSceneController : MonoBehaviour, IPureMvcScene
     {
         [SerializeField] private MonoBehaviour gameControllerBehaviour;
+        [SerializeField] private GameView gameView;
 
         private IGameController gameController;
         private IFacade facade;
@@ -19,10 +22,6 @@ namespace Crashmania.PureMvc.Scenes
         private void Awake()
         {
             gameController = gameControllerBehaviour as IGameController;
-            if (gameController == null)
-            {
-                gameController = GetComponentInChildren<IGameController>(true);
-            }
         }
 
         public void Show(IFacade activeFacade)
@@ -48,11 +47,15 @@ namespace Crashmania.PureMvc.Scenes
                 activeGameProxy.SetActiveGame(CreateDevGame(), CreateDevSession());
             }
 
-            gameController.OnRequestExit += OnRequestExit;
+            gameObject.SetActive(true);
             gameController.OnBalanceChanged += OnBalanceChanged;
 
             var settings = facade.RetrieveProxy(SettingsProxy.Name) as SettingsProxy;
             gameController.Initialize(activeGameProxy.Session, settings);
+            if (gameView != null)
+            {
+                facade.RegisterMediator(new GameMediator(gameView));
+            }
 
             var balance = facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
             EnsureDevBalance(balance);
@@ -68,15 +71,14 @@ namespace Crashmania.PureMvc.Scenes
         {
             if (gameController != null)
             {
-                gameController.OnRequestExit -= OnRequestExit;
                 gameController.OnBalanceChanged -= OnBalanceChanged;
                 gameController.Shutdown();
             }
-        }
-
-        private void OnRequestExit()
-        {
-            facade?.SendNotification(LobbyNotifications.ExitGame);
+            if (activeFacade != null && activeFacade.HasMediator(GameMediator.Name))
+            {
+                activeFacade.RemoveMediator(GameMediator.Name);
+            }
+            gameObject.SetActive(false);
         }
 
         private void OnBalanceChanged(double ccDelta, double scDelta)

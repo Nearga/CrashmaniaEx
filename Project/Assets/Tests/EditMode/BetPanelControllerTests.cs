@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Crashmania.Config;
 using Crashmania.Models;
 using Crashmania.Services;
@@ -78,6 +79,24 @@ namespace Crashmania.Tests
         }
 
         [Test]
+        public void AutoplayToggleRemainsInteractableAfterBetIsPlaced()
+        {
+            var fixture = CreatePanel();
+            try
+            {
+                fixture.ActionButton.onClick.Invoke();
+
+                Assert.AreEqual(BetPanelState.Pending, fixture.Panel.State);
+                Assert.IsFalse(fixture.DecrementButton.interactable);
+                Assert.IsTrue(fixture.AutoplayToggle.interactable);
+            }
+            finally
+            {
+                fixture.Destroy();
+            }
+        }
+
+        [Test]
         public void FiniteAutoplayDisablesAfterLastAutoCashOutArmedBetResolves()
         {
             var fixture = CreatePanel();
@@ -105,14 +124,19 @@ namespace Crashmania.Tests
         {
             var root = new GameObject("BetPanel", typeof(RectTransform));
             var actionButton = CreateButton(root.transform, "ActionButton");
+            var decrementButton = CreateButton(root.transform, "DecrementButton");
             var autoplayToggle = CreateToggle(root.transform, "AutoplayToggle");
             autoplayToggle.isOn = false;
             var panel = root.AddComponent<BetPanelController>();
             var service = new FakeCrashGameService();
 
+            SetPrivateField(panel, "actionButton", actionButton);
+            SetPrivateField(panel, "decrementButton", decrementButton);
+            SetPrivateField(panel, "autoplayToggle", autoplayToggle);
+            InvokePrivateMethod(panel, "Awake");
             panel.Initialize(TestPanelId, service, CurrencyMode.CC);
 
-            return new PanelFixture(root, panel, service, actionButton, autoplayToggle);
+            return new PanelFixture(root, panel, service, actionButton, decrementButton, autoplayToggle);
         }
 
         private static Button CreateButton(Transform parent, string name)
@@ -129,14 +153,29 @@ namespace Crashmania.Tests
             return toggleObject.GetComponent<Toggle>();
         }
 
+        private static void SetPrivateField(BetPanelController panel, string fieldName, object value)
+        {
+            typeof(BetPanelController)
+                .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.SetValue(panel, value);
+        }
+
+        private static void InvokePrivateMethod(BetPanelController panel, string methodName)
+        {
+            typeof(BetPanelController)
+                .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.Invoke(panel, Array.Empty<object>());
+        }
+
         private sealed class PanelFixture
         {
-            public PanelFixture(GameObject root, BetPanelController panel, FakeCrashGameService service, Button actionButton, Toggle autoplayToggle)
+            public PanelFixture(GameObject root, BetPanelController panel, FakeCrashGameService service, Button actionButton, Button decrementButton, Toggle autoplayToggle)
             {
                 Root = root;
                 Panel = panel;
                 Service = service;
                 ActionButton = actionButton;
+                DecrementButton = decrementButton;
                 AutoplayToggle = autoplayToggle;
             }
 
@@ -144,6 +183,7 @@ namespace Crashmania.Tests
             public BetPanelController Panel { get; }
             public FakeCrashGameService Service { get; }
             public Button ActionButton { get; }
+            public Button DecrementButton { get; }
             public Toggle AutoplayToggle { get; }
 
             public void Destroy()

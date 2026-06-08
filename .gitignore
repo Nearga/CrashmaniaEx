@@ -6,7 +6,8 @@ Research/app_patched/decompiled
 
 Project/Assets/UnityMCP/Log
 
-Project/Assets/Screenshots
+Project/Assets/Screenshots~/
+Project/.utmp
 
 node_modules/
 Sample/
@@ -16,6 +17,30 @@ Sample/
 # Applies recursively to all Unity projects
 # (e.g. Sample/Unity-last-one-out, Research/deobfuscated/game/unity, /Project)
 # ========================================
+
+# Project-specific Unity ignores
+Project/[Ll]ibrary/
+Project/[Tt]emp/
+Project/[Oo]bj/
+Project/[Bb]uild/
+Project/[Bb]uilds/
+Project/[Ll]ogs/
+Project/[Uu]ser[Ss]ettings/
+Project/[Mm]emoryCaptures/
+Project/*.csproj
+Project/*.unityproj
+Project/*.sln
+Project/*.suo
+Project/*.tmp
+Project/*.user
+Project/*.userprefs
+Project/*.pidb
+Project/*.booproj
+Project/*.svd
+Project/*.pdb
+Project/*.mdb
+Project/*.opendb
+Project/*.VC.db
 
 # Unity generated directories
 [Ll]ibrary/

@@ -7,7 +7,7 @@ namespace Crashmania.Game
     public interface IGameController
     {
         event Action<double, double> OnBalanceChanged;
-        event Action OnRequestExit;
+        event Action<CrashRewardEvent> RewardEarned;
 
         void Initialize(GameSession session, SettingsProxy settings);
         void OnBalanceUpdated(double newCC, double newSC);

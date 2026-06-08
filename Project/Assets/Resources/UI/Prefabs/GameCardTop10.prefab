@@ -324,10 +324,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crashmania.UI.Lobby.GameCardView
   button: {fileID: 4652290290948534244}
-  thumbnail: {fileID: 0}
-  nameText: {fileID: 0}
-  onlineText: {fileID: 0}
-  rankText: {fileID: 0}
+  thumbnail: {fileID: 9085688431202579123}
+  nameText: {fileID: 1530531726154729188}
+  onlineText: {fileID: 3650135557849051470}
+  rankText: {fileID: 1391585010399457522}
 --- !u!1 &4920424687859723634
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,7 +396,7 @@ MonoBehaviour:
   m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 437a96ea7e2f74212a215d3b99000b02, type: 2}
-  m_sharedMaterial: {fileID: -3856366446518412044, guid: 287ffb32bdc214237b1014ee3e0f0d01, type: 2}
+  m_sharedMaterial: {fileID: -8153360226488781495, guid: 437a96ea7e2f74212a215d3b99000b02, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

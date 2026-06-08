@@ -17,13 +17,6 @@ namespace Crashmania.Game
 {
     public sealed class CrashGameController : MonoBehaviour, IGameController
     {
-        [Header("Header")]
-        [SerializeField] private Button backButton;
-        [SerializeField] private Button currencyToggleButton;
-        [SerializeField] private TMP_Text titleText;
-        [SerializeField] private TMP_Text ccBalanceText;
-        [SerializeField] private TMP_Text scBalanceText;
-
         [Header("Flight")]
         [SerializeField] private TMP_Text multiplierText;
         [SerializeField] private TMP_Text statusText;
@@ -37,10 +30,31 @@ namespace Crashmania.Game
         [SerializeField] private CrashBackgroundAnimator backgroundAnimator;
 
         [Header("Layout Baselines")]
-        [SerializeField] private Vector2 fallbackRocketCountdownPosition = new(490f, -590f);
-        [SerializeField] private Vector2 fallbackRocketLaunchPosition = new(520f, -515f);
-        [SerializeField] private Vector2 fallbackRocketFlightTargetPosition = new(835f, -210f);
+        [SerializeField] private Vector2 fallbackRocketCountdownNormalized = new(0.5f, 0.167f);
+        [SerializeField] private Vector2 fallbackRocketLaunchNormalized = new(0.527f, 0.259f);
+        [SerializeField] private Vector2 fallbackRocketFlightTargetNormalized = new(0.805f, 0.637f);
         [SerializeField] private float fallbackRocketCountdownRotation = 0f;
+
+        private Vector2 ResolvedCountdownPos => GetAnchoredPosition(fallbackRocketCountdownNormalized);
+        private Vector2 ResolvedLaunchPos => GetAnchoredPosition(fallbackRocketLaunchNormalized);
+        private Vector2 ResolvedFlightTargetPos => GetAnchoredPosition(fallbackRocketFlightTargetNormalized);
+
+        private Vector2 GetAnchoredPosition(Vector2 normalizedPos)
+        {
+            if (rocketTransform == null || rocketTransform.parent == null)
+            {
+                return Vector2.zero;
+            }
+
+            var parentRT = rocketTransform.parent as RectTransform;
+            if (parentRT == null)
+            {
+                return Vector2.zero;
+            }
+
+            var size = parentRT.rect.size;
+            return new Vector2(normalizedPos.x * size.x, -(1f - normalizedPos.y) * size.y);
+        }
 
         [Header("Lists")]
         [SerializeField] private RectTransform historyContent;
@@ -53,59 +67,23 @@ namespace Crashmania.Game
 
         private readonly List<GameObject> playerRows = new();
         private ICrashGameService service;
-        private SettingsProxy settings;
-        private double balanceCc;
-        private double balanceSc;
         private RectTransform multiplierTextRect;
         private RectTransform statusTextRect;
         private Vector2 multiplierTextBasePosition;
         private Vector2 statusTextBasePosition;
         private int lastCountdownRoundNonce = int.MinValue;
 
+        private readonly Dictionary<string, (double amount, CurrencyMode currency)> pendingBets = new();
+        private Action<double, CurrencyMode> betAcceptedHandlerA;
+        private Action<double, CurrencyMode> betCancelledHandlerA;
+        private Action<double, CurrencyMode> betAcceptedHandlerB;
+        private Action<double, CurrencyMode> betCancelledHandlerB;
+
         public event Action<double, double> OnBalanceChanged;
-        public event Action OnRequestExit;
+        public event Action<CrashRewardEvent> RewardEarned;
 
         private void Awake()
         {
-            backButton ??= FindDeep<Button>("BackButton");
-            currencyToggleButton ??= FindDeep<Button>("CurrencyToggleButton");
-            titleText ??= FindDeep<TMP_Text>("GameTitle");
-            ccBalanceText ??= FindDeep<TMP_Text>("CCBalanceText");
-            scBalanceText ??= FindDeep<TMP_Text>("SCBalanceText");
-            multiplierText ??= FindDeep<TMP_Text>("MultiplierText");
-            statusText ??= FindDeep<TMP_Text>("StatusText");
-            rocketTransform ??= FindDeep<RectTransform>("Rocket");
-            flameParticles ??= FindDeep<ParticleSystem>("FlameParticles");
-            scrollingGrid ??= FindDeep<ScrollingGridBackground>("GridBackground");
-            rocketAnimator ??= GetComponentInChildren<CrashRocketAnimator>(true);
-            backgroundAnimator ??= GetComponentInChildren<CrashBackgroundAnimator>(true);
-
-            if (explosionObject == null)
-            {
-                var explosion = FindDeep<Transform>("Explosion");
-                explosionObject = explosion != null ? explosion.gameObject : null;
-            }
-
-            if (historyContent == null)
-            {
-                var history = FindDeep<RectTransform>("HistoryContent");
-                historyContent = history;
-            }
-
-            if (playerRowsContent == null)
-            {
-                var rows = FindDeep<RectTransform>("PlayerRowsContent");
-                playerRowsContent = rows;
-            }
-
-            if (betPanels == null || betPanels.Length == 0)
-            {
-                betPanels = GetComponentsInChildren<BetPanelController>(true);
-            }
-
-            if (backButton != null) backButton.onClick.AddListener(() => OnRequestExit?.Invoke());
-            if (currencyToggleButton != null) currencyToggleButton.onClick.AddListener(ToggleCurrency);
-
             multiplierTextRect = multiplierText != null ? multiplierText.rectTransform : null;
             statusTextRect = statusText != null ? statusText.rectTransform : null;
             multiplierTextBasePosition = multiplierTextRect != null ? multiplierTextRect.anchoredPosition : Vector2.zero;
@@ -114,14 +92,8 @@ namespace Crashmania.Game
 
         public void Initialize(GameSession session, SettingsProxy settingsProxy)
         {
-            settings = settingsProxy;
             service = ServiceLocator.Resolve<ICrashGameService>();
             var config = ServiceLocator.Resolve<AppConfig>();
-
-            if (titleText != null)
-            {
-                titleText.text = string.IsNullOrWhiteSpace(session?.GameId) ? "CRASH" : session.GameId.ToUpperInvariant();
-            }
 
             if (service != null)
             {
@@ -129,14 +101,27 @@ namespace Crashmania.Game
                 service.StartLoop(config).Forget();
             }
 
-            var activeCurrency = settings != null ? settings.ActiveCurrency : CurrencyMode.CC;
+            var activeCurrency = settingsProxy != null ? settingsProxy.ActiveCurrency : CurrencyMode.CC;
             for (var i = 0; i < betPanels.Length; i++)
             {
                 var panel = betPanels[i];
                 if (panel == null) continue;
                 panel.Initialize(i == 0 ? "BetPanelA" : "BetPanelB", service, activeCurrency);
-                panel.BetAccepted += OnBetAccepted;
-                panel.BetCancelled += OnBetCancelled;
+                string pid = panel.PanelId;
+                if (i == 0)
+                {
+                    betAcceptedHandlerA = (amount, curr) => OnBetAccepted(pid, amount, curr);
+                    betCancelledHandlerA = (amount, curr) => OnBetCancelled(pid, amount, curr);
+                    panel.BetAccepted += betAcceptedHandlerA;
+                    panel.BetCancelled += betCancelledHandlerA;
+                }
+                else
+                {
+                    betAcceptedHandlerB = (amount, curr) => OnBetAccepted(pid, amount, curr);
+                    betCancelledHandlerB = (amount, curr) => OnBetCancelled(pid, amount, curr);
+                    panel.BetAccepted += betAcceptedHandlerB;
+                    panel.BetCancelled += betCancelledHandlerB;
+                }
             }
 
             ResetFlightVisuals();
@@ -145,10 +130,6 @@ namespace Crashmania.Game
 
         public void OnBalanceUpdated(double newCC, double newSC)
         {
-            balanceCc = newCC;
-            balanceSc = newSC;
-            if (ccBalanceText != null) ccBalanceText.text = FormatAmount(balanceCc);
-            if (scBalanceText != null) scBalanceText.text = balanceSc.ToString("0.00");
         }
 
         public void OnSettingsChanged(bool musicOn, bool sfxOn)
@@ -164,13 +145,23 @@ namespace Crashmania.Game
                 service = null;
             }
 
-            foreach (var panel in betPanels)
+            for (var i = 0; i < betPanels.Length; i++)
             {
+                var panel = betPanels[i];
                 if (panel == null) continue;
-                panel.BetAccepted -= OnBetAccepted;
-                panel.BetCancelled -= OnBetCancelled;
+                if (i == 0)
+                {
+                    if (betAcceptedHandlerA != null) panel.BetAccepted -= betAcceptedHandlerA;
+                    if (betCancelledHandlerA != null) panel.BetCancelled -= betCancelledHandlerA;
+                }
+                else
+                {
+                    if (betAcceptedHandlerB != null) panel.BetAccepted -= betAcceptedHandlerB;
+                    if (betCancelledHandlerB != null) panel.BetCancelled -= betCancelledHandlerB;
+                }
                 panel.ResetAutoplay();
             }
+
         }
 
         private void Subscribe(ICrashGameService crashService)
@@ -245,6 +236,29 @@ namespace Crashmania.Game
             {
                 panel?.OnRoundStarted();
             }
+
+            // Debit active bets from balance exactly at round start
+            double totalCc = 0;
+            double totalSc = 0;
+            foreach (var bet in pendingBets.Values)
+            {
+                if (bet.currency == CurrencyMode.CC)
+                {
+                    totalCc += bet.amount;
+                }
+                else
+                {
+                    totalSc += bet.amount;
+                }
+            }
+
+            if (totalCc > 0 || totalSc > 0)
+            {
+                OnBalanceChanged?.Invoke(-totalCc, -totalSc);
+            }
+
+            pendingBets.Clear();
+
         }
 
         private void OnMultiplierUpdated(CrashMultiplierEvent update)
@@ -302,7 +316,7 @@ namespace Crashmania.Game
             if (update.Multiplier < 1.1)
             {
                 // Launch phase
-                rocketTransform.DOAnchorPos(fallbackRocketLaunchPosition, duration).SetEase(Ease.OutSine);
+                rocketTransform.DOAnchorPos(ResolvedLaunchPos, duration).SetEase(Ease.OutSine);
                 rocketTransform.DORotate(new Vector3(0f, 0f, 5f), duration).SetEase(Ease.OutSine);
             }
             else
@@ -315,8 +329,8 @@ namespace Crashmania.Game
                 float noiseY = Mathf.Cos(Time.time * 2.5f) * 15f;
 
                 Vector2 targetPos = new Vector2(
-                    Mathf.Lerp(fallbackRocketLaunchPosition.x, fallbackRocketFlightTargetPosition.x, progress) + noiseX,
-                    Mathf.Lerp(fallbackRocketLaunchPosition.y, fallbackRocketFlightTargetPosition.y, Mathf.Sqrt(progress)) + noiseY
+                    Mathf.Lerp(ResolvedLaunchPos.x, ResolvedFlightTargetPos.x, progress) + noiseX,
+                    Mathf.Lerp(ResolvedLaunchPos.y, ResolvedFlightTargetPos.y, Mathf.Sqrt(progress)) + noiseY
                 );
 
                 float targetRot = Mathf.Lerp(5f, 25f, progress);
@@ -349,6 +363,7 @@ namespace Crashmania.Game
             }
 
             AddHistoryPill(ended.CrashPoint);
+
         }
 
         private void OnIntermissionStarted(int roundNonce)
@@ -367,55 +382,29 @@ namespace Crashmania.Game
 
             if (resolution.Won)
             {
-                if (resolution.Currency == CurrencyMode.CC)
+                foreach (var panel in betPanels)
                 {
-                    OnBalanceChanged?.Invoke(resolution.Payout, 0.0);
+                    if (panel != null && panel.PanelId == resolution.PanelId)
+                    {
+                        RewardEarned?.Invoke(new CrashRewardEvent(
+                            resolution.Payout,
+                            resolution.Multiplier,
+                            resolution.Currency,
+                            panel.RewardSource));
+                        break;
+                    }
                 }
-                else
-                {
-                    OnBalanceChanged?.Invoke(0.0, resolution.Payout);
-                }
             }
         }
 
-        private void OnBetAccepted(double amount, CurrencyMode activeCurrency)
+        private void OnBetAccepted(string panelId, double amount, CurrencyMode activeCurrency)
         {
-            if (activeCurrency == CurrencyMode.CC)
-            {
-                OnBalanceChanged?.Invoke(-amount, 0.0);
-            }
-            else
-            {
-                OnBalanceChanged?.Invoke(0.0, -amount);
-            }
+            pendingBets[panelId] = (amount, activeCurrency);
         }
 
-        private void OnBetCancelled(double amount, CurrencyMode activeCurrency)
+        private void OnBetCancelled(string panelId, double amount, CurrencyMode activeCurrency)
         {
-            if (activeCurrency == CurrencyMode.CC)
-            {
-                OnBalanceChanged?.Invoke(amount, 0.0);
-            }
-            else
-            {
-                OnBalanceChanged?.Invoke(0.0, amount);
-            }
-        }
-
-        private void ToggleCurrency()
-        {
-            if (settings == null)
-            {
-                return;
-            }
-
-            var next = settings.ActiveCurrency == CurrencyMode.CC ? CurrencyMode.SC : CurrencyMode.CC;
-            settings.SetCurrencyMode(next);
-
-            foreach (var panel in betPanels)
-            {
-                panel?.SetCurrency(next);
-            }
+            pendingBets.Remove(panelId);
         }
 
         private void RenderPlayers(IReadOnlyList<CrashPlayerBet> bets)
@@ -469,7 +458,7 @@ namespace Crashmania.Game
             if (rocketTransform != null)
             {
                 rocketTransform.DOKill();
-                rocketTransform.anchoredPosition = fallbackRocketCountdownPosition;
+                rocketTransform.anchoredPosition = ResolvedCountdownPos;
                 rocketTransform.localRotation = Quaternion.Euler(0f, 0f, fallbackRocketCountdownRotation);
                 rocketTransform.localScale = Vector3.one;
             }
@@ -496,20 +485,6 @@ namespace Crashmania.Game
                 statusTextRect.localRotation = Quaternion.identity;
                 statusTextRect.localScale = Vector3.one;
             }
-        }
-
-        private T FindDeep<T>(string objectName) where T : Component
-        {
-            var transforms = GetComponentsInChildren<Transform>(true);
-            foreach (var child in transforms)
-            {
-                if (child.name == objectName && child.TryGetComponent(out T component))
-                {
-                    return component;
-                }
-            }
-
-            return null;
         }
 
         private static void SetText(GameObject root, string childName, string value)

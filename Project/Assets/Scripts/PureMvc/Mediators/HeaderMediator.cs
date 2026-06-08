@@ -20,7 +20,11 @@ namespace Crashmania.PureMvc.Mediators
         public override void OnRegister()
         {
             View.OnToggleCurrency += OnToggleCurrency;
+            View.OnBackClicked += OnBackClicked;
             
+            var activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            View.SetVisibleForScene(activeSceneName);
+
             UpdateBalances(false);
             UpdateCurrencyMode();
         }
@@ -28,6 +32,12 @@ namespace Crashmania.PureMvc.Mediators
         public override void OnRemove()
         {
             View.OnToggleCurrency -= OnToggleCurrency;
+            View.OnBackClicked -= OnBackClicked;
+        }
+
+        private void OnBackClicked()
+        {
+            Facade.SendNotification(LobbyNotifications.ExitGame);
         }
 
         public override string[] ListNotificationInterests()
@@ -36,6 +46,8 @@ namespace Crashmania.PureMvc.Mediators
             {
                 LobbyNotifications.BalanceUpdated,
                 LobbyNotifications.CurrencyModeChanged,
+                LobbyNotifications.GameCurrencyLockChanged,
+                LobbyNotifications.GameBalanceAnimationRequested,
                 LobbyNotifications.SceneLoaded
             };
         }
@@ -54,6 +66,12 @@ namespace Crashmania.PureMvc.Mediators
                     break;
                 case LobbyNotifications.CurrencyModeChanged:
                     UpdateCurrencyMode();
+                    break;
+                case LobbyNotifications.GameCurrencyLockChanged:
+                    View.SetCurrencyToggleInteractable(notification.Body is not true);
+                    break;
+                case LobbyNotifications.GameBalanceAnimationRequested:
+                    UpdateBalances(notification.Body is float duration ? duration : 0.5f);
                     break;
                 case LobbyNotifications.SceneLoaded:
                     View.SetVisibleForScene(notification.Body as string);
@@ -76,6 +94,15 @@ namespace Crashmania.PureMvc.Mediators
             if (balanceProxy != null)
             {
                 View.SetBalances(balanceProxy.BalanceCC, balanceProxy.BalanceSC, animate);
+            }
+        }
+
+        private void UpdateBalances(float duration)
+        {
+            var balanceProxy = Facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
+            if (balanceProxy != null)
+            {
+                View.SetBalances(balanceProxy.BalanceCC, balanceProxy.BalanceSC, duration);
             }
         }
 

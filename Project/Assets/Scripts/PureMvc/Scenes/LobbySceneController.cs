@@ -10,11 +10,6 @@ namespace Crashmania.PureMvc.Scenes
     {
         [SerializeField] private LobbyView lobbyView;
 
-        private void Awake()
-        {
-            if (lobbyView == null) lobbyView = GetComponent<LobbyView>();
-        }
-
         public void Show(IFacade facade)
         {
             if (facade == null)
@@ -30,6 +25,7 @@ namespace Crashmania.PureMvc.Scenes
                 return;
             }
 
+            gameObject.SetActive(true);
             facade.RegisterMediator(new LobbyMediator(lobbyView));
             facade.SendNotification(LobbyNotifications.LoadLobbyData);
             Debug.Log("[LobbySceneController] Lobby scene shown.");
@@ -41,6 +37,7 @@ namespace Crashmania.PureMvc.Scenes
             {
                 facade.RemoveMediator(LobbyMediator.Name);
             }
+            gameObject.SetActive(false);
         }
     }
 }

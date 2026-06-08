@@ -1,19 +1,16 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Crashmania.UI.Shell
 {
-    [RequireComponent(typeof(CanvasGroup))]
     public sealed class TransitionOverlay : MonoBehaviour
     {
-        private CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup fadeCanvasGroup;
+
         private Tween fadeTween;
 
         public static TransitionOverlay Instance { get; private set; }
-
-
 
         private void Awake()
         {
@@ -30,6 +27,7 @@ namespace Crashmania.UI.Shell
         private void OnDestroy()
         {
             fadeTween?.Kill();
+
             if (Instance == this)
             {
                 Instance = null;
@@ -50,15 +48,15 @@ namespace Crashmania.UI.Shell
         {
             Initialize();
             fadeTween?.Kill();
-            canvasGroup.blocksRaycasts = true;
+            fadeCanvasGroup.blocksRaycasts = true;
 
             var completion = new UniTaskCompletionSource();
-            fadeTween = canvasGroup
+            fadeTween = fadeCanvasGroup
                 .DOFade(alpha, duration)
                 .SetEase(Ease.OutCubic)
                 .OnComplete(() =>
                 {
-                    canvasGroup.blocksRaycasts = blocksRaycasts;
+                    fadeCanvasGroup.blocksRaycasts = blocksRaycasts;
                     completion.TrySetResult();
                 });
 
@@ -67,10 +65,18 @@ namespace Crashmania.UI.Shell
 
         private void Initialize()
         {
-            if (canvasGroup == null)
+            if (fadeCanvasGroup == null)
             {
-                canvasGroup = GetComponent<CanvasGroup>();
+                fadeCanvasGroup = GetComponentInChildren<CanvasGroup>(true);
             }
+
+            if (fadeCanvasGroup == null)
+            {
+                Debug.LogError("[TransitionOverlay] Missing fade CanvasGroup.");
+                return;
+            }
+
+            fadeCanvasGroup.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
     }
 }

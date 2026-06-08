@@ -11,22 +11,35 @@ namespace Crashmania.UI.Shell
         [SerializeField] private GameObject ccHighlight;
         [SerializeField] private GameObject scHighlight;
         [SerializeField] private UnityEngine.UI.Button toggleButton;
+        [SerializeField] private UnityEngine.UI.Button backButton;
+        [SerializeField] private RectTransform ccRewardTarget;
+        [SerializeField] private RectTransform scRewardTarget;
 
         public event System.Action OnToggleCurrency;
+        public event System.Action OnBackClicked;
+
+        public RectTransform GetRewardTarget(CurrencyMode currency)
+        {
+            return currency == CurrencyMode.CC ? ccRewardTarget : scRewardTarget;
+        }
 
         private void Awake()
         {
-            if (ccBalance == null) ccBalance = transform.Find("Safe Area/Header Bar/CC Balance/CC Value")?.GetComponent<AccumulateToBalance>();
-            if (scBalance == null) scBalance = transform.Find("Safe Area/Header Bar/SC Balance/SC Value")?.GetComponent<AccumulateToBalance>();
-            
             if (toggleButton != null)
             {
                 toggleButton.onClick.AddListener(() => OnToggleCurrency?.Invoke());
+            }
+
+            if (backButton != null)
+            {
+                backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
             }
         }
 
         public void SetActiveCurrency(CurrencyMode mode)
         {
+            if (ccBalance != null) ccBalance.transform.parent.gameObject.SetActive(mode == CurrencyMode.CC);
+            if (scBalance != null) scBalance.transform.parent.gameObject.SetActive(mode == CurrencyMode.SC);
             if (ccHighlight != null) ccHighlight.SetActive(mode == CurrencyMode.CC);
             if (scHighlight != null) scHighlight.SetActive(mode == CurrencyMode.SC);
         }
@@ -47,14 +60,34 @@ namespace Crashmania.UI.Shell
             if (scBalance != null) scBalance.SetValue(sc, animate);
         }
 
+        public void SetBalances(double cc, double sc, float duration)
+        {
+            if (ccBalance != null) ccBalance.SetValue(cc, animate: true, duration);
+            if (scBalance != null) scBalance.SetValue(sc, animate: true, duration);
+        }
+
+        public void SetCurrencyToggleInteractable(bool interactable)
+        {
+            if (toggleButton != null)
+            {
+                toggleButton.interactable = interactable;
+            }
+        }
+
         public void SetVisibleForScene(string sceneName)
         {
             gameObject.SetActive(IsShellScene(sceneName));
+            var isGame = sceneName == "Game";
+            if (backButton != null)
+            {
+                backButton.gameObject.SetActive(isGame);
+            }
         }
 
         private static bool IsShellScene(string sceneName)
         {
-            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts" || sceneName == "Account";
+            return sceneName == "Lobby" || sceneName == "Store" || sceneName == "Gifts"
+                || sceneName == "Redeem" || sceneName == "Account" || sceneName == "Game";
         }
     }
 }

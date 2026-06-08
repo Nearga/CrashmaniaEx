@@ -9,15 +9,37 @@ namespace Crashmania.Game
     {
         [SerializeField] private RectTransform rocketTransform;
         [SerializeField] private Image rocketImage;
-        [SerializeField] private RectTransform rocketGlow;
-        [SerializeField] private Image rocketGlowImage;
         [SerializeField] private ParticleSystem flameParticles;
         [SerializeField] private GameObject explosionObject;
         [SerializeField] private GameObject optionalSpineRoot;
-        [SerializeField] private Vector2 countdownAnchoredPosition = new(490f, -590f);
-        [SerializeField] private Vector2 launchAnchoredPosition = new(520f, -515f);
-        [SerializeField] private Vector2 flightTargetAnchoredPosition = new(835f, -210f);
+        [SerializeField] private Vector2 countdownNormalizedPosition = new(0.5f, 0.167f);
+        [SerializeField] private Vector2 launchNormalizedPosition = new(0.527f, 0.259f);
+        [SerializeField] private Vector2 flightTargetNormalizedPosition = new(0.805f, 0.637f);
         [SerializeField] private float countdownRotationDegrees = 0f;
+
+        private Vector2 ResolvedCountdownPos => GetAnchoredPosition(countdownNormalizedPosition);
+        private Vector2 ResolvedLaunchPos => GetAnchoredPosition(launchNormalizedPosition);
+        private Vector2 ResolvedFlightTargetPos => GetAnchoredPosition(flightTargetNormalizedPosition);
+
+        private Vector2 GetAnchoredPosition(Vector2 normalizedPos)
+        {
+            if (rocketTransform == null || rocketTransform.parent == null)
+            {
+                return Vector2.zero;
+            }
+
+            var parentRT = rocketTransform.parent as RectTransform;
+            if (parentRT == null)
+            {
+                return Vector2.zero;
+            }
+
+            var size = parentRT.rect.size;
+            // Assuming anchors are Top-Left (0, 1):
+            // x = normX * width
+            // y = -(1f - normY) * height
+            return new Vector2(normalizedPos.x * size.x, -(1f - normalizedPos.y) * size.y);
+        }
 
         private Sequence idleSequence;
         private Sequence launchSequence;
@@ -26,19 +48,11 @@ namespace Crashmania.Game
 
         private void Awake()
         {
-            if (rocketTransform == null)
+            if (flameParticles != null)
             {
-                rocketTransform = GetComponent<RectTransform>();
-            }
-
-            if (rocketImage == null && rocketTransform != null)
-            {
-                rocketImage = rocketTransform.GetComponent<Image>();
-            }
-
-            if (flameParticles == null && rocketTransform != null)
-            {
-                flameParticles = rocketTransform.GetComponentInChildren<ParticleSystem>(true);
+                var emission = flameParticles.emission;
+                emission.rateOverTime = 0f;
+                flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
         }
 
@@ -72,9 +86,8 @@ namespace Crashmania.Game
             }
 
             KillTweens();
-            SetGlowVisible(false, 0f);
             rocketTransform.DOKill();
-            rocketTransform.anchoredPosition = countdownAnchoredPosition;
+            rocketTransform.anchoredPosition = ResolvedCountdownPos;
             rocketTransform.localRotation = Quaternion.Euler(0f, 0f, countdownRotationDegrees);
             rocketTransform.localScale = Vector3.one;
 
@@ -99,7 +112,6 @@ namespace Crashmania.Game
                 explosionObject.SetActive(false);
             }
 
-            SetGlowVisible(true, 0.38f);
             if (flameParticles != null)
             {
                 var emission = flameParticles.emission;
@@ -108,7 +120,7 @@ namespace Crashmania.Game
             }
 
             launchSequence = DOTween.Sequence()
-                .Join(rocketTransform.DOAnchorPos(launchAnchoredPosition, 0.28f).SetEase(Ease.OutBack))
+                .Join(rocketTransform.DOAnchorPos(ResolvedLaunchPos, 0.28f).SetEase(Ease.OutBack))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 6f), 0.28f).SetEase(Ease.OutSine))
                 .Join(rocketTransform.DOScale(new Vector3(1.04f, 0.96f, 1f), 0.12f).SetLoops(2, LoopType.Yoyo));
         }
@@ -129,14 +141,13 @@ namespace Crashmania.Game
             var noiseX = Mathf.Sin(Time.time * 3.2f) * Mathf.Lerp(6f, 18f, progress);
             var noiseY = Mathf.Cos(Time.time * 2.7f) * Mathf.Lerp(8f, 22f, progress);
             var targetPos = new Vector2(
-                Mathf.Lerp(launchAnchoredPosition.x, flightTargetAnchoredPosition.x, progress) + noiseX,
-                Mathf.Lerp(launchAnchoredPosition.y, flightTargetAnchoredPosition.y, lift) + noiseY
+                Mathf.Lerp(ResolvedLaunchPos.x, ResolvedFlightTargetPos.x, progress) + noiseX,
+                Mathf.Lerp(ResolvedLaunchPos.y, ResolvedFlightTargetPos.y, lift) + noiseY
             );
 
             rocketTransform.DOAnchorPos(targetPos, 0.06f).SetEase(Ease.Linear);
             rocketTransform.DORotate(new Vector3(0f, 0f, Mathf.Lerp(5f, 27f, progress)), 0.06f).SetEase(Ease.Linear);
             rocketTransform.DOScale(Vector3.one * Mathf.Lerp(1f, 1.08f, progress), 0.06f).SetEase(Ease.Linear);
-            SetGlowVisible(true, Mathf.Lerp(0.2f, 0.55f, progress));
 
             if (flameParticles != null)
             {
@@ -169,7 +180,6 @@ namespace Crashmania.Game
                 flameParticles.Stop();
             }
 
-            SetGlowVisible(false, 0f);
             if (explosionObject != null)
             {
                 explosionObject.SetActive(true);
@@ -182,10 +192,10 @@ namespace Crashmania.Game
         {
             if (flameParticles != null)
             {
-                flameParticles.Stop();
+                var emission = flameParticles.emission;
+                emission.rateOverTime = 0f;
+                flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
-
-            SetGlowVisible(false, 0f);
         }
 
         private void EnsureIdleTween(float secondsRemaining)
@@ -197,34 +207,11 @@ namespace Crashmania.Game
 
             var bobHeight = secondsRemaining <= 3f ? 18f : 10f;
             idleSequence = DOTween.Sequence()
-                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(ResolvedCountdownPos.y + bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, 4f), 0.65f).SetEase(Ease.InOutSine))
-                .Append(rocketTransform.DOAnchorPosY(countdownAnchoredPosition.y - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
+                .Append(rocketTransform.DOAnchorPosY(ResolvedCountdownPos.y - bobHeight, 0.65f).SetRelative(false).SetEase(Ease.InOutSine))
                 .Join(rocketTransform.DORotate(new Vector3(0f, 0f, countdownRotationDegrees), 0.65f).SetEase(Ease.InOutSine))
                 .SetLoops(-1);
-        }
-
-        private void SetGlowVisible(bool visible, float alpha)
-        {
-            if (rocketGlow == null)
-            {
-                return;
-            }
-
-            rocketGlow.gameObject.SetActive(visible || alpha > 0f);
-            rocketGlow.DOKill();
-            rocketGlow.localScale = Vector3.one;
-            if (visible)
-            {
-                rocketGlow.DOScale(1.18f, 0.35f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
-            }
-
-            if (rocketGlowImage != null)
-            {
-                var color = rocketGlowImage.color;
-                color.a = Mathf.Clamp01(alpha);
-                rocketGlowImage.color = color;
-            }
         }
 
         private void KillTweens()
@@ -234,11 +221,6 @@ namespace Crashmania.Game
             if (rocketTransform != null)
             {
                 rocketTransform.DOKill();
-            }
-
-            if (rocketGlow != null)
-            {
-                rocketGlow.DOKill();
             }
 
             if (rocketImage != null)

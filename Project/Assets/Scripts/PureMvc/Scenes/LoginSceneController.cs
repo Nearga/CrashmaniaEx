@@ -29,6 +29,7 @@ namespace Crashmania.PureMvc.Scenes
                 return;
             }
 
+            gameObject.SetActive(true);
             facade.RegisterMediator(new LoginMediator(loginView));
             Debug.Log("[LoginSceneController] Login scene shown.");
         }
@@ -39,6 +40,7 @@ namespace Crashmania.PureMvc.Scenes
             {
                 facade.RemoveMediator(LoginMediator.Name);
             }
+            gameObject.SetActive(false);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace Crashmania.UI.Lobby
         [SerializeField] private GameObject lobbyPanel;
         [SerializeField] private GameObject storePanel;
         [SerializeField] private GameObject giftsPanel;
+        [SerializeField] private GameObject redeemPanel;
         [SerializeField] private GameObject accountPanel;
 
         private readonly List<CategoryChipView> chips = new();
@@ -40,29 +41,14 @@ namespace Crashmania.UI.Lobby
 
         private void Awake()
         {
-            if (promoBanner == null) promoBanner = transform.Find("ScrollRect/Viewport/Content/PromoSection/MainPromo")?.GetComponent<PromoBannerView>();
-            if (categoryContent == null) categoryContent = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect/Viewport/Content")?.GetComponent<RectTransform>();
-            
             if (promoBanner != null)
             {
                 promoBanner.CtaClicked += id => GameSelected?.Invoke(id);
             }
 
-            if (categoryScrollRect == null) categoryScrollRect = transform.Find("ScrollRect/Viewport/Content/CategoryRail/ScrollRect")?.GetComponent<ScrollRect>();
-            if (carouselContent == null) carouselContent = transform.Find("ScrollRect/Viewport/Content/CarouselSections")?.GetComponent<RectTransform>();
-            if (searchInput == null) searchInput = transform.Find("ScrollRect/Viewport/Content/CategoryRail/SearchInput")?.GetComponent<TMP_InputField>();
-            if (recentMultipliersView == null) recentMultipliersView = transform.Find("ScrollRect/Viewport/Content/RecentMultipliers")?.GetComponent<RecentMultipliersView>();
-            if (storePanelView == null) storePanelView = transform.Find("StorePanel")?.GetComponent<StorePanelView>();
-
             if (storePanelView != null)
             {
                 storePanelView.PurchaseRequested += id => PurchaseRequested?.Invoke(id);
-            }
-
-            if (lobbyPanel == null)
-            {
-                var scrollRect = transform.Find("ScrollRect");
-                if (scrollRect != null) lobbyPanel = scrollRect.gameObject;
             }
 
             if (searchInput != null)
@@ -296,6 +282,7 @@ namespace Crashmania.UI.Lobby
             if (lobbyPanel != null) lobbyPanel.SetActive(tabName == "Lobby");
             if (storePanel != null) storePanel.SetActive(tabName == "Store");
             if (giftsPanel != null) giftsPanel.SetActive(tabName == "Gifts");
+            if (redeemPanel != null) redeemPanel.SetActive(tabName == "Redeem");
             if (accountPanel != null) accountPanel.SetActive(tabName == "Account");
         }
 

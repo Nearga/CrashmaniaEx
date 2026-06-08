@@ -23,6 +23,17 @@ namespace Crashmania.PureMvc.Commands.Lobby
                 var response = await backend.GetLobbyData();
                 var catalogProxy = Facade.RetrieveProxy(CatalogProxy.Name) as CatalogProxy;
                 catalogProxy?.SetData(response);
+
+                var balanceProxy = Facade.RetrieveProxy(BalanceProxy.Name) as BalanceProxy;
+                if (balanceProxy != null && !balanceProxy.IsInitialized)
+                {
+                    var profile = await backend.GetPlayerProfile();
+                    if (profile != null)
+                    {
+                        balanceProxy.Initialize(profile.BalanceCC, profile.BalanceSC);
+                    }
+                }
+
                 SendNotification(LobbyNotifications.CatalogUpdated, response);
             }
             catch (System.Exception exception)
